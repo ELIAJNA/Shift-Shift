@@ -740,3 +740,10 @@ Done:
 - Runner.HasCharge (public). GameFlow draws a charge counter above the runner during play: one dot per alternating tap towards the next charge, "CHARGED" when ready.
 Tested: 152 Core tests (2 new: last tap pressed in the window and released after it breaks the wall; wait rules). Compile check passes.
 Not run in Unity: the counter's position and size on screen, and how the wall feels with the longer wait. Docs/RUNNER.md updated.
+
+## 2026-11-16 — D20: runner stops in front of the obstacle on a fail
+
+ELIA did not want the runner to stop past a wall (side effect of waiting for a late key press before judging).
+Done: FailStop.Distance (Core, tested) gives the stopping point: the obstacle's front face minus 0.35 m, never ahead of where the runner already is; a gap stops at the failing edge. Runner.Fail uses it and places the runner at once (Update stops after a fail, so before this the runner simply stayed wherever the last frame left it). Applies to every obstacle kind, not only walls.
+Tested: 153 Core tests (1 new), compile check. Not run in Unity.
+Uncertain: when the wait was long, the runner (and camera) jump back up to about 3 m at the fail; the white flash and hit-stop should hide it, but it needs a look.

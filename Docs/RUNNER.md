@@ -52,6 +52,7 @@ ignores gestures until then.
   last tap that was **pressed** within the grace window (wall click + Good window, 120 ms) but not yet released. Before
   this, a fourth tap pressed in time but released after the window failed. Rule: `RunnerModel.WallMayStillBreak`
   (tested). Waiting is bounded: a pressed key is decided within the tap/hold threshold (250 ms).
-- Side effect: on a fail at a wall, the runner can stop up to about 3 m past it (the wait keeps it moving).
+- On a fail the runner stops just in front of the obstacle (`FailStop.Distance`, tested), even if it moved on
+  while the judgement waited (ELIA, day 20). A gap fail stops at the gap's edge.
 - Charge counter (GameFlow): dots above the runner, one per alternating tap towards the next charge, "CHARGED" once a
   charge is ready. Hidden when no charge is under way.
