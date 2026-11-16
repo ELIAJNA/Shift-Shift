@@ -6,13 +6,16 @@ namespace ShiftShift
 {
     /// <summary>
     /// Trailer mode: presses the virtual Shift keys from <see cref="AutoPlan"/>, through ShiftInput, so every game rule
-    /// and effect runs as for a player. Added at run time by <see cref="TrailerMode"/>; never in a scene or a build.
+    /// and effect runs as for a player. Each press and release is given at its exact planned song time (decision A:
+    /// answers count from key-down), so slow frames while recording cannot lose a tap or make a press late.
+    /// Added at run time by <see cref="TrailerMode"/>; never in a scene or a build.
     /// </summary>
     public sealed class AutoPlayer : MonoBehaviour
     {
         private ShiftInput _input;
         private Conductor _conductor;
-        private List<KeyHold> _plan;
+        private List<AutoPlan.KeyEdge> _edges;
+        private int _next;
 
         public void Init(ShiftInput input, Conductor conductor)
         {
@@ -27,23 +30,24 @@ namespace ShiftShift
                 enabled = false;
                 return;
             }
-            _plan = AutoPlan.Build(_conductor.Level);
-            _input.KeySource = IsDown;
-            Debug.Log($"[Trailer] Autoplay: {_plan.Count} key presses for {_conductor.Level.name}.");
+            _edges = AutoPlan.Edges(AutoPlan.Build(_conductor.Level));
+            _input.KeySource = Feed;
+            Debug.Log($"[Trailer] Autoplay: {_edges.Count / 2} key presses for {_conductor.Level.name}.");
         }
 
-        private bool IsDown(Side side, double songTime)
+        private void Feed(double now, ShiftInput.KeyEdge edge)
         {
-            if (!_conductor.IsStarted || _conductor.IsPaused) return false;
-            // Keys are read once per frame: look one frame ahead, so a press lands in the frame just before its time
-            // (never after the obstacle is judged).
-            double ahead = Mathf.Clamp(Time.unscaledDeltaTime, 0f, 0.04f);
-            return AutoPlan.IsDown(_plan, side, songTime + ahead);
+            if (!_conductor.IsStarted || _conductor.IsPaused) return;
+            while (_next < _edges.Count && _edges[_next].Time <= now)
+            {
+                AutoPlan.KeyEdge e = _edges[_next++];
+                edge(e.Side, e.Down, e.Time);
+            }
         }
 
         private void OnDestroy()
         {
-            if (_input != null && _input.KeySource == (System.Func<Side, double, bool>)IsDown) _input.KeySource = null;
+            if (_input != null) _input.KeySource = null;
         }
     }
 }

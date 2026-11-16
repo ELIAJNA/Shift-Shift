@@ -42,14 +42,18 @@ namespace ShiftShift
             return _classifier != null && _classifier.TryGetUnresolvedPress(out downTime);
         }
 
+        /// <summary>One key edge with its exact song time: down = pressed, else let go.</summary>
+        public delegate void KeyEdge(Side side, bool down, double time);
+
         /// <summary>
-        /// Trailer mode (AutoPlayer): when set, the keys are read from this (side, song time) instead of the keyboard.
+        /// Trailer mode (AutoPlayer): when set, the keyboard is ignored; each frame this is called with the song time
+        /// now and reports every key edge up to it, in time order, with its exact time. So taps shorter than a frame
+        /// and slow frames (recording) lose nothing.
         /// </summary>
-        public Func<Side, double, bool> KeySource { get; set; }
+        public Action<double, KeyEdge> KeySource { get; set; }
 
         private GestureClassifier _classifier;
         private int _settingsVersion;
-        private readonly bool[] _virtualDown = new bool[2];
 
         private void Awake()
         {
@@ -89,14 +93,11 @@ namespace ShiftShift
             double now = Clock.SongTime;
             if (KeySource != null)
             {
-                for (int i = 0; i < 2; i++)
+                KeySource(now, (side, down, time) =>
                 {
-                    Side side = i == 0 ? Side.Left : Side.Right;
-                    bool down = KeySource(side, now);
-                    if (down && !_virtualDown[i]) _classifier.Press(side, now);
-                    if (!down && _virtualDown[i]) _classifier.Release(side, now);
-                    _virtualDown[i] = down;
-                }
+                    if (down) _classifier.Press(side, time);
+                    else _classifier.Release(side, time);
+                });
             }
             else if (ShiftKeys.FromBrowser)
             {

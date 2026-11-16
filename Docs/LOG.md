@@ -878,3 +878,14 @@ Runner.Update: no hits on any level; answers PERFECT except lane moves before a 
 already clear (OK). Compile check (normal and Web), Core tests 163 passing.
 Not run: anything in Unity. Unknown: how it looks and sounds, Recorder
 settings (Variable playback suggested, not tried), and frame rate while recording at 1080p.
+
+## 2026-11-17 — D23: trailer mode fix (hits while recording)
+
+ELIA: recording with trailer mode only showed level 1, and the runner hit obstacles. The video is on ELIA's PC and
+was not seen here. Likely cause: the AutoPlayer sampled "is the key down now" once per frame, so with slow frames
+while recording at 1080p a 70 ms tap could fall between two frames (lost lane move) or a press land late; each fail
+retried level 1. Fix: ShiftInput.KeySource now reports key edges with their exact planned song times
+(AutoPlan.Edges), and the classifier and runner judge from key-down times, so frame rate no longer matters.
+Depends on / could break: ShiftInput (keyboard path unchanged when KeySource is null), AutoPlayer.
+Tested: AutoPlanTests now run every level at 60, 20 and uneven 8 fps: no hits. Compile checks, Core tests.
+Not run: Unity. Not confirmed that this was the cause seen in the video.
