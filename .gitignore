@@ -57,3 +57,6 @@ crashlytics-build.properties
 # Unity scene backups after a crash (keep locally, never commit)
 /Assets/_Recovery/
 /Assets/_Recovery.meta
+
+# Unity Recorder output and trailer work files (large videos, never committed)
+/Recordings/
