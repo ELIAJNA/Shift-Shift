@@ -754,3 +754,9 @@ ELIA (level 1, which has no walls) saw "CHARGED" stay on screen: a charge earned
 Done: RunnerModel.ResolveWithAnswer uses up every charge earned at or before the obstacle being judged, wall or not; a charge completed after it (in a wall's grace window) is kept for the next one. So charges no longer bank up (eight taps = one wall, not two). Runner.NextObstacleKind; GameFlow draws the counter only when it is Wall. Docs/RUNNER.md rule 2 updated.
 Tested: 155 Core tests (2 new; the old "eight taps break two walls" test rewritten for the new rule). Compile check passes. Not run in Unity.
 Checked against the levels: every wall has at least 3 free beats before it, so no level relied on carrying a charge past an obstacle. Level 5's back-to-back walls (176, 180) each need their own four taps.
+
+## 2026-11-16 — D20: charged look on the runner
+
+ELIA asked for a glow or flame on the runner instead of the "CHARGED" text.
+Done: RunnerFigure switches the figure to a new emissive material (Materials/Greybox/RunnerCharged, wall red #F21E3D, emission x2.2 so bloom picks it up) and plays a flame particle system around the torso while a charge is ready and the next obstacle is a red wall. Phase look still wins over charged. Flames are left behind in the world as the runner moves, so they stream back like a trail; they burn out when the charge is used. GameFlow keeps the tap dots (1-3) and no longer draws "CHARGED". Set Up Visuals adds the flame and material to existing figures (WireChargeLook).
+Tested: compile check, 155 Core tests (no rule changed). Not run in Unity: how it looks, whether the flames read as fire in WebGL (Sprites/Default, alpha-blended), and frame rate with up to 300 extra particles.

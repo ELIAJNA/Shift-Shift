@@ -86,6 +86,75 @@ namespace ShiftShift.EditorTools
             log.Add($"{label}: runner is now a running figure with heel dust (capsule kept, switched off)");
         }
 
+        private const string ChargedMatPath = MatDir + "/RunnerCharged.mat";
+
+        /// <summary>Glowing red body material for a charged runner: the wall red on every level, bright enough to bloom.</summary>
+        private static Material EnsureChargedMaterial()
+        {
+            var m = AssetDatabase.LoadAssetAtPath<Material>(ChargedMatPath);
+            if (m != null) return m;
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+            m = new Material(shader);
+            Color red = Hex("#F21E3D");
+            m.SetColor("_BaseColor", red);
+            m.color = red;
+            m.EnableKeyword("_EMISSION"); // on in the asset, so builds keep the emission variant
+            m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+            m.SetColor("_EmissionColor", red * 2.2f);
+            AssetDatabase.CreateAsset(m, ChargedMatPath);
+            return m;
+        }
+
+        /// <summary>Day 20 (ELIA): instead of a "CHARGED" label, the runner glows red and flames stream off it.</summary>
+        private static void WireChargeLook(Runner runner, List<string> log, string label)
+        {
+            if (runner == null) return;
+            Transform figure = runner.transform.Find("Figure");
+            RunnerFigure anim = figure != null ? figure.GetComponent<RunnerFigure>() : null;
+            if (anim == null) return;
+
+            ParticleSystem flame;
+            Transform existing = figure.Find("Flame");
+            if (existing != null) flame = existing.GetComponent<ParticleSystem>();
+            else
+            {
+                var go = new GameObject("Flame");
+                go.transform.SetParent(figure, false);
+                go.transform.localPosition = new Vector3(0f, 1.25f, 0f); // around the torso
+                flame = go.AddComponent<ParticleSystem>();
+                ParticleSystem.MainModule main = flame.main;
+                main.playOnAwake = false;
+                main.loop = true;
+                main.startLifetime = 0.35f;
+                main.startSpeed = 0.4f;
+                main.startSize = 0.3f;
+                main.gravityModifier = -0.6f; // flames rise
+                main.simulationSpace = ParticleSystemSimulationSpace.World; // left behind as the runner moves: a trail of fire
+                main.maxParticles = 300;
+                ParticleSystem.EmissionModule emission = flame.emission;
+                emission.rateOverTime = 70f;
+                ParticleSystem.ShapeModule shape = flame.shape;
+                shape.shapeType = ParticleSystemShapeType.Box;
+                shape.scale = new Vector3(0.5f, 1.4f, 0.3f);
+                ParticleSystem.SizeOverLifetimeModule size = flame.sizeOverLifetime;
+                size.enabled = true;
+                size.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.1f));
+                ParticleSystem.ColorOverLifetimeModule colour = flame.colorOverLifetime;
+                colour.enabled = true;
+                var fire = new Gradient();
+                fire.SetKeys(
+                    new[] { new GradientColorKey(Hex("#FFE066"), 0f), new GradientColorKey(Hex("#FF8A1E"), 0.4f), new GradientColorKey(Hex("#F21E3D"), 1f) },
+                    new[] { new GradientAlphaKey(0.95f, 0f), new GradientAlphaKey(0.7f, 0.5f), new GradientAlphaKey(0f, 1f) });
+                colour.color = new ParticleSystem.MinMaxGradient(fire);
+                var fr = go.GetComponent<ParticleSystemRenderer>();
+                fr.sharedMaterial = EnsureTrailMaterial(); // Sprites/Default: uses the particle colours
+                fr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
+            Set(anim, "flame", flame);
+            Set(anim, "chargedMaterial", EnsureChargedMaterial());
+            log.Add($"{label}: charged look on the runner (red glow and flames)");
+        }
+
         /// <summary>A pivot at <paramref name="at"/> with a box hanging down from it.</summary>
         private static Transform Limb(Transform parent, string name, Vector3 at, Vector3 size)
         {

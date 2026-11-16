@@ -352,25 +352,23 @@ namespace ShiftShift
         }
 
         /// <summary>
-        /// Charge counter above the runner (day 20): one dot per alternating tap towards the next charge, "CHARGED"
-        /// once a charge is ready. Shown only when the next obstacle is a red wall (ELIA), and only while a charge is
-        /// under way or ready.
+        /// Charge counter above the runner (day 20): one dot per alternating tap towards the next charge. Shown only
+        /// when the next obstacle is a red wall, and only while a charge is under way. A ready charge is shown on the
+        /// runner itself (RunnerFigure: glowing body and flames), not as text (ELIA).
         /// </summary>
         private void DrawCharge()
         {
             if (input == null || runner == null || runner.NextObstacleKind != ObstacleKind.Wall) return;
             int taps = Mathf.Max(1, input.Settings.chargeTaps);
-            bool charged = runner.HasCharge;
             int lit = input.AlternateStreak % taps;
-            if (!charged && lit == 0) return;
+            if (runner.HasCharge || lit == 0) return;
             Camera cam = Camera.main;
             if (cam == null) return;
             Vector3 p = cam.WorldToScreenPoint(runner.transform.position + Vector3.up * 2.6f);
             if (p.z <= 0f) return;
             float x = p.x, y = Screen.height - p.y; // GUI y runs down
             string dots = "";
-            for (int i = 1; i <= taps; i++) dots += charged || i <= lit ? "<color=#F21E3D>●</color> " : "<color=#FFFFFF88>○</color> ";
-            if (charged) dots = "<b><color=#F21E3D>CHARGED</color></b>";
+            for (int i = 1; i <= taps; i++) dots += i <= lit ? "<color=#F21E3D>●</color> " : "<color=#FFFFFF88>○</color> ";
             GUI.Label(new Rect(x - 150, y - 40, 300, 40), dots.TrimEnd(), _mid);
         }
 
