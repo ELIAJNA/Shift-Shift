@@ -860,3 +860,21 @@ ELIA played the menu and levels with the sound effects: "all is good" (choices a
 
 ELIA asked for a gameplay video / trailer with an enticing script. Footage cannot be recorded from the cloud session (no Unity), so: script and shot list timed to Celebration and Fear (the drop found by measuring loudness per bar: quiet intro to bar 26, drop at bar 27; the trailer starts at bar 19 = 25.19 s), 14 caption and end cards (Inter Display, the action colours), and an animatic MP4 (44.2 s, music and cards in place, a labelled placeholder per shot) sent to ELIA. Docs/TRAILER.md has the script, recording and Clipchamp steps. Cards and video are not in the repo (PNG/MP4 go through LFS, which cannot be pushed from the cloud session).
 Font: Inter (SIL Open Font License) used in the trailer images only, not in the game.
+
+## 2026-11-17 — D23: trailer mode (autoplay) for recording footage
+
+ELIA chose option 2: the runner plays every level by itself so clean footage can be recorded with Unity Recorder.
+Done: Core/AutoPlan.cs works out the key presses from a level file (lane moves, holds, jumps, phases, 4-tap charges
+ending on the beat; close holds released and pressed again, or joined if there is no room). Runtime: TrailerMode
+(editor only, PlayerPrefs switch, menu Shift+Shift > Trailer Mode (autoplay)) adds an AutoPlayer to the Input object
+when a scene loads; ShiftInput.KeySource feeds its virtual keys to the classifier, looking one frame ahead. GameFlow:
+direct Play starts level 1, results go on to the next level after 4 s (stops after level 6), a fail retries after 1 s,
+nothing saved; MainMenu starts level 1 at once. No scene changes; nothing to re-run in Set Up Visuals.
+Depends on / could break: ShiftInput (Runner, GameFlow, MainMenu, SoundFx, GestureDebugHud, LatencyCalibration read it;
+unchanged when KeySource is null), GameFlow (Run and LevelTest scenes; the Results/Failed branch was reordered so
+trailer mode is checked first), MainMenu (Menu scene).
+Tested: AutoPlanTests simulates levels 1-6 through the real GestureClassifier and RunnerModel at 60 fps, mirroring
+Runner.Update: no hits on any level; answers PERFECT except lane moves before a phase (GOOD, 0.1 s early) and lanes
+already clear (OK). Compile check (normal and Web), Core tests 163 passing.
+Not run: anything in Unity. Unknown: how it looks and sounds, Recorder
+settings (Variable playback suggested, not tried), and frame rate while recording at 1080p.

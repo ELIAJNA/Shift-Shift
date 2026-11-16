@@ -28,10 +28,34 @@ transparent) and an animatic MP4 with the music and every card in place, plus a 
 | 15 | 40.4-44.2 | 3 | End card: SHIFT+SHIFT, tagline, "Play free in your browser · itch.io", GitHub Game Off 2026 | End card as is; music fades |
 
 ## Recording
+Two ways: trailer mode in the editor (below, cleanest), or play it yourself:
 - Record the **browser release build** in fullscreen (F11 in Chrome), so there is no debug text and no editor frame.
 - Windows: **Win+Alt+R** starts and stops Xbox Game Bar recording (clips go to Videos\Captures). OBS Studio works too.
 - Record a full run of each level, played well; the shots are cut from those. Game sound on or off: the trailer uses
   the music track, so mute the clips in the editor.
+
+### Trailer mode (autoplay, editor only)
+The runner plays every level by itself, each answer on its beat, so the footage is clean. Editor only: it is never
+on in a build.
+1. **Shift+Shift > Trailer Mode (autoplay)** (a tick shows it is on).
+2. Press Play (from the Menu or Run scene). Level 1 starts at once; each level goes on to the next after 4 s of
+   results; level 6 stays on its results. A fail (should not happen) retries after 1 s. Debug text is hidden (F1
+   still shows it). Best scores and cleared levels are not saved while it is on.
+3. Untick the menu item to play normally again.
+
+What the bot does: it answers every obstacle on the beat (PERFECT). A lane move just before a phase lands 0.1 s
+early (GOOD), and a lane obstacle the runner is already clear of scores OK (the game's own rule). Checked in a
+simulation of all six levels (AutoPlanTests); needs at least about 30 fps in the editor while recording.
+
+### Unity Recorder (free package)
+1. Window > Package Manager > Unity Registry > **Recorder** > Install.
+2. Game view: set the size to **1920x1080**.
+3. Window > General > Recorder > Recorder Window. Add Recorder > **Movie**. Format MP4 (H.264), output 1920x1080
+   (Game View), quality High. Untick audio (the trailer uses the music track).
+4. Recording Mode **Manual**; Playback **Variable**, max 60 fps. (Constant slows game time to the capture rate, but
+   this game follows the audio clock, so constant-rate footage could skip.)
+5. Start Recording (it enters Play mode), let the levels run, Stop Recording. The file is in the project's
+   Recordings folder (outside Assets).
 
 ## Editing (Clipchamp, built into Windows 11)
 1. New video, 16:9. Import the animatic, the cards, the track and the recordings.

@@ -86,6 +86,12 @@ namespace ShiftShift
 
         private void Awake()
         {
+            // Trailer mode (editor only): a run scene opened directly plays level 1 at once.
+            if (TrailerMode.Enabled && string.IsNullOrEmpty(LevelToLoad) && !_autoStart)
+            {
+                LevelToLoad = TrailerMode.FirstLevel;
+                _autoStart = true;
+            }
             TextAsset json = Pick();
             if (json == null || conductor == null || runner == null)
             {
@@ -175,6 +181,10 @@ namespace ShiftShift
             {
                 if (esc) SetPaused(true);
             }
+            else if (TrailerMode.Enabled)
+            {
+                TrailerStep(); // autoplay keys must not pick results options or retry at once
+            }
             else if (Current == Phase.Failed)
             {
                 if (esc) ToMenu();
@@ -186,6 +196,24 @@ namespace ShiftShift
                 else if (key == MenuKey.Right) { if (_nextLevel != null) Play(_nextLevel, gameObject.scene.name); else ToMenu(); }
                 else if (key == MenuKey.Both || esc) ToMenu();
             }
+        }
+
+        private float _trailerWait = -1f;
+
+        /// <summary>Trailer mode: results for a few seconds, then the next level (stops after the last); a fail retries.</summary>
+        private void TrailerStep()
+        {
+            if (Current != Phase.Results && !(Current == Phase.Failed && _canRestart))
+            {
+                _trailerWait = -1f;
+                return;
+            }
+            if (_trailerWait < 0f) _trailerWait = Current == Phase.Results ? 4f : 1f;
+            _trailerWait -= Time.unscaledDeltaTime;
+            if (_trailerWait > 0f) return;
+            _trailerWait = float.MaxValue; // once
+            if (Current == Phase.Failed) Restart();
+            else if (_nextLevel != null && conductor.LevelAssetName != TrailerMode.LastLevel) Play(_nextLevel, gameObject.scene.name);
         }
 
         private void SetPaused(bool paused)
@@ -234,6 +262,7 @@ namespace ShiftShift
 
         private void Remember(string prefix)
         {
+            if (TrailerMode.Enabled) return; // autoplay runs do not count
             string key = prefix + conductor.LevelAssetName;
             if (PlayerPrefs.GetInt(key, 0) == 1) return;
             PlayerPrefs.SetInt(key, 1);
@@ -256,7 +285,7 @@ namespace ShiftShift
             // A key still held from the last obstacle must not pick a results option.
             _keys.Reset(input != null && input.IsDown(Side.Left), input != null && input.IsDown(Side.Right));
             int points = (int)Score.Points;
-            if (points > _best)
+            if (points > _best && !TrailerMode.Enabled)
             {
                 _best = points;
                 _newBest = true;
