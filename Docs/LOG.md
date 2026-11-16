@@ -829,3 +829,9 @@ Likely cause (not confirmed in a browser): Web builds decode compressed audio in
 Done: Conductor starts loading the clip when the level is set; StartNow becomes a request that begins playback once the clip is Loaded (or Failed, or after 15 s: then it runs silent with a warning). IsStarted only turns true when playback is scheduled, so GameFlow, Runner and PaletteApplier wait as before. GameFlow shows "Loading music..." meanwhile.
 Tested: compile check, Core tests. Not run in a browser.
 If it is still silent: the browser's console (F12) will say why; the Calibrate scene (clips made at run time, never compressed) tells an audio-unlock problem apart from a decoding one.
+
+## 2026-11-16 — D20: real cause of the silent browser build: Shift is not a user gesture
+
+ELIA's Chrome console showed "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page" (166 times). Chrome does not count modifier keys (Shift, Ctrl, Alt, Meta) as a user gesture, so a game played only with Shift never unlocks sound. Earlier browser tests had sound because the page had been clicked first. The decode wait from the previous entry stays (harmless, and right for long clips) but was not the cause.
+Done: ShiftKeys.jslib resumes Unity's audio context on a click, tap or non-modifier key and reports whether it is running; WebAudioUnlock.Ready wraps it (always true outside Web builds). MainMenu shows "Click to start (or press Space)" in Web builds until sound is unlocked and ignores Shift until then.
+Tested: compile check for both variants; the browser script simulated in Node (Shift does not unlock, Space and a click do, fallback when Unity's audio context is not found). Not run in a browser.

@@ -27,6 +27,35 @@ mergeInto(LibraryManager.library, {
     }, true);
     window.addEventListener('blur', function () { s.left = false; s.right = false; });
   },
+  // Browsers start sound only after a user gesture, and Chrome does not count Shift (or any modifier key) as one
+  // (day 20: the music was silent in Chrome; console: "The AudioContext was not allowed to start").
+  // A click, a tap, or a key other than a modifier resumes Unity's audio context.
+  AudioUnlock_Init: function () {
+    if (Module.audioUnlock) return;
+    var u = Module.audioUnlock = { gesture: false };
+    function ctx() {
+      try { if (typeof WEBAudio !== 'undefined' && WEBAudio && WEBAudio.audioContext) return WEBAudio.audioContext; } catch (e) {}
+      return null;
+    }
+    u.ctx = ctx;
+    function unlock(e) {
+      if (e.type === 'keydown' && (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta')) return;
+      u.gesture = true;
+      var c = ctx();
+      if (c && c.state !== 'running' && c.resume) { try { c.resume(); } catch (err) {} }
+    }
+    window.addEventListener('pointerdown', unlock, true);
+    window.addEventListener('touchend', unlock, true);
+    window.addEventListener('keydown', unlock, true);
+  },
+  // 1 once sound can play: Unity's audio context is running (or, if it cannot be found, once a gesture happened).
+  AudioUnlock_IsRunning: function () {
+    var u = Module.audioUnlock;
+    if (!u) return 0;
+    var c = u.ctx();
+    if (c) return c.state === 'running' ? 1 : 0;
+    return u.gesture ? 1 : 0;
+  },
   ShiftKeys_State: function () {
     var s = Module.shiftKeys;
     if (!s) return 0;

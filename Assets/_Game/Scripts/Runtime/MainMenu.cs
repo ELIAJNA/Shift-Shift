@@ -71,6 +71,8 @@ namespace ShiftShift
         private void Update()
         {
             MenuKey key = _keys.Poll(Down(Side.Left), Down(Side.Right));
+            // Browser: nothing happens until sound is unlocked by a click (Shift does not count as a gesture there).
+            if (!WebAudioUnlock.Ready) return;
             if (key == MenuKey.None) return;
             if (_page != Page.None)
             {
@@ -189,6 +191,15 @@ namespace ShiftShift
             }
 
             GUI.Label(new Rect(0, h * 0.08f, w, 110), "SHIFT+SHIFT", _title);
+            if (!WebAudioUnlock.Ready)
+            {
+                // Web build only: the browser needs one click before it plays sound (it does not count Shift).
+                GUI.Label(new Rect(0, h * 0.08f + 105, w, 30), "A Rhythm Runner Played With Just Two Keys", _small);
+                GUI.Label(new Rect(0, h * 0.42f, w, 70), "Click to start", _big);
+                GUI.Label(new Rect(w * 0.1f, h * 0.42f + 75, w * 0.8f, 40),
+                    "(or press Space). Your browser needs this once before it plays sound. After that, just the two Shift keys.", _mid);
+                return;
+            }
             GUI.Label(new Rect(0, h * 0.08f + 105, w, 30), "A Rhythm Runner Played With Just Two Keys", _small);
 
             Entry e = _entries[_index];
