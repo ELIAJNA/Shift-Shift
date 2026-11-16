@@ -904,6 +904,6 @@ ELIA set up the draft page (jna1980.itch.io/shift-shift: browser embed, descript
 images. tools/trailer/make_itch_art.py draws them from the game's look (night palette, three-lane road with cyan
 edges, orange lane block, red brick wall, the boxy runner with the charge flame, skyline with lit windows):
 banner 960x300 (title, tagline, the two Shift keys), page background 1920x1080 (sky, skyline, empty road, darkened
-for the page column), embed background 960x600 (scene plus "Click to play · headphones on"). Images go to itch-art/
+for the page column), embed background 960x600 (scene plus "Click to play · headphones on"), cover 630x500 (title, "Two keys. Seven moves. One beat.", scene, the two keys). Images go to itch-art/
 (ignored by git: PNGs are LFS and cannot be pushed from the cloud session); sent to ELIA.
 Not checked: how they look on the itch page.
