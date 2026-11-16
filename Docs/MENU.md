@@ -22,3 +22,12 @@ Menu entries: the levels in play order (name, length, best score), "Calibrate ti
 Pause: the Conductor freezes the song clock and pauses the audio; on resume the song's start moves forward by the time spent paused. If the pause came during the count-in, the audio start is scheduled again.
 
 Developer overlays (gesture log, runner state box): shown by default in the editor only; F1 toggles them anywhere.
+
+## Day 20 changes (ELIA)
+
+- Tagline: "A Rhythm Runner Played With Just Two Keys".
+- New menu entry **How to play** (after the levels): the six moves, each with the obstacle colour it answers, plus a
+  line on scoring and Esc. Any Shift goes back.
+- Level status under each level: "best N" once cleared, "Failed - Try Again" once played but not cleared, else
+  "not played yet". Stored in PlayerPrefs `ShiftShift.Played.<level>` and `ShiftShift.Cleared.<level>` (set by GameFlow
+  on fail and on finish); a best score above 0 also counts as cleared.

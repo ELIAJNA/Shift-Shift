@@ -773,3 +773,13 @@ ELIA: no menu on the first screen; the level choice only appeared after clearing
 Done: GameFlow loads the Menu scene when the Run scene is opened directly (no level chosen, no auto-start) and the Menu scene is in the build list. Tick box "Open Menu When Started Here" (on by default) to switch it off for quick tests. Docs/MENU.md updated.
 Tested: compile check only. Not run in Unity.
 Noticed: the Menu scene in the repository is still the empty one (its menu is added by Set Up Visuals on ELIA's PC); it reaches GitHub with ELIA's next commit.
+
+## 2026-11-16 — D20: menu tagline, How to play, level status, fewer flames
+
+ELIA tested the menu (works: Left/Right choose, Both opens) and the charged flame. Asked: tagline "A Rhythm Runner Played With Just Two Keys"; where is How to play; a level played but not cleared should say "Failed - Try Again"; the flames hid the runner.
+Done:
+- MainMenu: new tagline; "How to play" entry and page (six moves with their obstacle colours, scoring line, Esc); status per level from PlayerPrefs.
+- GameFlow: records Played (on fail and finish) and Cleared (on finish) per level.
+- Flame rebuilt by Set Up Visuals on every run: three layers at 12 flames per second each (were 55-60), smaller (0.12-0.2), simulated in local space so they stay on the body instead of streaming back at the camera; at most 20 per layer.
+Tested: compile check, 155 Core tests. Not run in Unity: page layout at different window sizes, the new flame by eye.
+Noticed: in ELIA's screenshot the runner was charged at the start of level 5 because L R L R during the count-in earns a charge for the first wall (beat 8). Allowed by the rules (the first obstacle is the wall); left as is.

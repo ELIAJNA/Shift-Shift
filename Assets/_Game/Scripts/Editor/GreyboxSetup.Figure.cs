@@ -124,31 +124,23 @@ namespace ShiftShift.EditorTools
             RunnerFigure anim = figure != null ? figure.GetComponent<RunnerFigure>() : null;
             if (anim == null) return;
 
+            // Rebuilt on every run, so changes to the numbers below always reach the scenes.
             Transform existing = figure.Find("Flame");
-            if (existing != null && existing.Find("Core") == null)
-            {
-                Object.DestroyImmediate(existing.gameObject); // the first, single-layer flame
-                existing = null;
-            }
-            ParticleSystem flame;
-            if (existing != null) flame = existing.GetComponent<ParticleSystem>();
-            else
-            {
-                // Outside to inside. Lower sorting fudge = drawn on top, so the yellow core shows through.
-                flame = FlameLayer(figure, "Flame", new Vector3(0.75f, 1.6f, 0.45f), 0.38f, 0.45f, 55f,
-                    "#FF5A2A", "#F21E3D", 0.8f, 0f);
-                FlameLayer(flame.transform, "Middle", new Vector3(0.5f, 1.35f, 0.32f), 0.3f, 0.35f, 60f,
-                    "#FFA41E", "#FF6A1E", 0.9f, -10f);
-                FlameLayer(flame.transform, "Core", new Vector3(0.3f, 1.1f, 0.22f), 0.22f, 0.25f, 60f,
-                    "#FFF6B0", "#FFD23F", 1f, -20f);
-                log.Add($"{label}: flame rebuilt as yellow core, orange middle, red outside");
-            }
+            if (existing != null) Object.DestroyImmediate(existing.gameObject);
+            // Outside to inside. Lower sorting fudge = drawn on top, so the yellow core shows through. Few, small
+            // flames that stay on the body (ELIA, day 20: the trail streamed back at the camera and hid the runner).
+            ParticleSystem flame = FlameLayer(figure, "Flame", new Vector3(0.6f, 1.5f, 0.35f), 0.2f, 0.32f, 12f,
+                "#FF5A2A", "#F21E3D", 0.75f, 0f);
+            FlameLayer(flame.transform, "Middle", new Vector3(0.45f, 1.3f, 0.28f), 0.16f, 0.28f, 12f,
+                "#FFA41E", "#FF6A1E", 0.85f, -10f);
+            FlameLayer(flame.transform, "Core", new Vector3(0.3f, 1.1f, 0.2f), 0.12f, 0.24f, 12f,
+                "#FFF6B0", "#FFD23F", 1f, -20f);
             Set(anim, "flame", flame);
             Set(anim, "chargedMaterial", EnsureChargedMaterial());
             log.Add($"{label}: charged look on the runner (warm glow and layered flame)");
         }
 
-        /// <summary>One looping flame layer around the torso, rising and left behind in the world as the runner moves.</summary>
+        /// <summary>One looping flame layer around the torso, rising off the body and moving with it.</summary>
         private static ParticleSystem FlameLayer(Transform parent, string name, Vector3 box, float size, float life,
             float rate, string fromHex, string toHex, float alpha, float sortingFudge)
         {
@@ -162,9 +154,9 @@ namespace ShiftShift.EditorTools
             main.startLifetime = life;
             main.startSpeed = 0.4f;
             main.startSize = size;
-            main.gravityModifier = -0.6f; // flames rise
-            main.simulationSpace = ParticleSystemSimulationSpace.World; // a trail of fire behind the runner
-            main.maxParticles = 150;
+            main.gravityModifier = -0.9f; // flames rise
+            main.simulationSpace = ParticleSystemSimulationSpace.Local; // flames stay on the body, no trail at the camera
+            main.maxParticles = 20;
             ParticleSystem.EmissionModule emission = ps.emission;
             emission.rateOverTime = rate;
             ParticleSystem.ShapeModule shape = ps.shape;

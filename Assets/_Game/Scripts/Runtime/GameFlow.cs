@@ -22,6 +22,10 @@ namespace ShiftShift
 
         // V2: point values changed on day 17 (50 / 20 / 5); bests saved under the old values are left behind.
         public const string BestKeyPrefix = "ShiftShift.BestV2.";
+        /// <summary>Set to 1 once a level has been played (failed or finished); the menu shows "Failed - Try Again".</summary>
+        public const string PlayedKeyPrefix = "ShiftShift.Played.";
+        /// <summary>Set to 1 once a level has been finished.</summary>
+        public const string ClearedKeyPrefix = "ShiftShift.Cleared.";
 
         [SerializeField] private List<TextAsset> levels = new List<TextAsset>();
         [SerializeField] private Conductor conductor;
@@ -223,8 +227,17 @@ namespace ShiftShift
         private void OnFailed(Obstacle o)
         {
             Current = Phase.Failed;
+            Remember(PlayedKeyPrefix);
             _flash = 1f;
             StartCoroutine(HitStop());
+        }
+
+        private void Remember(string prefix)
+        {
+            string key = prefix + conductor.LevelAssetName;
+            if (PlayerPrefs.GetInt(key, 0) == 1) return;
+            PlayerPrefs.SetInt(key, 1);
+            PlayerPrefs.Save();
         }
 
         private IEnumerator HitStop()
@@ -238,6 +251,8 @@ namespace ShiftShift
         private void OnCompleted()
         {
             Current = Phase.Results;
+            Remember(PlayedKeyPrefix);
+            Remember(ClearedKeyPrefix);
             // A key still held from the last obstacle must not pick a results option.
             _keys.Reset(input != null && input.IsDown(Side.Left), input != null && input.IsDown(Side.Right));
             int points = (int)Score.Points;
