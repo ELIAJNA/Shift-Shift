@@ -801,3 +801,10 @@ Tested: 156 Core tests (2 new for the four-tap rule; the old eight-taps test rep
 ## 2026-11-16 — D20: charge and flame verified in the editor
 
 ELIA: the flame "looks good now"; the four-press charge rule is in. Next: a browser build to check the menu, the flame, the four-press rule and the frame rate in WebGL.
+
+## 2026-11-16 — D20: browser build checked; menu arrows drawn as images
+
+ELIA ran a browser build: menu, How to play, level status, pause, charge rule and flame all look good in the browser. Only the arrows either side of the level name were missing: the Web build's font has no arrow characters (the editor falls back to a Windows font).
+Done: MainMenu draws the two arrows as small triangle textures made at run time (no font needed), placed from the measured width of the level name.
+Tested: compile check. Not seen in the browser yet.
+Note: the round dots (menu position, count-in, charge counter) did show in the browser, so they were left as text.

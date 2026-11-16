@@ -136,6 +136,33 @@ namespace ShiftShift
             GUI.Label(new Rect(0, h * 0.92f, w, 30), "Any Shift: back", _small);
         }
 
+        private static Texture2D _arrowLeft, _arrowRight;
+
+        /// <summary>A white triangle pointing right or left, made once (tinted with GUI.color when drawn).</summary>
+        private static Texture2D Arrow(bool right)
+        {
+            Texture2D cached = right ? _arrowRight : _arrowLeft;
+            if (cached != null) return cached;
+            const int n = 64;
+            var tex = new Texture2D(n, n) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                float u = (x + 0.5f) / n, v = (y + 0.5f) / n;
+                float along = right ? u : 1f - u;                  // 0 at the flat side, 1 at the point
+                float halfHeight = 0.5f * (1f - along);            // the triangle narrows towards the point
+                float edge = halfHeight - Mathf.Abs(v - 0.5f);     // > 0 inside
+                float a = Mathf.Clamp01(edge * n * 0.8f);          // soft edge
+                if (along < 0.08f) a = 0f;                         // a little margin on the flat side
+                px[y * n + x] = new Color(1f, 1f, 1f, a);
+            }
+            tex.SetPixels(px);
+            tex.Apply();
+            if (right) _arrowRight = tex; else _arrowLeft = tex;
+            return tex;
+        }
+
         private void OnGUI()
         {
             if (_entries.Count == 0) return;
@@ -165,7 +192,14 @@ namespace ShiftShift
             GUI.Label(new Rect(0, h * 0.08f + 105, w, 30), "A Rhythm Runner Played With Just Two Keys", _small);
 
             Entry e = _entries[_index];
-            GUI.Label(new Rect(0, h * 0.40f, w, 70), $"<color=#888888>◀</color>     {e.Title}     <color=#888888>▶</color>", _big);
+            GUI.Label(new Rect(0, h * 0.40f, w, 70), e.Title, _big);
+            // Arrows are drawn as images: the Web build's font has no arrow characters (ELIA, day 20: missing in the browser).
+            float half = _big.CalcSize(new GUIContent(e.Title)).x * 0.5f, size = 44f, gap = 50f, cy = h * 0.40f + 35f;
+            Color old = GUI.color;
+            GUI.color = new Color(0.55f, 0.55f, 0.55f, 1f);
+            GUI.DrawTexture(new Rect(w * 0.5f - half - gap - size, cy - size * 0.5f, size, size), Arrow(false));
+            GUI.DrawTexture(new Rect(w * 0.5f + half + gap, cy - size * 0.5f, size, size), Arrow(true));
+            GUI.color = old;
             GUI.Label(new Rect(w * 0.1f, h * 0.40f + 75, w * 0.8f, 40), e.Detail, _mid);
 
             string dots = "";
