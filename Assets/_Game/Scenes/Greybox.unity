@@ -406,7 +406,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ShiftShift.Runtime::ShiftShift.GestureDebugHud
   input: {fileID: 0}
-  visible: 1
 --- !u!4 &270537907
 Transform:
   m_ObjectHideFlags: 0
