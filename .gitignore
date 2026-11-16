@@ -60,3 +60,4 @@ crashlytics-build.properties
 
 # Unity Recorder output and trailer work files (large videos, never committed)
 /Recordings/
+/itch-art/
