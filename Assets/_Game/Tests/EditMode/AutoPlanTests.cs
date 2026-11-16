@@ -14,7 +14,6 @@ namespace ShiftShift.Tests
     /// </summary>
     public class AutoPlanTests
     {
-        private const double Dt = 1.0 / 60.0;
         private const double JumpSeconds = 0.5;
         private const double MetresPerBeat = 5.0;
         private const double GapDepth = 2.5;
@@ -36,16 +35,15 @@ namespace ShiftShift.Tests
             public string Name;
         }
 
-        [TestCase("level01")]
-        [TestCase("level02")]
-        [TestCase("level03")]
-        [TestCase("level04")]
-        [TestCase("level05")]
-        [TestCase("level06")]
-        public void Autoplay_ClearsLevel_NeverLate(string file)
+        private static readonly string[] Levels = { "level01", "level02", "level03", "level04", "level05", "level06" };
+        // 60 fps, a slow recording (20 fps) and an uneven, very slow one (8 fps): the result must not change.
+        private static readonly double[] FrameRates = { 60, 20, 8 };
+
+        [Test]
+        public void Autoplay_ClearsLevel_NeverLate([ValueSource(nameof(Levels))] string file, [ValueSource(nameof(FrameRates))] double fps)
         {
             LevelData level = Load(file);
-            var grades = Simulate(level, out string failure);
+            var grades = Simulate(level, 1.0 / fps, out string failure);
             Assert.IsNull(failure, failure);
             TestContext.WriteLine($"{file}: {grades[Grade.Perfect]} perfect, {grades[Grade.Good]} good, {grades[Grade.Ok]} ok, {grades[Grade.None]} none");
             Assert.Greater(grades[Grade.Perfect], 0);
@@ -66,7 +64,7 @@ namespace ShiftShift.Tests
             }
         }
 
-        private static Dictionary<Grade, int> Simulate(LevelData level, out string failure)
+        private static Dictionary<Grade, int> Simulate(LevelData level, double dt, out string failure)
         {
             failure = null;
             var tempo = new TempoMap(level.bpm, level.tempo);
@@ -82,21 +80,21 @@ namespace ShiftShift.Tests
             classifier.HoldEnded += (t, s) => model.OnHoldEnded(t, s);
 
             List<Check> checks = Checks(level, tempo);
-            List<KeyHold> plan = AutoPlan.Build(level);
+            List<AutoPlan.KeyEdge> edges = AutoPlan.Edges(AutoPlan.Build(level));
+            int nextEdge = 0;
+            var rng = new Random(1);
             var grades = new Dictionary<Grade, int> { { Grade.None, 0 }, { Grade.Perfect, 0 }, { Grade.Good, 0 }, { Grade.Ok, 0 }, { Grade.Miss, 0 } };
-            bool[] down = new bool[2];
             int next = 0;
             double end = tempo.TimeAtBeat(level.lengthBeats);
-            for (now = -1.0; now <= end; now += Dt)
+            for (now = -1.0; now <= end + dt; now += dt * (0.5 + rng.NextDouble()))
             {
                 clock.SongTime = now;
-                // ShiftInput: key edges are seen once per frame, at the frame's song time.
-                foreach (Side side in new[] { Side.Left, Side.Right })
+                // ShiftInput + AutoPlayer: every edge up to now, at its exact time.
+                while (nextEdge < edges.Count && edges[nextEdge].Time <= now)
                 {
-                    bool d = AutoPlan.IsDown(plan, side, now + Dt); // AutoPlayer looks one frame ahead
-                    if (d && !down[(int)side]) classifier.Press(side, now);
-                    if (!d && down[(int)side]) classifier.Release(side, now);
-                    down[(int)side] = d;
+                    AutoPlan.KeyEdge e = edges[nextEdge++];
+                    if (e.Down) classifier.Press(e.Side, e.Time);
+                    else classifier.Release(e.Side, e.Time);
                 }
                 classifier.Update(now);
 

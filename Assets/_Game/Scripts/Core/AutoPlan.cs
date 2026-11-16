@@ -185,6 +185,27 @@ namespace ShiftShift.Core
 
         private static bool IsHold(KeyHold h) => h.End - h.Start > TapSeconds + 1e-9;
 
+        public readonly struct KeyEdge
+        {
+            public readonly Side Side;
+            public readonly bool Down;
+            public readonly double Time;
+            public KeyEdge(Side side, bool down, double time) { Side = side; Down = down; Time = time; }
+        }
+
+        /// <summary>The plan as key presses and releases in time order (releases first on a tie).</summary>
+        public static List<KeyEdge> Edges(List<KeyHold> plan)
+        {
+            var edges = new List<KeyEdge>();
+            foreach (KeyHold h in plan)
+            {
+                edges.Add(new KeyEdge(h.Side, true, h.Start));
+                edges.Add(new KeyEdge(h.Side, false, h.End));
+            }
+            edges.Sort((x, y) => x.Time != y.Time ? x.Time.CompareTo(y.Time) : x.Down.CompareTo(y.Down));
+            return edges;
+        }
+
         /// <summary>Whether a key is down at a song time, given the plan.</summary>
         public static bool IsDown(List<KeyHold> plan, Side side, double time)
         {

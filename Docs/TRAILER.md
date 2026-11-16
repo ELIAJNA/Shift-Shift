@@ -45,7 +45,8 @@ on in a build.
 
 What the bot does: it answers every obstacle on the beat (PERFECT). A lane move just before a phase lands 0.1 s
 early (GOOD), and a lane obstacle the runner is already clear of scores OK (the game's own rule). Checked in a
-simulation of all six levels (AutoPlanTests); needs at least about 30 fps in the editor while recording.
+simulation of all six levels at 60, 20 and 8 fps (AutoPlanTests): each key press is given at its exact planned time, so a slow
+editor while recording does not change the result.
 
 ### Unity Recorder (free package)
 1. Window > Package Manager > Unity Registry > **Recorder** > Install.
