@@ -353,11 +353,12 @@ namespace ShiftShift
 
         /// <summary>
         /// Charge counter above the runner (day 20): one dot per alternating tap towards the next charge, "CHARGED"
-        /// once a charge is ready for the next wall. Shown only while a charge is under way or ready.
+        /// once a charge is ready. Shown only when the next obstacle is a red wall (ELIA), and only while a charge is
+        /// under way or ready.
         /// </summary>
         private void DrawCharge()
         {
-            if (input == null || runner == null) return;
+            if (input == null || runner == null || runner.NextObstacleKind != ObstacleKind.Wall) return;
             int taps = Mathf.Max(1, input.Settings.chargeTaps);
             bool charged = runner.HasCharge;
             int lit = input.AlternateStreak % taps;

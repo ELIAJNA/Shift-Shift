@@ -303,6 +303,25 @@ namespace ShiftShift.Tests
         }
 
         [Test]
+        public void Charge_IsLost_WhenAnyOtherObstacleIsPassedFirst()
+        {
+            for (int i = 1; i <= 4; i++) _m.OnGestureFired(GestureType.Alternate, 1.0 + i * 0.1, i);
+            Assert.IsTrue(_m.HasCharge(1.5));
+            _m.Resolve(Obs(ObstacleKind.Block, 2.0, lane: 1)); // a bar in another lane, passed
+            Assert.IsFalse(_m.HasCharge(2.0), "the charge does not carry past an obstacle");
+            Assert.AreEqual(ObstacleOutcome.Hit, _m.Resolve(Obs(ObstacleKind.Wall, 3.0, all: true)));
+        }
+
+        [Test]
+        public void Charge_EarnedAfterAnObstacle_IsKeptForTheNextOne()
+        {
+            _m.Resolve(Obs(ObstacleKind.Block, 2.0, lane: 1));
+            for (int i = 1; i <= 4; i++) _m.OnGestureFired(GestureType.Alternate, 2.2 + i * 0.1, i);
+            Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 3.0, all: true)));
+            Assert.IsFalse(_m.HasCharge(3.0), "used by the wall");
+        }
+
+        [Test]
         public void Charge_EarnedWellAfterWall_DoesNotCount()
         {
             _m.OnGestureFired(GestureType.Alternate, 2.5, 4);
@@ -324,12 +343,15 @@ namespace ShiftShift.Tests
         }
 
         [Test]
-        public void LongStreak_EarnsAChargeEveryFourTaps()
+        public void LongStreak_EarnsAChargeEveryFourTaps_ButChargesDoNotBankUp()
         {
+            // Eight taps before the first wall earn two charges; only the next obstacle can use one (day 20).
             for (int s = 2; s <= 8; s++) _m.OnGestureFired(GestureType.Alternate, s * 0.5, s);
             Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 5.0, all: true)));
-            Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 6.0, all: true)));
-            Assert.AreEqual(ObstacleOutcome.Hit, _m.Resolve(Obs(ObstacleKind.Wall, 7.0, all: true)));
+            Assert.AreEqual(ObstacleOutcome.Hit, _m.Resolve(Obs(ObstacleKind.Wall, 6.0, all: true)));
+            // A streak that goes on past a wall earns a fresh charge for the next one.
+            for (int s = 9; s <= 12; s++) _m.OnGestureFired(GestureType.Alternate, 6.0 + (s - 8) * 0.2, s);
+            Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 7.0, all: true)));
         }
 
         [Test]

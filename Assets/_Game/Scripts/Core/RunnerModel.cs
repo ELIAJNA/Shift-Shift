@@ -242,6 +242,11 @@ namespace ShiftShift.Core
         public ObstacleResolution ResolveWithAnswer(ObstacleInfo o)
         {
             ObstacleOutcome outcome = ResolveOutcome(o, out double answer);
+            // A charge is good for the next obstacle only (ELIA, day 20): once the runner is past any obstacle,
+            // charges earned before it are gone. One earned just after it (in a wall's grace window) is kept for
+            // the obstacle after that.
+            foreach (var c in _charges)
+                if (!c.Used && c.Time <= o.Time) c.Used = true;
             return new ObstacleResolution(outcome, outcome == ObstacleOutcome.Hit ? double.NaN : answer);
         }
 

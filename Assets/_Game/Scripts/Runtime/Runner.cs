@@ -52,6 +52,9 @@ namespace ShiftShift
         public RunState State { get; private set; } = RunState.Running;
         public bool IsSprinting => _model != null && _model.IsSprinting(Now);
         public bool IsPhased => _model != null && _model.IsPhased(Now);
+        /// <summary>The kind of the next obstacle the runner will reach, or null when none is left.</summary>
+        public ObstacleKind? NextObstacleKind =>
+            _nextCheck < _checks.Count ? _checks[_nextCheck].Info.Kind : (ObstacleKind?)null;
         /// <summary>A charge is ready for the next wall.</summary>
         public bool HasCharge => _model != null && _model.HasCharge(Now);
         public float MetresPerBeat => metresPerBeat;
