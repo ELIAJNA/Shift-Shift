@@ -253,7 +253,10 @@ namespace ShiftShift
         {
             State = RunState.Failed;
             _failedOn = c.Obstacle;
-            _frozenZ = z;
+            // Stop in front of the obstacle, not wherever the runner had got to while the judgement waited.
+            double depth = c.Obstacle != null ? c.Obstacle.depth : 0.0;
+            _frozenZ = (float)FailStop.Distance(c.Info.Kind, c.Beat * metresPerBeat, depth, z);
+            ApplyVisuals(Now, _frozenZ); // Update stops after a fail, so place the runner now
             if (conductor != null) conductor.StopSong();
             Debug.Log($"[Run] Failed on {c.Obstacle.name} ({c.Info.Kind}, {c.Info.Layer}, " +
                       $"{(c.Info.AllLanes ? "all lanes" : "lane " + c.Info.Lane)}) at {c.Info.Time:F3}s.");

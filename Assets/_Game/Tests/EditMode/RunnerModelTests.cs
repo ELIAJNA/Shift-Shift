@@ -285,6 +285,15 @@ namespace ShiftShift.Tests
         }
 
         [Test]
+        public void FailStop_InFrontOfTheObstacle_NeverAhead()
+        {
+            // Wall centre at 280 m, 0.6 m deep: front face at 279.7, runner stops at 279.35.
+            Assert.AreEqual(279.35, FailStop.Distance(ObstacleKind.Wall, 280, 0.6, 283.0), 1e-9, "had run 3 m past: comes back");
+            Assert.AreEqual(279.0, FailStop.Distance(ObstacleKind.Wall, 280, 0.6, 279.0), 1e-9, "never moved forward");
+            Assert.AreEqual(150.0, FailStop.Distance(ObstacleKind.Gap, 150, 2.5, 151.0), 1e-9, "gap: at the failing edge");
+        }
+
+        [Test]
         public void WallWait_Rules()
         {
             Assert.IsFalse(_m.WallMayStillBreak(2.0, 0, true, 1.9, 2.0), "no charge under way: no wait");

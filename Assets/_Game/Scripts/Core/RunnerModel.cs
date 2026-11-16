@@ -54,6 +54,28 @@ namespace ShiftShift.Core
         public double Time;
     }
 
+    /// <summary>Where the runner stops when it hits an obstacle.</summary>
+    public static class FailStop
+    {
+        /// <summary>Gap between the runner's centre and the obstacle's front face when it stops (half the body, plus a little).</summary>
+        public const double Clearance = 0.35;
+
+        /// <summary>
+        /// Distance along the track to stop at: just in front of the obstacle, never past where the runner already is.
+        /// A judgement can come a little after the runner reaches an obstacle (it waits for an undecided key press, up
+        /// to the tap/hold threshold), so without this the runner could stop inside or behind a wall (ELIA, day 20).
+        /// A gap is judged at its edges, so it stops at the edge.
+        /// </summary>
+        /// <param name="checkDistance">Distance of the check that failed (an obstacle's centre, or a gap's edge).</param>
+        /// <param name="depth">The obstacle's length along the track.</param>
+        /// <param name="current">Where the runner is now.</param>
+        public static double Distance(ObstacleKind kind, double checkDistance, double depth, double current)
+        {
+            double stop = kind == ObstacleKind.Gap ? checkDistance : checkDistance - depth * 0.5 - Clearance;
+            return Math.Min(current, stop);
+        }
+    }
+
     public sealed class RunnerRules
     {
         /// <summary>How long a jump keeps the runner in the air (s).</summary>
