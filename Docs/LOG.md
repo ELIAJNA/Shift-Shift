@@ -897,3 +897,13 @@ videos cannot reach the cloud session). Added Docs/TRAILER-EDIT.md (brief: input
 tools/trailer/make_cards.py (the 14 caption/end cards, portable: Arial Bold on Windows if Inter is not there).
 /Recordings/ added to .gitignore so the videos are never committed.
 Tested: make_cards.py runs here (Inter). Not run: on Windows (Arial fallback), the edit itself.
+
+## 2026-11-17 — D23: itch.io page art
+
+ELIA set up the draft page (jna1980.itch.io/shift-shift: browser embed, description, AI disclosure) and asked for
+images. tools/trailer/make_itch_art.py draws them from the game's look (night palette, three-lane road with cyan
+edges, orange lane block, red brick wall, the boxy runner with the charge flame, skyline with lit windows):
+banner 960x300 (title, tagline, the two Shift keys), page background 1920x1080 (sky, skyline, empty road, darkened
+for the page column), embed background 960x600 (scene plus "Click to play · headphones on"). Images go to itch-art/
+(ignored by git: PNGs are LFS and cannot be pushed from the cloud session); sent to ELIA.
+Not checked: how they look on the itch page.
