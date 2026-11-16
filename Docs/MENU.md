@@ -13,6 +13,8 @@ Everything is driven by the two Shift keys, plus Esc for pause. Keys are read th
 
 Rules of the menu keys (`Core/ShiftMenuKeys.cs`, tested): one key on its own counts when it is let go; both down at once counts the moment the second goes down; after a "both", nothing counts until every key is up. A key still held when a screen appears is ignored until it is let go.
 
+Pressing Play in the Run scene in the editor opens the menu too (GameFlow > Open Menu When Started Here; untick it to start level 1 straight away while testing). It falls back to level 1 if the Menu scene is not in the build list.
+
 Flow: Boot -> Menu -> Run (a level by name, started at once) -> results -> next level, retry or Menu. Calibrate is a menu entry and returns to the menu. All six levels are open from the start.
 
 Menu entries: the levels in play order (name, length, best score), "Calibrate timing", "Credits". The credits text is on the Menu object in the Menu scene (Inspector). The menu shows the Sticky Keys tip from the plan.
