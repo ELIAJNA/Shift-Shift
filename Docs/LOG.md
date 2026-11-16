@@ -889,3 +889,11 @@ retried level 1. Fix: ShiftInput.KeySource now reports key edges with their exac
 Depends on / could break: ShiftInput (keyboard path unchanged when KeySource is null), AutoPlayer.
 Tested: AutoPlanTests now run every level at 60, 20 and uneven 8 fps: no hits. Compile checks, Core tests.
 Not run: Unity. Not confirmed that this was the cause seen in the video.
+
+## 2026-11-17 — D23: trailer edit handed to a session on ELIA's PC
+
+ELIA recorded all six levels in trailer mode and chose to have the edit done by a Claude session on the PC (the
+videos cannot reach the cloud session). Added Docs/TRAILER-EDIT.md (brief: inputs, timing, steps, output) and
+tools/trailer/make_cards.py (the 14 caption/end cards, portable: Arial Bold on Windows if Inter is not there).
+/Recordings/ added to .gitignore so the videos are never committed.
+Tested: make_cards.py runs here (Inter). Not run: on Windows (Arial fallback), the edit itself.
