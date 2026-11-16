@@ -766,3 +766,10 @@ Tested: compile check, 155 Core tests (no rule changed). Not run in Unity: how i
 ELIA: the flame should not be all red: yellow inside, then orange, then red.
 Done (setup tool only): the flame is rebuilt as three particle layers: a tight yellow core (#FFF6B0 to #FFD23F), an orange middle (#FFA41E to #FF6A1E) and a wider red outside (#FF5A2A to #F21E3D), drawn core on top (sorting fudge). The charged body glow is now warm yellow-orange (#FFB547, emission #FF9A1F x1.8) instead of red. The old single-layer flame is replaced on the next Set Up Visuals; the material's colours are reset on every run.
 Tested: compile check only (no runtime code changed). Not seen in Unity: whether the layers read as one fire, and the particle count (up to 450) in WebGL.
+
+## 2026-11-16 — D20: the Run scene opens the menu when started directly
+
+ELIA: no menu on the first screen; the level choice only appeared after clearing level 1. Cause: ELIA presses Play in the Run scene, which starts level 1 by itself; the menu is reached through Boot (in a build the list starts Boot, Menu, Run, so a build opens on the menu).
+Done: GameFlow loads the Menu scene when the Run scene is opened directly (no level chosen, no auto-start) and the Menu scene is in the build list. Tick box "Open Menu When Started Here" (on by default) to switch it off for quick tests. Docs/MENU.md updated.
+Tested: compile check only. Not run in Unity.
+Noticed: the Menu scene in the repository is still the empty one (its menu is added by Set Up Visuals on ELIA's PC); it reaches GitHub with ELIA's next commit.

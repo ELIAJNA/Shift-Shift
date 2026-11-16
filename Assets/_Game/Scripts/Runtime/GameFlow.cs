@@ -29,6 +29,9 @@ namespace ShiftShift
         [Tooltip("Optional; found in the scene if empty. Menu keys (retry, next, pause) are read through it.")]
         [SerializeField] private ShiftInput input;
         [SerializeField] private string menuScene = "Menu";
+        [Tooltip("Pressing Play in this scene opens the menu, like the game does (ELIA, day 20). Untick to start " +
+                 "the first level in the list straight away while testing.")]
+        [SerializeField] private bool openMenuWhenStartedHere = true;
         [SerializeField, Min(0f)] private float hitStopSeconds = 0.06f;
         [SerializeField, Min(0.01f)] private float flashSeconds = 0.3f;
 
@@ -93,6 +96,16 @@ namespace ShiftShift
             }
             _bestKey = BestKeyPrefix + json.name;
             _best = PlayerPrefs.GetInt(_bestKey, 0);
+
+            // Opened directly (not from the menu, Retry or Next level): go to the menu. The level was still loaded
+            // above, so the rest of the scene starts without errors for the one frame before the menu replaces it.
+            if (openMenuWhenStartedHere && string.IsNullOrEmpty(LevelToLoad) && !_autoStart &&
+                Application.CanStreamedLevelBeLoaded(menuScene))
+            {
+                enabled = false;
+                SceneManager.LoadScene(menuScene);
+                return;
+            }
 
             if (input == null) input = FindAnyObjectByType<ShiftInput>();
             string next = NextLevelName(json.name);
