@@ -88,24 +88,35 @@ namespace ShiftShift.EditorTools
 
         private const string ChargedMatPath = MatDir + "/RunnerCharged.mat";
 
-        /// <summary>Glowing red body material for a charged runner: the wall red on every level, bright enough to bloom.</summary>
+        /// <summary>
+        /// Glowing body for a charged runner: warm yellow-orange, the hot centre of the flame (ELIA, day 20: not all
+        /// red). Bright enough for bloom. Colours are set on every run, so changing them here updates the asset.
+        /// </summary>
         private static Material EnsureChargedMaterial()
         {
             var m = AssetDatabase.LoadAssetAtPath<Material>(ChargedMatPath);
-            if (m != null) return m;
-            Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-            m = new Material(shader);
-            Color red = Hex("#F21E3D");
-            m.SetColor("_BaseColor", red);
-            m.color = red;
+            bool created = m == null;
+            if (created)
+            {
+                Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+                m = new Material(shader);
+            }
+            Color body = Hex("#FFB547");
+            m.SetColor("_BaseColor", body);
+            m.color = body;
             m.EnableKeyword("_EMISSION"); // on in the asset, so builds keep the emission variant
             m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
-            m.SetColor("_EmissionColor", red * 2.2f);
-            AssetDatabase.CreateAsset(m, ChargedMatPath);
+            m.SetColor("_EmissionColor", Hex("#FF9A1F") * 1.8f);
+            if (created) AssetDatabase.CreateAsset(m, ChargedMatPath);
+            else EditorUtility.SetDirty(m);
             return m;
         }
 
-        /// <summary>Day 20 (ELIA): instead of a "CHARGED" label, the runner glows red and flames stream off it.</summary>
+        /// <summary>
+        /// Day 20 (ELIA): instead of a "CHARGED" label, the runner glows and flames stream off it. The flame is three
+        /// layers: a tight yellow core, an orange middle, a wider red outside. "Flame" is the red layer; the other two
+        /// are its children, so playing or stopping it plays or stops all three.
+        /// </summary>
         private static void WireChargeLook(Runner runner, List<string> log, string label)
         {
             if (runner == null) return;
@@ -113,46 +124,66 @@ namespace ShiftShift.EditorTools
             RunnerFigure anim = figure != null ? figure.GetComponent<RunnerFigure>() : null;
             if (anim == null) return;
 
-            ParticleSystem flame;
             Transform existing = figure.Find("Flame");
+            if (existing != null && existing.Find("Core") == null)
+            {
+                Object.DestroyImmediate(existing.gameObject); // the first, single-layer flame
+                existing = null;
+            }
+            ParticleSystem flame;
             if (existing != null) flame = existing.GetComponent<ParticleSystem>();
             else
             {
-                var go = new GameObject("Flame");
-                go.transform.SetParent(figure, false);
-                go.transform.localPosition = new Vector3(0f, 1.25f, 0f); // around the torso
-                flame = go.AddComponent<ParticleSystem>();
-                ParticleSystem.MainModule main = flame.main;
-                main.playOnAwake = false;
-                main.loop = true;
-                main.startLifetime = 0.35f;
-                main.startSpeed = 0.4f;
-                main.startSize = 0.3f;
-                main.gravityModifier = -0.6f; // flames rise
-                main.simulationSpace = ParticleSystemSimulationSpace.World; // left behind as the runner moves: a trail of fire
-                main.maxParticles = 300;
-                ParticleSystem.EmissionModule emission = flame.emission;
-                emission.rateOverTime = 70f;
-                ParticleSystem.ShapeModule shape = flame.shape;
-                shape.shapeType = ParticleSystemShapeType.Box;
-                shape.scale = new Vector3(0.5f, 1.4f, 0.3f);
-                ParticleSystem.SizeOverLifetimeModule size = flame.sizeOverLifetime;
-                size.enabled = true;
-                size.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.1f));
-                ParticleSystem.ColorOverLifetimeModule colour = flame.colorOverLifetime;
-                colour.enabled = true;
-                var fire = new Gradient();
-                fire.SetKeys(
-                    new[] { new GradientColorKey(Hex("#FFE066"), 0f), new GradientColorKey(Hex("#FF8A1E"), 0.4f), new GradientColorKey(Hex("#F21E3D"), 1f) },
-                    new[] { new GradientAlphaKey(0.95f, 0f), new GradientAlphaKey(0.7f, 0.5f), new GradientAlphaKey(0f, 1f) });
-                colour.color = new ParticleSystem.MinMaxGradient(fire);
-                var fr = go.GetComponent<ParticleSystemRenderer>();
-                fr.sharedMaterial = EnsureTrailMaterial(); // Sprites/Default: uses the particle colours
-                fr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                // Outside to inside. Lower sorting fudge = drawn on top, so the yellow core shows through.
+                flame = FlameLayer(figure, "Flame", new Vector3(0.75f, 1.6f, 0.45f), 0.38f, 0.45f, 55f,
+                    "#FF5A2A", "#F21E3D", 0.8f, 0f);
+                FlameLayer(flame.transform, "Middle", new Vector3(0.5f, 1.35f, 0.32f), 0.3f, 0.35f, 60f,
+                    "#FFA41E", "#FF6A1E", 0.9f, -10f);
+                FlameLayer(flame.transform, "Core", new Vector3(0.3f, 1.1f, 0.22f), 0.22f, 0.25f, 60f,
+                    "#FFF6B0", "#FFD23F", 1f, -20f);
+                log.Add($"{label}: flame rebuilt as yellow core, orange middle, red outside");
             }
             Set(anim, "flame", flame);
             Set(anim, "chargedMaterial", EnsureChargedMaterial());
-            log.Add($"{label}: charged look on the runner (red glow and flames)");
+            log.Add($"{label}: charged look on the runner (warm glow and layered flame)");
+        }
+
+        /// <summary>One looping flame layer around the torso, rising and left behind in the world as the runner moves.</summary>
+        private static ParticleSystem FlameLayer(Transform parent, string name, Vector3 box, float size, float life,
+            float rate, string fromHex, string toHex, float alpha, float sortingFudge)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            if (name == "Flame") go.transform.localPosition = new Vector3(0f, 1.25f, 0f); // around the torso
+            var ps = go.AddComponent<ParticleSystem>();
+            ParticleSystem.MainModule main = ps.main;
+            main.playOnAwake = false;
+            main.loop = true;
+            main.startLifetime = life;
+            main.startSpeed = 0.4f;
+            main.startSize = size;
+            main.gravityModifier = -0.6f; // flames rise
+            main.simulationSpace = ParticleSystemSimulationSpace.World; // a trail of fire behind the runner
+            main.maxParticles = 150;
+            ParticleSystem.EmissionModule emission = ps.emission;
+            emission.rateOverTime = rate;
+            ParticleSystem.ShapeModule shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Box;
+            shape.scale = box;
+            ParticleSystem.SizeOverLifetimeModule sizeLife = ps.sizeOverLifetime;
+            sizeLife.enabled = true;
+            sizeLife.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 1f, 1f, 0.15f));
+            ParticleSystem.ColorOverLifetimeModule colour = ps.colorOverLifetime;
+            colour.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Hex(fromHex), 0f), new GradientColorKey(Hex(toHex), 1f) },
+                new[] { new GradientAlphaKey(alpha, 0f), new GradientAlphaKey(alpha * 0.7f, 0.5f), new GradientAlphaKey(0f, 1f) });
+            colour.color = new ParticleSystem.MinMaxGradient(g);
+            var r = go.GetComponent<ParticleSystemRenderer>();
+            r.sharedMaterial = EnsureTrailMaterial(); // Sprites/Default: uses the particle colours
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            r.sortingFudge = sortingFudge;
+            return ps;
         }
 
         /// <summary>A pivot at <paramref name="at"/> with a box hanging down from it.</summary>
