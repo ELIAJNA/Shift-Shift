@@ -797,3 +797,7 @@ Done:
 - RunnerModel: any press after a charge (tap, jump, or the start of a hold) cancels charges earned before it; the fifth tap counts as tap 1 of a fresh set, so taps 5-8 charge again. The fourth tap's own lane tap (fired just before its Alternate, at the same key-down time) does not cancel. Docs/RUNNER.md rule 2 updated.
 - Flame (setup tool): 40 per second per layer (was 30), random sizes between small and big per layer (outer 0.12-0.38, middle 0.1-0.3, core 0.08-0.22), lifetimes 0.24-0.34 s for a trail of about 4 m at full speed (camera at 5.5 m).
 Tested: 156 Core tests (2 new for the four-tap rule; the old eight-taps test replaced), compile check. Not run in Unity.
+
+## 2026-11-16 — D20: charge and flame verified in the editor
+
+ELIA: the flame "looks good now"; the four-press charge rule is in. Next: a browser build to check the menu, the flame, the four-press rule and the frame rate in WebGL.
