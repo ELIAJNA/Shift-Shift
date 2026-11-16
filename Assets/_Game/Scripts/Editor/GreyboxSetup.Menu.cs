@@ -20,8 +20,8 @@ namespace ShiftShift.EditorTools
             "Made for GitHub Game Off 2026. Theme: SHIFT.\n\n" +
             "Design, code, levels and testing: ELIA\n" +
             "Engine: Unity 6 (URP)\n" +
-            "Music: Tricks & Traps (CC0), from the Free Rhythm Game Music Packs on OpenGameArt:\n" +
-            "T.O.E., Flying Temple, Ascend, The Lab, Vessel of Eternity, Celebration and Fear\n\n" +
+            "Music: Tricks & Traps\n" +
+            "Sound effects: Kenney\n\n" +
             "Thank you for playing.";
 
         private static void WireMenuScene(List<string> log)
@@ -37,6 +37,7 @@ namespace ShiftShift.EditorTools
             bool created = menu == null;
             if (created) menu = new GameObject("Menu").AddComponent<MainMenu>();
             Set(menu, "input", input);
+            WireMenuSounds(menu); // day 23
 
             var so = new SerializedObject(menu);
             SerializedProperty levels = so.FindProperty("levels");
