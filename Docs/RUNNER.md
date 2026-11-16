@@ -43,7 +43,8 @@ ignores gestures until then.
 2. **A charge is good for the next obstacle only** (changed by ELIA, day 20; was "until the next wall uses it").
    Every 4th quick alternating tap earns one; passing any obstacle uses it up, wall or not, and the counter above
    the runner goes out. A charge completed in a wall's grace window, after the obstacle before it, is kept.
-   The counter above the runner shows only when the next obstacle is a red wall (ELIA, day 20).
+   The counter above the runner shows only when the next obstacle is a red wall (ELIA, day 20). A ready charge is
+   shown on the runner: the body glows wall-red and flames stream off it (no "CHARGED" text).
 3. ~~Walls are in the solid layer, so a phased runner also passes them.~~ Changed day 13: only a charge breaks a wall.
 4. **Gaps are checked at both edges**, other obstacles at their centre.
 5. **Charge taps also change lanes** (open question 1 in INPUT.md). Walls span all lanes, so it only looks odd.

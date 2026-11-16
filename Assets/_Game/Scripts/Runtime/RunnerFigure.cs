@@ -37,6 +37,10 @@ namespace ShiftShift
         [Tooltip("Kept slight (ELIA, day 17): a big lean reads as a lane change.")]
         [SerializeField, Range(0f, 30f)] private float bendLeanMaxDegrees = 5f;
 
+        [Header("Charged (ELIA, day 20): glowing body and flames while a charge is ready for the next red wall")]
+        [SerializeField] private Material chargedMaterial;
+        [SerializeField] private ParticleSystem flame;
+
         [Header("Dust from the heels")]
         [SerializeField] private ParticleSystem dust;
         [SerializeField, Range(0, 12)] private int puffsPerStep = 4;
@@ -44,7 +48,8 @@ namespace ShiftShift
         [SerializeField] private Vector3 footOffset = new Vector3(0.14f, 0.05f, -0.25f);
 
         private int _lastStep = int.MinValue;
-        private bool _phased;
+        private Material _applied;
+        private bool _flaming;
         private float _lean;
 
         private void Start()
@@ -96,12 +101,21 @@ namespace ShiftShift
                 }
             }
 
-            bool phased = runner.IsPhased;
-            if (phased != _phased && normalMaterial != null && phaseMaterial != null)
+            // Look: phased beats charged beats normal. Charged = a charge is ready and the next obstacle is a red wall.
+            bool charged = running && runner.HasCharge && runner.NextObstacleKind == ShiftShift.Core.ObstacleKind.Wall;
+            Material wanted = runner.IsPhased && phaseMaterial != null ? phaseMaterial
+                : charged && chargedMaterial != null ? chargedMaterial : normalMaterial;
+            if (wanted != null && wanted != _applied)
             {
-                _phased = phased;
+                _applied = wanted;
                 foreach (Renderer r in parts)
-                    if (r != null) r.sharedMaterial = phased ? phaseMaterial : normalMaterial;
+                    if (r != null) r.sharedMaterial = wanted;
+            }
+            if (flame != null && charged != _flaming)
+            {
+                _flaming = charged;
+                if (charged) flame.Play();
+                else flame.Stop(); // flames already in the air burn out
             }
         }
     }

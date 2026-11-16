@@ -72,6 +72,7 @@ namespace ShiftShift.EditorTools
             }
             if (applier != null && runner != null) Set(applier, "runner", runner); // step 4: phase look
             WireFigure(runner, log, label); // day 17: running figure instead of the capsule
+            WireChargeLook(runner, log, label); // day 20: glow and flames while charged
             log.Add($"{label}: CameraFeel on the chase camera, runner trail ({(trail != null ? "ok" : "no runner")})");
         }
     }
