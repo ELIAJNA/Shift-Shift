@@ -3986,17 +3986,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ShiftShift.Runtime::ShiftShift.GameFlow
   levels:
-  - {fileID: 4900000, guid: 6bab35e1c4f74fe7a128030ac5a25e34, type: 3}
-  - {fileID: 4900000, guid: f59983f6faa04de98fc861cf5a444d5a, type: 3}
-  - {fileID: 4900000, guid: 8b87835cc36444d8ae54f68afd2f2249, type: 3}
-  - {fileID: 4900000, guid: c9ccb154c4054a7fb0d81fe49c17aa1c, type: 3}
-  - {fileID: 4900000, guid: 08c94e3244464131957020d3deef803f, type: 3}
   - {fileID: 4900000, guid: b251f4bfe8c346988af30bbb5e62b578, type: 3}
+  - {fileID: 4900000, guid: 08c94e3244464131957020d3deef803f, type: 3}
+  - {fileID: 4900000, guid: c9ccb154c4054a7fb0d81fe49c17aa1c, type: 3}
+  - {fileID: 4900000, guid: 8b87835cc36444d8ae54f68afd2f2249, type: 3}
+  - {fileID: 4900000, guid: f59983f6faa04de98fc861cf5a444d5a, type: 3}
+  - {fileID: 4900000, guid: 6bab35e1c4f74fe7a128030ac5a25e34, type: 3}
   - {fileID: 4900000, guid: ff2d39e87e034651b888533cb3f1ca3e, type: 3}
   - {fileID: 4900000, guid: 744926ee8e1abc74c889f583ce4043e7, type: 3}
   - {fileID: 4900000, guid: b0dbdc54a6648004fa1540128c5459ac, type: 3}
   conductor: {fileID: 231402790}
   runner: {fileID: 808588598}
+  input: {fileID: 1706689122}
+  menuScene: Menu
   hitStopSeconds: 0.06
   flashSeconds: 0.3
 --- !u!4 &1655522350
@@ -4059,7 +4061,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ShiftShift.Runtime::ShiftShift.GestureDebugHud
   input: {fileID: 0}
-  visible: 1
 --- !u!4 &1706689124
 Transform:
   m_ObjectHideFlags: 0
