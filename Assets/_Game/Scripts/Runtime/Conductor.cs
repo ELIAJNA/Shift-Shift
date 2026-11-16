@@ -57,6 +57,8 @@ namespace ShiftShift
         private AudioSource _source;
         private AudioClip _clip;
         private double _audioStartDsp;
+        private bool _startRequested;
+        private float _requestedAt;
         private double _pausedAtDsp;
         private double _offsetSeconds;
         private double _userOffsetMs;
@@ -88,6 +90,9 @@ namespace ShiftShift
             _clip = Resources.Load<AudioClip>(Level.audioClip);
             if (_clip == null)
                 Debug.LogWarning($"[Conductor] Audio '{Level.audioClip}' not found in a Resources folder; running silent.");
+            // Web builds decode compressed audio in the browser, after loading: start that now (day 20: music
+            // scheduled before it was decoded stayed silent for the whole run in Chrome).
+            else if (_clip.loadState == AudioDataLoadState.Unloaded) _clip.LoadAudioData();
             Debug.Log($"[Conductor] {Level.name}: {Level.bpm} BPM, {Level.lengthBeats} beats, {Level.events.Length} events, " +
                       $"user offset {_userOffsetMs:0} ms.");
             return true;
@@ -97,7 +102,7 @@ namespace ShiftShift
         {
             // Start in LateUpdate, after ShiftInput has handled this frame's press on the old clock, so the swap in
             // StartNow discards the start press instead of it becoming a gesture at the start of the song.
-            if (IsStarted || Level == null) return;
+            if (IsStarted || _startRequested || Level == null) return;
             Keyboard kb = Keyboard.current;
             if (kb != null && (kb.leftShiftKey.wasPressedThisFrame || kb.rightShiftKey.wasPressedThisFrame))
                 StartNow();
@@ -105,6 +110,11 @@ namespace ShiftShift
 
         private void Update()
         {
+            if (_startRequested && !IsStarted && AudioReady(out string why))
+            {
+                if (why != null) Debug.LogWarning($"[Conductor] {why}");
+                BeginPlayback();
+            }
             if (!IsStarted) return;
 
             int beat = (int)Math.Floor(CurrentBeat);
@@ -116,10 +126,46 @@ namespace ShiftShift
             }
         }
 
-        /// <summary>Starts the delay + count-in now. Needs a prior user gesture in browsers (audio unlock).</summary>
+        /// <summary>True between a start request and the music being ready (Web builds decode it after loading).</summary>
+        public bool IsWaitingForAudio => _startRequested && !IsStarted;
+
+        /// <summary>
+        /// Starts the delay + count-in as soon as the music is decoded (at once if it already is). Needs a prior user
+        /// gesture in browsers (audio unlock).
+        /// </summary>
         public void StartNow()
         {
-            if (IsStarted || Level == null) return;
+            if (IsStarted || _startRequested || Level == null) return;
+            _startRequested = true;
+            _requestedAt = Time.realtimeSinceStartup; // only for the give-up timeout, not rhythm timing
+            if (AudioReady(out string why))
+            {
+                if (why != null) Debug.LogWarning($"[Conductor] {why}");
+                BeginPlayback();
+            }
+        }
+
+        private const float AudioWaitSeconds = 15f;
+
+        /// <summary>Ready to schedule: decoded, failed (run silent), or waited too long (run silent).</summary>
+        private bool AudioReady(out string why)
+        {
+            why = null;
+            if (_clip == null) return true;
+            AudioDataLoadState state = _clip.loadState;
+            if (state == AudioDataLoadState.Loaded) return true;
+            if (state == AudioDataLoadState.Failed) { why = $"Audio '{Level.audioClip}' failed to load; running silent."; return true; }
+            if (state == AudioDataLoadState.Unloaded) _clip.LoadAudioData();
+            if (Time.realtimeSinceStartup - _requestedAt > AudioWaitSeconds)
+            {
+                why = $"Audio '{Level.audioClip}' not ready after {AudioWaitSeconds:0} s; running silent.";
+                return true;
+            }
+            return false;
+        }
+
+        private void BeginPlayback()
+        {
             _audioStartDsp = AudioSettings.dspTime + startDelay + CountInSeconds;
             if (_clip != null)
             {

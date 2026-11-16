@@ -821,3 +821,11 @@ Done:
 Rehearsed here with the same trim maths: clip lengths 56-101 s; in each clip the first beat lands at 47-62 ms (target 50) and is a downbeat; estimated 7.5 MB compressed for all six (Vorbis q4). Compile check passes.
 Not done here: the actual clips (made on ELIA's PC; audio cannot be pushed from the cloud session), playing to check sync by ear, the build size with the music.
 Uncertain: every level is faster than when it was tested (level 1: 100 to 120 BPM, level 6: 15.8 m/s); the WebGL build may encode audio differently (AAC), so the size estimate is rough.
+
+## 2026-11-16 — D20: no music in Chrome; wait for the music to decode
+
+ELIA: the music plays in the editor but not in the browser (Chrome).
+Likely cause (not confirmed in a browser): Web builds decode compressed audio in the browser after it loads, asynchronously; the Conductor scheduled the clip at once, and a clip scheduled before it is decoded stays silent. The old click tracks were small and decoded in time; the editor loads audio synchronously.
+Done: Conductor starts loading the clip when the level is set; StartNow becomes a request that begins playback once the clip is Loaded (or Failed, or after 15 s: then it runs silent with a warning). IsStarted only turns true when playback is scheduled, so GameFlow, Runner and PaletteApplier wait as before. GameFlow shows "Loading music..." meanwhile.
+Tested: compile check, Core tests. Not run in a browser.
+If it is still silent: the browser's console (F12) will say why; the Calibrate scene (clips made at run time, never compressed) tells an audio-unlock problem apart from a decoding one.
