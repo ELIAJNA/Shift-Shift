@@ -193,3 +193,25 @@ Two optional lists, used by level 6:
 
 Rules kept: all of the earlier levels' (3 free beats before a wall, lane unknown after a wall, gates only in a certain lane, lane change + phase gets 4 beats, holds 4 beats apart, no gap on a slope).
 Track: hill 16, right bend 24, dip 40, left bend 48, S-bend 56, S-bend 72, archways 84, tunnel 94, rise 104, drop 120, right bend 128, left bend 152, S-bend 160, archways 184, rise 200.
+
+## Music (day 20)
+
+Each level now runs at its track's tempo (measured from the files; the grid holds within 15 ms over each level's span).
+The track starts 0.05 s before its first downbeat, so every level has `offsetMs` 50.
+
+| Level | Track (Tricks & Traps, CC0) | BPM (was) | Length |
+|---|---|---|---|
+| 1 Warm-up | T.O.E. | 120 (100) | 52 s |
+| 2 Low ceiling | Flying Temple | 128 (110) | 52.5 s |
+| 3 Gaps | Ascend | 130 (120) | 70 s |
+| 4 Ghost layer | The Lab | 144 (125) | 67 s |
+| 5 Drumline | Vessel of Eternity | 150 (135) | 83 s |
+| 6 Full shift | Celebration and Fear | 190 (130 to 150) | 98.5 s |
+
+Level 6 was re-timed for 190: every beat position x1.5 (2-beat gaps became 3, 4 became 6, the 1-beat barrier pairs
+stay 1 beat apart), 312 beats. The tempo rise at the midpoint is gone (the track does not change speed); the palette
+changes stay. The tempo list feature remains in the code for later use.
+
+Clips are made by **Shift+Shift > Prepare Music** from the full tracks in `Assets/_Game/Audio/Source` (not built):
+from 0.05 s before the first downbeat to 8 beats after the level's end, 2 s fade-out, Vorbis quality 50%. Re-run it
+after changing a level's length.

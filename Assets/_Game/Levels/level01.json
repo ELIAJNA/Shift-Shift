@@ -1,8 +1,8 @@
 {
   "name": "Warm-up",
-  "bpm": 100.0,
-  "audioClip": "click_100_long",
-  "offsetMs": 0.0,
+  "bpm": 120.0,
+  "audioClip": "music_01",
+  "offsetMs": 50.0,
   "palette": "dawn",
   "lengthBeats": 104.0,
   "events": [

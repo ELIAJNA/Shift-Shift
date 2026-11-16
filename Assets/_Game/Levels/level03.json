@@ -1,8 +1,8 @@
 {
   "name": "Gaps",
-  "bpm": 120.0,
-  "audioClip": "click_120",
-  "offsetMs": 0.0,
+  "bpm": 130.0,
+  "audioClip": "music_03",
+  "offsetMs": 50.0,
   "palette": "dusk",
   "lengthBeats": 152.0,
   "events": [
