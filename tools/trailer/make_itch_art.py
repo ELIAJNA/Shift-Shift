@@ -283,6 +283,27 @@ def main():
     text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 122 * SS), (201, 209, 216), med)
     finish(im, w, h, os.path.join(a.out, "embed_bg_960x600.png"))
 
+    # Cover 630x500 (itch.io's recommended size): title over the scene, the two keys at the bottom.
+    w, h = 630, 500
+    im = scene_image(w, h, 0.47, 0.5)
+    top = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    dt = ImageDraw.Draw(top)
+    for y in range(int(im.size[1] * 0.3)):
+        dt.line([(0, y), (im.size[0], y)], fill=(6, 8, 22, int(200 * (1 - y / (im.size[1] * 0.3)))))
+    for y in range(int(im.size[1] * 0.7), im.size[1]):
+        t = (y - im.size[1] * 0.7) / (im.size[1] * 0.3)
+        dt.line([(0, y), (im.size[0], y)], fill=(6, 8, 22, int(210 * t)))
+    im.alpha_composite(top)
+    for i, c in enumerate(["lane", "slide", "sprint", "jump", "phase", "charge"]):
+        x0 = (w - 6 * 50 + 10) / 2 + i * 50
+        ImageDraw.Draw(im).rectangle([x0 * SS, 26 * SS, (x0 + 40) * SS, 31 * SS], fill=COL[c])
+    text(im, "SHIFT+SHIFT", 72, (w * SS / 2, 78 * SS), COL["white"], bold, glow=(92, 225, 230))
+    text(im, "Two keys. Seven moves. One beat.", 22, (w * SS / 2, 128 * SS), (201, 209, 216), med)
+    keycap(im, (w / 2 - 95) * SS, 452 * SS, "⇧  LEFT", COL["sprint"], bold, 0.95)
+    text(im, "+", 32, (w / 2 * SS, 452 * SS), COL["white"], bold)
+    keycap(im, (w / 2 + 95) * SS, 452 * SS, "RIGHT  ⇧", COL["jump"], bold, 0.95)
+    finish(im, w, h, os.path.join(a.out, "cover_630x500.png"))
+
 
 if __name__ == "__main__":
     main()
