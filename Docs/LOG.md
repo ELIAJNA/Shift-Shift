@@ -851,3 +851,7 @@ ELIA pushed four Kenney packs (Interface Sounds, Digital Audio, Impact Sounds, S
 Done: SoundFx (Run and LevelTest scenes) plays a sound for every move and outcome, count-in ticks on beats -4..-1 scheduled on the audio clock (Conductor.DspTimeAtBeat, new), pause/resume sounds; MainMenu plays move/open/back sounds (the player object survives the scene change so "open" is not cut off). Choices and volumes in GreyboxSetup.Sound.cs, wired by Set Up Visuals; list in Docs/AUDIO.md. Lengths and loudness measured here (ffmpeg); volumes set against them.
 Credits: menu text "Music: Tricks & Traps" / "Sound effects: Kenney"; Docs/CREDITS.md rows for the four packs.
 Tested: compile check, Core tests. Not heard: every choice and volume is a first guess for ELIA to approve by ear. Size: the used files are about 20 small clips.
+
+## 2026-11-17 — D23: sound effects approved
+
+ELIA played the menu and levels with the sound effects: "all is good" (choices and volumes kept as in Docs/AUDIO.md). Audio pass done (plan day 23: music, gesture sounds, UI sounds, credits). Next in the plan: day 24 content lock, draft itch.io page, build to 3-5 testers.
