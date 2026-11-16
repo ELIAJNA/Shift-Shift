@@ -59,3 +59,5 @@ So in Web builds ShiftInput reads the keys from the browser itself (`Assets/Plug
 - A Shift pressed while the other has been held longer than the both-window (80 ms) counts as a tap at once, because its release cannot be seen.
 
 What a Web build therefore cannot do: start a second hold while the first is still held (e.g. sprint without letting go of a slide), or notice that one of two held keys was let go before the other. Jump and phase are not affected (their presses land together). Windows desktop builds and the editor use the Input System and have neither limit.
+
+Sound in the browser: Shift does not count as a user gesture in Chrome, so a click (or Space / Enter) is needed once before sound plays; the menu asks for it (Docs/MENU.md).

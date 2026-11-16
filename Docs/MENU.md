@@ -31,3 +31,11 @@ Developer overlays (gesture log, runner state box): shown by default in the edit
 - Level status under each level: "best N" once cleared, "Failed - Try Again" once played but not cleared, else
   "not played yet". Stored in PlayerPrefs `ShiftShift.Played.<level>` and `ShiftShift.Cleared.<level>` (set by GameFlow
   on fail and on finish); a best score above 0 also counts as cleared.
+
+## Browser: click to start (day 20)
+
+Browsers play sound only after a user gesture, and Chrome does not count a modifier key such as Shift as one. A
+Shift-only game therefore never unlocked sound (console: "The AudioContext was not allowed to start"). In Web builds
+the menu first shows "Click to start (or press Space)"; the click resumes Unity's audio context
+(`Assets/Plugins/WebGL/ShiftKeys.jslib`, `WebAudioUnlock.cs`) and also gives the page keyboard focus. Menu keys are
+ignored until then. Editor and desktop builds never show it.
