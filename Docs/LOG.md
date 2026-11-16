@@ -783,3 +783,9 @@ Done:
 - Flame rebuilt by Set Up Visuals on every run: three layers at 12 flames per second each (were 55-60), smaller (0.12-0.2), simulated in local space so they stay on the body instead of streaming back at the camera; at most 20 per layer.
 Tested: compile check, 155 Core tests. Not run in Unity: page layout at different window sizes, the new flame by eye.
 Noticed: in ELIA's screenshot the runner was charged at the start of level 5 because L R L R during the count-in earns a charge for the first wall (beat 8). Allowed by the rules (the first obstacle is the wall); left as is.
+
+## 2026-11-16 — D20: flame flows back again, shorter trail
+
+ELIA: too few flames now, and flames stuck to the body look wrong; they should flow back like real fire.
+Done (setup tool only): flames are left in the world again (they trail behind), 30 per second per layer (first try 55-60, second 12), sizes 0.16-0.24, lifetimes 0.18-0.26 s. At 12.5 m/s the trail is about 3 m, short of the camera 5.5 m behind, which is what hid the runner the first time.
+Tested: compile check. Not seen in Unity.
