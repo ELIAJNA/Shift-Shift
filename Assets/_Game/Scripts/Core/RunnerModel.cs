@@ -187,6 +187,22 @@ namespace ShiftShift.Core
             return false;
         }
 
+        /// <summary>
+        /// Whether a wall at <paramref name="wallTime"/> should wait before it is judged, because its charge may still
+        /// complete. A tap is only recognised when its key is let go, but it counts from the key press (decision A):
+        /// so a last tap PRESSED within the grace window must be waited for, even if it is released after it
+        /// (day 20: the fourth tap could be pressed in time and still fail).
+        /// </summary>
+        /// <param name="alternateStreak">Alternate taps recognised so far (ShiftInput.AlternateStreak).</param>
+        /// <param name="pressPending">A key is down whose gesture is not known yet; <paramref name="pressDown"/> is its key-down time.</param>
+        public bool WallMayStillBreak(double wallTime, int alternateStreak, bool pressPending, double pressDown, double now)
+        {
+            double end = wallTime + _rules.ChargeGraceSeconds;
+            if (HasCharge(end) || alternateStreak <= 0) return false; // answered already, or no charge under way
+            if (pressPending && pressDown <= end) return true;         // a last tap pressed in time: wait for its key-up
+            return now < end;                                         // the last tap may still be pressed
+        }
+
         // ---------- obstacles ----------
 
         /// <summary>

@@ -52,6 +52,8 @@ namespace ShiftShift
         public RunState State { get; private set; } = RunState.Running;
         public bool IsSprinting => _model != null && _model.IsSprinting(Now);
         public bool IsPhased => _model != null && _model.IsPhased(Now);
+        /// <summary>A charge is ready for the next wall.</summary>
+        public bool HasCharge => _model != null && _model.HasCharge(Now);
         public float MetresPerBeat => metresPerBeat;
         public float LaneWidth => laneWidth;
         public float JumpSeconds => jumpSeconds;
@@ -211,9 +213,13 @@ namespace ShiftShift
                 c.Info.Time = Clock.SongTimeAtBeat(c.Beat);
                 // Decision A: a press made before this obstacle may still turn out to be the answer. Wait for it.
                 if (input.TryGetUnresolvedPress(out double down) && down <= c.Info.Time) break;
-                // A charge in progress may still complete within the grace window after a wall's moment.
-                if (c.Info.Kind == ObstacleKind.Wall && input.AlternateStreak > 0 && !_model.HasCharge(c.Info.Time) &&
-                    now < c.Info.Time + input.Settings.goodMs / 1000.0) break;
+                // A charge in progress may still complete within the grace window after a wall's moment, including a
+                // last tap pressed in the window whose key is not up yet.
+                if (c.Info.Kind == ObstacleKind.Wall)
+                {
+                    bool pending = input.TryGetUnresolvedPress(out double pendingDown);
+                    if (_model.WallMayStillBreak(c.Info.Time, input.AlternateStreak, pending, pendingDown, now)) break;
+                }
 
                 ObstacleResolution r = _model.ResolveWithAnswer(c.Info);
                 if (r.Outcome == ObstacleOutcome.Hit)

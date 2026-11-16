@@ -275,6 +275,25 @@ namespace ShiftShift.Tests
         }
 
         [Test]
+        public void WallWait_LastTapPressedInWindow_WaitsForItsKeyUp_AndThenBreaks()
+        {
+            // Wall at 2.0, grace 0.12. Three taps recognised; the fourth key went down at 2.05 and is still down at 2.2.
+            Assert.IsTrue(_m.WallMayStillBreak(2.0, 3, true, 2.05, 2.2), "pressed in time: keep waiting past the window");
+            _m.OnGestureFired(GestureType.Alternate, 2.05, 4, 2.25); // key up at 2.25: charge counts from 2.05
+            Assert.IsFalse(_m.WallMayStillBreak(2.0, 4, false, 0, 2.25), "charged: judge now");
+            Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 2.0, all: true)));
+        }
+
+        [Test]
+        public void WallWait_Rules()
+        {
+            Assert.IsFalse(_m.WallMayStillBreak(2.0, 0, true, 1.9, 2.0), "no charge under way: no wait");
+            Assert.IsTrue(_m.WallMayStillBreak(2.0, 2, false, 0, 2.05), "streak going, window still open");
+            Assert.IsFalse(_m.WallMayStillBreak(2.0, 2, false, 0, 2.13), "window over, nothing pressed");
+            Assert.IsFalse(_m.WallMayStillBreak(2.0, 3, true, 2.2, 2.25), "pressed after the window: too late");
+        }
+
+        [Test]
         public void Charge_EarnedWellAfterWall_DoesNotCount()
         {
             _m.OnGestureFired(GestureType.Alternate, 2.5, 4);
