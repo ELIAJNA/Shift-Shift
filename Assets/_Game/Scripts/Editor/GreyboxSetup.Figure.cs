@@ -129,13 +129,14 @@ namespace ShiftShift.EditorTools
             if (existing != null) Object.DestroyImmediate(existing.gameObject);
             // Outside to inside. Lower sorting fudge = drawn on top, so the yellow core shows through.
             // The flames are left behind in the world, so they flow back off the runner like real fire (ELIA). Their
-            // lifetime keeps the trail to about 3 m at full speed, short of the camera 5.5 m behind (day 20, first
-            // try: a 5 m trail reached the camera and hid the runner; second try: flames stuck to the body).
-            ParticleSystem flame = FlameLayer(figure, "Flame", new Vector3(0.6f, 1.5f, 0.35f), 0.24f, 0.26f, 30f,
+            // lifetime keeps the trail to about 4 m at full speed (ELIA), short of the camera 5.5 m behind (day 20,
+            // first try: a 5 m trail reached the camera and hid the runner; second: flames stuck to the body; third:
+            // a 3 m trail, a little thin). Sizes vary between small and big flames.
+            ParticleSystem flame = FlameLayer(figure, "Flame", new Vector3(0.6f, 1.5f, 0.35f), 0.12f, 0.38f, 0.34f, 40f,
                 "#FF5A2A", "#F21E3D", 0.75f, 0f);
-            FlameLayer(flame.transform, "Middle", new Vector3(0.45f, 1.3f, 0.28f), 0.2f, 0.22f, 30f,
+            FlameLayer(flame.transform, "Middle", new Vector3(0.45f, 1.3f, 0.28f), 0.1f, 0.3f, 0.29f, 40f,
                 "#FFA41E", "#FF6A1E", 0.85f, -10f);
-            FlameLayer(flame.transform, "Core", new Vector3(0.3f, 1.1f, 0.2f), 0.16f, 0.18f, 30f,
+            FlameLayer(flame.transform, "Core", new Vector3(0.3f, 1.1f, 0.2f), 0.08f, 0.22f, 0.24f, 40f,
                 "#FFF6B0", "#FFD23F", 1f, -20f);
             Set(anim, "flame", flame);
             Set(anim, "chargedMaterial", EnsureChargedMaterial());
@@ -143,7 +144,7 @@ namespace ShiftShift.EditorTools
         }
 
         /// <summary>One looping flame layer around the torso, rising and left behind in the world as the runner moves.</summary>
-        private static ParticleSystem FlameLayer(Transform parent, string name, Vector3 box, float size, float life,
+        private static ParticleSystem FlameLayer(Transform parent, string name, Vector3 box, float minSize, float maxSize, float life,
             float rate, string fromHex, string toHex, float alpha, float sortingFudge)
         {
             var go = new GameObject(name);
@@ -155,10 +156,10 @@ namespace ShiftShift.EditorTools
             main.loop = true;
             main.startLifetime = life;
             main.startSpeed = 0.4f;
-            main.startSize = size;
+            main.startSize = new ParticleSystem.MinMaxCurve(minSize, maxSize); // each flame a random size between the two
             main.gravityModifier = -0.9f; // flames rise
             main.simulationSpace = ParticleSystemSimulationSpace.World; // left behind as the runner moves: flows back
-            main.maxParticles = 40;
+            main.maxParticles = 60;
             ParticleSystem.EmissionModule emission = ps.emission;
             emission.rateOverTime = rate;
             ParticleSystem.ShapeModule shape = ps.shape;
