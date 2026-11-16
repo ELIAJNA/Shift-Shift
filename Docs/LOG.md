@@ -839,3 +839,8 @@ Tested: compile check for both variants; the browser script simulated in Node (S
 ## 2026-11-17 — D20: browser sound confirmed; release build with music 16.1 MB
 
 ELIA: the music plays in Chrome after the "Click to start" screen. Release Web build (Shift+Shift > Build WebGL, Brotli): "[Build] WebGL OK in 03:16 -> Builds/WebGL, 16.1 MB on disk (plan budget: under 20 MB)". Was 9.6 MB before the music; matches the 15-17 MB estimate. About 4 MB of headroom left: UI and gesture sounds (day 23) must stay small. If space runs short, the first lever is the music quality in Prepare Music (Vorbis 0.5).
+
+## 2026-11-17 — D20: music verified and committed
+
+ELIA played all six levels at the new tempos ("it's all good", level 6 at 190 included) and pushed the trimmed clips (Audio/Resources/music_01..06.wav) and the moved full tracks (Audio/Source, 6 files, not built).
+Audio pass status (plan day 23): music done. Still to do: gesture sound effects and UI sounds (plan: Kenney audio packs, CC0), CREDITS.md entries for them, and "no silent action anywhere".
