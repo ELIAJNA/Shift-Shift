@@ -731,3 +731,12 @@ Final step, on the PC, with Unity closed (this replaces the filter-branch line i
 3. Check the printed totals, then `git push --force-with-lease origin main`
 4. Tell the cloud session, so its copy is reset before any further commit.
 Until then: commits already on GitHub keep the old name and their Verified badges; new commits carry the name ELIA and, when made from the cloud session, no signature.
+
+## 2026-11-16 — D20: charge: last tap counts from its key press; charge counter
+
+ELIA (level 5, editor) failed on the wall at beat 56 and asked if a second wall was behind it. No: the on-screen log shows only three alternating taps (L 54.24, R 54.86, L 55.48); a charge needs four. While checking, found that a fourth tap pressed in time but released after the grace window would also fail (taps are recognised on key-up). ELIA asked for both fixes.
+Done:
+- RunnerModel.WallMayStillBreak: wait while a charge is under way and the window is open, or while a key pressed within the window is still undecided; stop waiting once a charge counting up to the end of the window exists. Runner's wall wait uses it.
+- Runner.HasCharge (public). GameFlow draws a charge counter above the runner during play: one dot per alternating tap towards the next charge, "CHARGED" when ready.
+Tested: 152 Core tests (2 new: last tap pressed in the window and released after it breaks the wall; wait rules). Compile check passes.
+Not run in Unity: the counter's position and size on screen, and how the wall feels with the longer wait. Docs/RUNNER.md updated.

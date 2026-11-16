@@ -45,3 +45,13 @@ ignores gestures until then.
 4. **Gaps are checked at both edges**, other obstacles at their centre.
 5. **Charge taps also change lanes** (open question 1 in INPUT.md). Walls span all lanes, so it only looks odd.
 6. Camera smoothing uses frame time (visual only, not rhythm timing).
+
+## Wall wait and charge counter (day 20)
+
+- A tap is recognised when its key is let go but counts from the key press. At a wall, the runner now also waits for a
+  last tap that was **pressed** within the grace window (wall click + Good window, 120 ms) but not yet released. Before
+  this, a fourth tap pressed in time but released after the window failed. Rule: `RunnerModel.WallMayStillBreak`
+  (tested). Waiting is bounded: a pressed key is decided within the tap/hold threshold (250 ms).
+- Side effect: on a fail at a wall, the runner can stop up to about 3 m past it (the wait keeps it moving).
+- Charge counter (GameFlow): dots above the runner, one per alternating tap towards the next charge, "CHARGED" once a
+  charge is ready. Hidden when no charge is under way.
