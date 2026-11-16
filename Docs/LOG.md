@@ -907,3 +907,8 @@ banner 960x300 (title, tagline, the two Shift keys), page background 1920x1080 (
 for the page column), embed background 960x600 (scene plus "Click to play · headphones on"), cover 630x500 (title, "Two keys. Seven moves. One beat.", scene, the two keys). Images go to itch-art/
 (ignored by git: PNGs are LFS and cannot be pushed from the cloud session); sent to ELIA.
 Not checked: how they look on the itch page.
+
+## 2026-11-17 — D23: trailer done
+
+ELIA: the trailer came out fine (edited in a session on the PC from the trailer-mode recordings) and is linked on the
+itch.io page (YouTube). Plan day 29 "screenshots and video": video done; screenshots still to take.
