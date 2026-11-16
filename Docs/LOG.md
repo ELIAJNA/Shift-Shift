@@ -760,3 +760,9 @@ Checked against the levels: every wall has at least 3 free beats before it, so n
 ELIA asked for a glow or flame on the runner instead of the "CHARGED" text.
 Done: RunnerFigure switches the figure to a new emissive material (Materials/Greybox/RunnerCharged, wall red #F21E3D, emission x2.2 so bloom picks it up) and plays a flame particle system around the torso while a charge is ready and the next obstacle is a red wall. Phase look still wins over charged. Flames are left behind in the world as the runner moves, so they stream back like a trail; they burn out when the charge is used. GameFlow keeps the tap dots (1-3) and no longer draws "CHARGED". Set Up Visuals adds the flame and material to existing figures (WireChargeLook).
 Tested: compile check, 155 Core tests (no rule changed). Not run in Unity: how it looks, whether the flames read as fire in WebGL (Sprites/Default, alpha-blended), and frame rate with up to 300 extra particles.
+
+## 2026-11-16 — D20: flame in three colours
+
+ELIA: the flame should not be all red: yellow inside, then orange, then red.
+Done (setup tool only): the flame is rebuilt as three particle layers: a tight yellow core (#FFF6B0 to #FFD23F), an orange middle (#FFA41E to #FF6A1E) and a wider red outside (#FF5A2A to #F21E3D), drawn core on top (sorting fudge). The charged body glow is now warm yellow-orange (#FFB547, emission #FF9A1F x1.8) instead of red. The old single-layer flame is replaced on the next Set Up Visuals; the material's colours are reset on every run.
+Tested: compile check only (no runtime code changed). Not seen in Unity: whether the layers read as one fire, and the particle count (up to 450) in WebGL.
