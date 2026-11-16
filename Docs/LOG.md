@@ -808,3 +808,16 @@ ELIA ran a browser build: menu, How to play, level status, pause, charge rule an
 Done: MainMenu draws the two arrows as small triangle textures made at run time (no font needed), placed from the measured width of the level name.
 Tested: compile check. Not seen in the browser yet.
 Note: the round dots (menu position, count-in, charge counter) did show in the browser, so they were left as text.
+
+## 2026-11-16 — D20: music for all six levels
+
+ELIA picked six CC0 tracks by Tricks & Traps (Free Rhythm Game Music Packs 1 and 2, OpenGameArt), copied them into Audio/Resources and pushed them (2 to 7 minutes each, 275 MB of WAV, no .meta files yet). Agreed: level 6 at 190 with wider spacing and no midpoint tempo rise.
+Measured here (downloaded from GitHub LFS, analysed with an onset-strength beat grid): T.O.E. 120, Flying Temple 128, Ascend 130, The Lab 144, Vessel of Eternity 150 (not listed on its page), Celebration and Fear 190; first downbeat at 0.42 / 1.80 / 1.77 / 1.60 / 0.33 / 1.19 s; grid within 15 ms over each level's span. Vessel measured faster than The Lab, so The Lab went to level 4 and Vessel to level 5 (tempo rises level by level).
+Done:
+- Levels 1-6: bpm, audioClip music_01..06, offsetMs 50. Level 6 re-timed x1.5 for 190 (312 beats, 98.5 s), tempo list removed, palette changes and track pieces scaled. All six validate with no chart warnings; level 6 passes the scripted playability walk.
+- Shift+Shift > Prepare Music (editor tool): moves the full tracks to Audio/Source (outside Resources, so not built), writes trimmed clips music_01..06 to Resources (0.05 s before the first downbeat to 8 beats after the level's end, 10 ms fade-in, 2 s fade-out), Vorbis quality 0.5, not loaded in the background.
+- Removed the five click tracks no level uses (110, 120, 125, 135, 130-150) and stopped generating them; level00, test_gestures and test_track keep theirs.
+- Credits (menu text, now regenerated on every Set Up Visuals; Docs/CREDITS.md rows).
+Rehearsed here with the same trim maths: clip lengths 56-101 s; in each clip the first beat lands at 47-62 ms (target 50) and is a downbeat; estimated 7.5 MB compressed for all six (Vorbis q4). Compile check passes.
+Not done here: the actual clips (made on ELIA's PC; audio cannot be pushed from the cloud session), playing to check sync by ear, the build size with the music.
+Uncertain: every level is faster than when it was tested (level 1: 100 to 120 BPM, level 6: 15.8 m/s); the WebGL build may encode audio differently (AAC), so the size estimate is rough.

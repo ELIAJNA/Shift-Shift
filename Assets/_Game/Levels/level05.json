@@ -1,8 +1,8 @@
 {
   "name": "Drumline",
-  "bpm": 135.0,
-  "audioClip": "click_135",
-  "offsetMs": 0.0,
+  "bpm": 150.0,
+  "audioClip": "music_05",
+  "offsetMs": 50.0,
   "palette": "neon",
   "lengthBeats": 208.0,
   "events": [

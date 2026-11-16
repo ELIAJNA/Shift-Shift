@@ -363,29 +363,11 @@ namespace ShiftShift.EditorTools
         {
             EnsureFolder("Assets/_Game", "Audio");
             EnsureFolder("Assets/_Game/Audio", "Resources");
-            // Placeholder clicks until the audio pass (day 23): one per level tempo, a little longer than the level.
-            foreach ((string path, double bpm, int beats) in new[]
-                     {
-                         (LongClickPath, 100.0, 112), ("Assets/_Game/Audio/Resources/click_110.wav", 110.0, 120),
-                         ("Assets/_Game/Audio/Resources/click_120.wav", 120.0, 160),
-                         ("Assets/_Game/Audio/Resources/click_125.wav", 125.0, 168),
-                         ("Assets/_Game/Audio/Resources/click_135.wav", 135.0, 216),
-                     })
-            {
-                if (System.IO.File.Exists(path)) continue;
-                System.IO.File.WriteAllBytes(path, ClickTrack.GenerateWav(bpm, beats, 4, 22050));
-                AssetDatabase.ImportAsset(path);
-                log.Add($"Generated {path} ({bpm:0} BPM, {beats} beats)");
-            }
-            // Level 6: 130 BPM, rising to 150 at beat 96. Must match level06.json's bpm and tempo list.
-            const string risingClick = "Assets/_Game/Audio/Resources/click_130_150.wav";
-            if (!System.IO.File.Exists(risingClick))
-            {
-                var tempo = new TempoMap(130, new[] { new TempoChange { beat = 96, bpm = 150 } });
-                System.IO.File.WriteAllBytes(risingClick, ClickTrack.GenerateWav(tempo, 216, 4, 22050));
-                AssetDatabase.ImportAsset(risingClick);
-                log.Add($"Generated {risingClick} (130 BPM, 150 from beat 96, 216 beats)");
-            }
+            // Placeholder click for the track test level. The six real levels have music (Prepare Music, day 20).
+            if (System.IO.File.Exists(LongClickPath)) return;
+            System.IO.File.WriteAllBytes(LongClickPath, ClickTrack.GenerateWav(100, 112, 4, 22050));
+            AssetDatabase.ImportAsset(LongClickPath);
+            log.Add($"Generated {LongClickPath} (100 BPM, 112 beats)");
         }
 
         /// <summary>Run scene: GameFlow's levels in RunLevelOrder (level 1 first), then any others already listed.</summary>

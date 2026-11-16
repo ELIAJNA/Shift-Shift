@@ -1,8 +1,8 @@
 {
   "name": "Ghost layer",
-  "bpm": 125.0,
-  "audioClip": "click_125",
-  "offsetMs": 0.0,
+  "bpm": 144.0,
+  "audioClip": "music_04",
+  "offsetMs": 50.0,
   "palette": "night",
   "lengthBeats": 160.0,
   "events": [

@@ -1,8 +1,8 @@
 {
   "name": "Low ceiling",
-  "bpm": 110.0,
-  "audioClip": "click_110",
-  "offsetMs": 0.0,
+  "bpm": 128.0,
+  "audioClip": "music_02",
+  "offsetMs": 50.0,
   "palette": "overcast",
   "lengthBeats": 112.0,
   "events": [
