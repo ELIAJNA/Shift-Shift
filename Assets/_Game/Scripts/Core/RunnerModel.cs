@@ -132,6 +132,9 @@ namespace ShiftShift.Core
         public void OnGestureFired(GestureType type, double time, int alternateStreak, double recognizedAt = double.NaN)
         {
             if (double.IsNaN(recognizedAt) || recognizedAt < time) recognizedAt = time;
+            // A charge takes exactly four presses (ELIA, day 20): any later press cancels it. The four taps of a
+            // charge each fire a tap before their Alternate, so only charges strictly before this press are cancelled.
+            if (type != GestureType.Alternate) CancelChargesBefore(time);
             switch (type)
             {
                 case GestureType.TapLeft: AddLaneChange(time, recognizedAt, -1); break;
@@ -148,6 +151,7 @@ namespace ShiftShift.Core
 
         public void OnHoldStarted(GestureType type, double time)
         {
+            CancelChargesBefore(time); // a press after the four charge taps cancels the charge
             if (_holds.TryGetValue(type, out var list))
                 list.Add(new Interval { Start = time, End = double.PositiveInfinity });
         }
@@ -199,6 +203,12 @@ namespace ShiftShift.Core
             foreach (Jump j in _jumps)
                 if (time >= j.Start && time <= j.End) return true;
             return false;
+        }
+
+        private void CancelChargesBefore(double time)
+        {
+            foreach (var c in _charges)
+                if (!c.Used && c.Time < time) c.Used = true;
         }
 
         /// <summary>An unused charge earned at or before this time.</summary>

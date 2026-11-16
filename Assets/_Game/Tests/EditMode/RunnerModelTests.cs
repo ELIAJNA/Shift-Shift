@@ -342,16 +342,32 @@ namespace ShiftShift.Tests
             Assert.AreEqual(ObstacleOutcome.Hit, _m.Resolve(Obs(ObstacleKind.Wall, 2.0, all: true)));
         }
 
-        [Test]
-        public void LongStreak_EarnsAChargeEveryFourTaps_ButChargesDoNotBankUp()
+        /// <summary>One alternating tap as the input sends it: the tap first, then the Alternate with the streak.</summary>
+        private void AltTap(double t, int streak)
         {
-            // Eight taps before the first wall earn two charges; only the next obstacle can use one (day 20).
-            for (int s = 2; s <= 8; s++) _m.OnGestureFired(GestureType.Alternate, s * 0.5, s);
-            Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 5.0, all: true)));
-            Assert.AreEqual(ObstacleOutcome.Hit, _m.Resolve(Obs(ObstacleKind.Wall, 6.0, all: true)));
-            // A streak that goes on past a wall earns a fresh charge for the next one.
-            for (int s = 9; s <= 12; s++) _m.OnGestureFired(GestureType.Alternate, 6.0 + (s - 8) * 0.2, s);
-            Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 7.0, all: true)));
+            _m.OnGestureFired(streak % 2 == 1 ? GestureType.TapLeft : GestureType.TapRight, t, 1);
+            _m.OnGestureFired(GestureType.Alternate, t, streak);
+        }
+
+        [Test]
+        public void Charge_ExactlyFourTaps_FifthCancels_AndStartsAFreshCount()
+        {
+            for (int s = 1; s <= 4; s++) AltTap(1.0 + s * 0.2, s);
+            Assert.IsTrue(_m.HasCharge(2.0), "four taps: charged (the fourth tap's own lane tap does not cancel it)");
+            AltTap(2.0, 5);
+            Assert.IsFalse(_m.HasCharge(2.0), "fifth tap: charge cancelled");
+            Assert.AreEqual(ObstacleOutcome.Hit, _m.Resolve(Obs(ObstacleKind.Wall, 2.1, all: true)));
+            // Taps 5-8 are a fresh set of four.
+            for (int s = 6; s <= 8; s++) AltTap(2.1 + (s - 5) * 0.2, s);
+            Assert.AreEqual(ObstacleOutcome.Break, _m.Resolve(Obs(ObstacleKind.Wall, 3.0, all: true)));
+        }
+
+        [Test]
+        public void Charge_AnyLaterPress_Cancels()
+        {
+            for (int s = 1; s <= 4; s++) AltTap(1.0 + s * 0.2, s);
+            _m.OnHoldStarted(GestureType.HoldLeft, 2.5); // a slide started after charging
+            Assert.AreEqual(ObstacleOutcome.Hit, _m.Resolve(Obs(ObstacleKind.Wall, 3.0, all: true)));
         }
 
         [Test]

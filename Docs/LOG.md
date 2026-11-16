@@ -789,3 +789,11 @@ Noticed: in ELIA's screenshot the runner was charged at the start of level 5 bec
 ELIA: too few flames now, and flames stuck to the body look wrong; they should flow back like real fire.
 Done (setup tool only): flames are left in the world again (they trail behind), 30 per second per layer (first try 55-60, second 12), sizes 0.16-0.24, lifetimes 0.18-0.26 s. At 12.5 m/s the trail is about 3 m, short of the camera 5.5 m behind, which is what hid the runner the first time.
 Tested: compile check. Not seen in Unity.
+
+## 2026-11-16 — D20: exactly four charge taps; fuller flame with a 4 m trail
+
+ELIA: slightly more flames, a mix of big and small, a 4 m trail; and a fifth Shift press should reset the charge, so it takes strictly four presses.
+Done:
+- RunnerModel: any press after a charge (tap, jump, or the start of a hold) cancels charges earned before it; the fifth tap counts as tap 1 of a fresh set, so taps 5-8 charge again. The fourth tap's own lane tap (fired just before its Alternate, at the same key-down time) does not cancel. Docs/RUNNER.md rule 2 updated.
+- Flame (setup tool): 40 per second per layer (was 30), random sizes between small and big per layer (outer 0.12-0.38, middle 0.1-0.3, core 0.08-0.22), lifetimes 0.24-0.34 s for a trail of about 4 m at full speed (camera at 5.5 m).
+Tested: 156 Core tests (2 new for the four-tap rule; the old eight-taps test replaced), compile check. Not run in Unity.

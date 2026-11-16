@@ -41,12 +41,14 @@ ignores gestures until then.
    time; actually speeding up would make every later obstacle arrive off the beat. Sprint = state for gates + FOV
    kick (60 → 72). Confirmed by ELIA, day 11: keep it.
 2. **A charge is good for the next obstacle only** (changed by ELIA, day 20; was "until the next wall uses it").
-   Every 4th quick alternating tap earns one; passing any obstacle uses it up, wall or not, and the counter above
+   Exactly four quick alternating taps earn one; any further Shift press cancels it, and that press counts as tap 1
+   of a fresh set (ELIA, day 20). Passing any obstacle uses it up, wall or not, and the counter above
    the runner goes out. A charge completed in a wall's grace window, after the obstacle before it, is kept.
    The counter above the runner shows only when the next obstacle is a red wall (ELIA, day 20). A ready charge is
    shown on the runner: the body glows warm yellow-orange and a three-layer flame (yellow core, orange middle,
-   red outside) flows back off it (no "CHARGED" text). Flames are left behind in the world, 30 per second per layer,
-   living 0.18-0.26 s, so the trail is about 3 m long at full speed and stops short of the camera (5.5 m behind).
+   red outside) flows back off it (no "CHARGED" text). Flames are left behind in the world, 40 per second per layer,
+   in mixed sizes, living 0.24-0.34 s, so the trail is about 4 m long at full speed and stops short of the camera
+   (5.5 m behind).
 3. ~~Walls are in the solid layer, so a phased runner also passes them.~~ Changed day 13: only a charge breaks a wall.
 4. **Gaps are checked at both edges**, other obstacles at their centre.
 5. **Charge taps also change lanes** (open question 1 in INPUT.md). Walls span all lanes, so it only looks odd.
