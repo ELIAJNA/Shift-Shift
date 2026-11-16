@@ -287,7 +287,7 @@ namespace ShiftShift
             {
                 case Phase.Ready:
                     GUI.Label(new Rect(0, h * 0.30f, w, 60), $"<b>{conductor.Level.name}</b>", _mid);
-                    GUI.Label(new Rect(0, h * 0.40f, w, 80), "Press Shift to start", _big);
+                    GUI.Label(new Rect(0, h * 0.40f, w, 80), conductor.IsWaitingForAudio ? "Loading music..." : "Press Shift to start", _big);
                     GUI.Label(new Rect(0, h * 0.55f, w, 30),
                         $"Best {_best}   ·   F1 debug   ·   F2 calibrate (offset {conductor.UserOffsetMs:+0;-0;0} ms)", _small);
                     break;
