@@ -897,3 +897,18 @@ videos cannot reach the cloud session). Added Docs/TRAILER-EDIT.md (brief: input
 tools/trailer/make_cards.py (the 14 caption/end cards, portable: Arial Bold on Windows if Inter is not there).
 /Recordings/ added to .gitignore so the videos are never committed.
 Tested: make_cards.py runs here (Inter). Not run: on Windows (Arial fallback), the edit itself.
+
+## 2026-11-17 — D23: trailer rendered (Recordings/trailer/shiftshift_trailer.mp4)
+
+Cut from Recordings/Movie_003.mp4 only (all six levels in trailer mode). Movie_001 (level 1 with fails) and
+Movie_002 (menu, then a failed run) not used. Cut list with source in-points: Recordings/trailer/cutlist.md
+(+ cuts.json, contact sheets); ELIA saw the frames before the render. Cards from make_cards.py (Arial Bold fallback
+worked on Windows). Each shot rendered at exact frame counts on the bar grid (30 fps), captions overlaid,
+concatenated, music 25.19 s + 44.21 s with 2 s fade, H.264 CRF 18 yuv420p, AAC 192k, 21.2 MB. Shot 3 is a 1.4x
+zoom of the level 3 count-in ("close on the runner"). No speed changes. Videos are not committed (Recordings/ ignored).
+Tested: ffprobe 1920x1080, 30 fps, 1326 frames, 44.21 s; frames extracted by index at cuts (black card -> TAP at
+frame 303 = 10.10 s, the drop; 14d -> end card at 1213); mid-shot frames show captions readable, no debug text
+(game HUD score/streak/multiplier is visible, as intended for shot 12); audio level drops over the last 2 s.
+Found: trailer mode failed once in level 5 (phase, about 312 s into Movie_003) and retried; the bot is supposed
+never to fail. Not investigated. Uncertain: obstacle moments were placed from chart times read off frames
+(about +-0.1 s); not watched in real time with sound by a person here.
