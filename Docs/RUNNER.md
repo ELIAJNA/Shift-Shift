@@ -45,7 +45,8 @@ ignores gestures until then.
    the runner goes out. A charge completed in a wall's grace window, after the obstacle before it, is kept.
    The counter above the runner shows only when the next obstacle is a red wall (ELIA, day 20). A ready charge is
    shown on the runner: the body glows warm yellow-orange and a three-layer flame (yellow core, orange middle,
-   red outside) streams off it (no "CHARGED" text).
+   red outside) rises off it (no "CHARGED" text). The flames stay on the body (local space, 12 per second per layer):
+   a trail left in the world streamed back at the camera and hid the runner.
 3. ~~Walls are in the solid layer, so a phased runner also passes them.~~ Changed day 13: only a charge breaks a wall.
 4. **Gaps are checked at both edges**, other obstacles at their centre.
 5. **Charge taps also change lanes** (open question 1 in INPUT.md). Walls span all lanes, so it only looks odd.

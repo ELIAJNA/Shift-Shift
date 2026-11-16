@@ -23,13 +23,14 @@ namespace ShiftShift
         private struct Entry
         {
             public string Title, Detail, LevelAsset;
-            public bool Calibrate, Credits;
+            public bool Calibrate, Credits, HowTo;
         }
 
         private readonly List<Entry> _entries = new List<Entry>();
         private readonly ShiftMenuKeys _keys = new ShiftMenuKeys();
         private int _index;
-        private bool _showCredits;
+        private enum Page { None, Credits, HowTo }
+        private Page _page;
         private GUIStyle _title, _big, _mid, _small;
 
         private void Start()
@@ -48,11 +49,12 @@ namespace ShiftShift
                 _entries.Add(new Entry
                 {
                     Title = $"{_entries.Count + 1}   {level.name}",
-                    Detail = $"{seconds:0} seconds   ·   " + (best > 0 ? $"best {best}" : "not played yet"),
+                    Detail = $"{seconds:0} seconds   ·   " + Status(json.name, best),
                     LevelAsset = json.name,
                 });
             }
             float offset = PlayerPrefs.GetFloat(Conductor.UserOffsetKey, 0f);
+            _entries.Add(new Entry { Title = "How to play", Detail = "The seven moves, and which obstacle wants which", HowTo = true });
             _entries.Add(new Entry { Title = "Calibrate timing", Detail = $"Tap along to a click to line the game up with your sound (now {offset:+0;-0;0} ms)", Calibrate = true });
             _entries.Add(new Entry { Title = "Credits", Detail = "Who and what made this", Credits = true });
 
@@ -70,9 +72,9 @@ namespace ShiftShift
         {
             MenuKey key = _keys.Poll(Down(Side.Left), Down(Side.Right));
             if (key == MenuKey.None) return;
-            if (_showCredits)
+            if (_page != Page.None)
             {
-                _showCredits = false; // any key closes the credits
+                _page = Page.None; // any key closes the page
                 return;
             }
             if (key == MenuKey.Left) _index = (_index + _entries.Count - 1) % _entries.Count;
@@ -82,13 +84,56 @@ namespace ShiftShift
 
         private void Open(Entry e)
         {
-            if (e.Credits) _showCredits = true;
+            if (e.Credits) _page = Page.Credits;
+            else if (e.HowTo) _page = Page.HowTo;
             else if (e.Calibrate)
             {
                 if (Application.CanStreamedLevelBeLoaded(calibrateScene)) SceneManager.LoadScene(calibrateScene);
                 else Debug.LogWarning($"[Menu] Scene '{calibrateScene}' is not in the build list.");
             }
             else GameFlow.Play(e.LevelAsset, runScene);
+        }
+
+        /// <summary>Best score once cleared; "Failed - Try Again" once played but not cleared (ELIA, day 20).</summary>
+        private static string Status(string level, int best)
+        {
+            bool cleared = best > 0 || PlayerPrefs.GetInt(GameFlow.ClearedKeyPrefix + level, 0) == 1;
+            if (cleared) return $"best {best}";
+            if (PlayerPrefs.GetInt(GameFlow.PlayedKeyPrefix + level, 0) == 1) return "<color=#FF8A8A>Failed - Try Again</color>";
+            return "not played yet";
+        }
+
+        // Colour = what you press: the same action colours on every level (Docs/PALETTES.md).
+        private static readonly (string keys, string action, string colour, string obstacle)[] Moves =
+        {
+            ("Tap Left Shift / Tap Right Shift", "Change lane", "#F27017", "orange blocks and wide bars"),
+            ("Hold Left Shift", "Slide", "#FCC41E", "yellow low bars"),
+            ("Hold Right Shift", "Sprint", "#00FCF9", "cyan gates"),
+            ("Tap both together", "Jump", "#F40E9D", "pink gaps and hurdles"),
+            ("Hold both", "Phase", "#0E79F1", "blue walls (but not the light pink blocks inside them)"),
+            ("Left, Right, Left, Right quickly", "Charge, then smash", "#F21E3D", "red brick walls"),
+        };
+
+        private void DrawHowTo(float w, float h)
+        {
+            GUI.Label(new Rect(0, h * 0.05f, w, 70), "How to play", _big);
+            GUI.Label(new Rect(w * 0.1f, h * 0.05f + 62, w * 0.8f, 34),
+                "You run by yourself. Obstacles arrive on the beat: answer each one with the move its colour asks for.", _small);
+            var left = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = false };
+            var right = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = true, fontSize = 20 };
+            float top = h * 0.05f + 110, row = Mathf.Min(64f, h * 0.085f), x0 = w * 0.08f, x1 = w * 0.45f;
+            for (int i = 0; i < Moves.Length; i++)
+            {
+                var m = Moves[i];
+                float y = top + i * row;
+                GUI.Label(new Rect(x0, y, x1 - x0, row), $"<b>{m.keys}</b>", left);
+                GUI.Label(new Rect(x1, y, w * 0.92f - x1, row),
+                    $"<color={m.colour}><b>{m.action}</b></color>  through {m.obstacle}", right);
+            }
+            float tips = top + Moves.Length * row + 10;
+            GUI.Label(new Rect(w * 0.1f, tips, w * 0.8f, 60),
+                "Act on the click for more points: PERFECT and GOOD build your streak and multiplier.   Esc: pause", _small);
+            GUI.Label(new Rect(0, h * 0.92f, w, 30), "Any Shift: back", _small);
         }
 
         private void OnGUI()
@@ -103,7 +148,12 @@ namespace ShiftShift
             }
             float w = Screen.width, h = Screen.height;
 
-            if (_showCredits)
+            if (_page == Page.HowTo)
+            {
+                DrawHowTo(w, h);
+                return;
+            }
+            if (_page == Page.Credits)
             {
                 GUI.Label(new Rect(0, h * 0.08f, w, 70), "Credits", _big);
                 GUI.Label(new Rect(w * 0.15f, h * 0.22f, w * 0.7f, h * 0.6f), credits, _mid);
@@ -112,7 +162,7 @@ namespace ShiftShift
             }
 
             GUI.Label(new Rect(0, h * 0.08f, w, 110), "SHIFT+SHIFT", _title);
-            GUI.Label(new Rect(0, h * 0.08f + 105, w, 30), "A rhythm runner played with two keys", _small);
+            GUI.Label(new Rect(0, h * 0.08f + 105, w, 30), "A Rhythm Runner Played With Just Two Keys", _small);
 
             Entry e = _entries[_index];
             GUI.Label(new Rect(0, h * 0.40f, w, 70), $"<color=#888888>◀</color>     {e.Title}     <color=#888888>▶</color>", _big);
