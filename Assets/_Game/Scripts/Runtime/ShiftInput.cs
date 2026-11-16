@@ -42,8 +42,14 @@ namespace ShiftShift
             return _classifier != null && _classifier.TryGetUnresolvedPress(out downTime);
         }
 
+        /// <summary>
+        /// Trailer mode (AutoPlayer): when set, the keys are read from this (side, song time) instead of the keyboard.
+        /// </summary>
+        public Func<Side, double, bool> KeySource { get; set; }
+
         private GestureClassifier _classifier;
         private int _settingsVersion;
+        private readonly bool[] _virtualDown = new bool[2];
 
         private void Awake()
         {
@@ -81,7 +87,18 @@ namespace ShiftShift
             if (settings.Version != _settingsVersion) Rebuild(); // threshold tuned in the Inspector
 
             double now = Clock.SongTime;
-            if (ShiftKeys.FromBrowser)
+            if (KeySource != null)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Side side = i == 0 ? Side.Left : Side.Right;
+                    bool down = KeySource(side, now);
+                    if (down && !_virtualDown[i]) _classifier.Press(side, now);
+                    if (!down && _virtualDown[i]) _classifier.Release(side, now);
+                    _virtualDown[i] = down;
+                }
+            }
+            else if (ShiftKeys.FromBrowser)
             {
                 // Web build: the browser's own view of the keys (see ShiftKeys: Unity's can stick on Windows).
                 ShiftKeys.Read(out bool leftDown, out bool rightDown, out bool leftHit, out bool rightHit,
