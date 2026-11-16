@@ -855,3 +855,8 @@ Tested: compile check, Core tests. Not heard: every choice and volume is a first
 ## 2026-11-17 — D23: sound effects approved
 
 ELIA played the menu and levels with the sound effects: "all is good" (choices and volumes kept as in Docs/AUDIO.md). Audio pass done (plan day 23: music, gesture sounds, UI sounds, credits). Next in the plan: day 24 content lock, draft itch.io page, build to 3-5 testers.
+
+## 2026-11-17 — D23: trailer script and animatic
+
+ELIA asked for a gameplay video / trailer with an enticing script. Footage cannot be recorded from the cloud session (no Unity), so: script and shot list timed to Celebration and Fear (the drop found by measuring loudness per bar: quiet intro to bar 26, drop at bar 27; the trailer starts at bar 19 = 25.19 s), 14 caption and end cards (Inter Display, the action colours), and an animatic MP4 (44.2 s, music and cards in place, a labelled placeholder per shot) sent to ELIA. Docs/TRAILER.md has the script, recording and Clipchamp steps. Cards and video are not in the repo (PNG/MP4 go through LFS, which cannot be pushed from the cloud session).
+Font: Inter (SIL Open Font License) used in the trailer images only, not in the game.
