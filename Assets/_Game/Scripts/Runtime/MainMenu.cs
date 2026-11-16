@@ -20,6 +20,26 @@ namespace ShiftShift
         [SerializeField] private string calibrateScene = "Calibrate";
         [SerializeField, TextArea(6, 20)] private string credits = "Shift+Shift";
 
+        [Header("Sounds (day 23; the setup tool assigns them)")]
+        [SerializeField] private AudioClip moveSound;
+        [SerializeField] private AudioClip openSound;
+        [SerializeField] private AudioClip backSound;
+        [SerializeField, Range(0f, 1f)] private float soundVolume = 0.5f;
+        private static AudioSource _audio; // survives the scene change, so the "open" sound is not cut off
+
+        private void PlayUi(AudioClip clip)
+        {
+            if (clip == null) return;
+            if (_audio == null)
+            {
+                var go = new GameObject("UI Sound");
+                DontDestroyOnLoad(go);
+                _audio = go.AddComponent<AudioSource>();
+                _audio.playOnAwake = false;
+            }
+            _audio.PlayOneShot(clip, soundVolume);
+        }
+
         private struct Entry
         {
             public string Title, Detail, LevelAsset;
@@ -77,11 +97,12 @@ namespace ShiftShift
             if (_page != Page.None)
             {
                 _page = Page.None; // any key closes the page
+                PlayUi(backSound);
                 return;
             }
-            if (key == MenuKey.Left) _index = (_index + _entries.Count - 1) % _entries.Count;
-            else if (key == MenuKey.Right) _index = (_index + 1) % _entries.Count;
-            else Open(_entries[_index]);
+            if (key == MenuKey.Left) { _index = (_index + _entries.Count - 1) % _entries.Count; PlayUi(moveSound); }
+            else if (key == MenuKey.Right) { _index = (_index + 1) % _entries.Count; PlayUi(moveSound); }
+            else { PlayUi(openSound); Open(_entries[_index]); }
         }
 
         private void Open(Entry e)

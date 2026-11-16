@@ -211,6 +211,7 @@ namespace ShiftShift.EditorTools
             WirePostProcessing(Camera.main, log, Path.GetFileNameWithoutExtension(scene.path));
             WireFeelAndTrail(applier, log, Path.GetFileNameWithoutExtension(scene.path));
             if (scene.path == RunScenePath) PutTrackTestLevelFirst(log);
+            WireRunSounds(log, Path.GetFileNameWithoutExtension(scene.path)); // day 23: sound effects
             // GameFlow reads the menu keys (retry, next, pause) through ShiftInput.
             var flow = Object.FindAnyObjectByType<GameFlow>();
             var flowInput = Object.FindAnyObjectByType<ShiftInput>();

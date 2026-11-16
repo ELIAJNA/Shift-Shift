@@ -844,3 +844,10 @@ ELIA: the music plays in Chrome after the "Click to start" screen. Release Web b
 
 ELIA played all six levels at the new tempos ("it's all good", level 6 at 190 included) and pushed the trimmed clips (Audio/Resources/music_01..06.wav) and the moved full tracks (Audio/Source, 6 files, not built).
 Audio pass status (plan day 23): music done. Still to do: gesture sound effects and UI sounds (plan: Kenney audio packs, CC0), CREDITS.md entries for them, and "no silent action anywhere".
+
+## 2026-11-17 — D23: sound effects
+
+ELIA pushed four Kenney packs (Interface Sounds, Digital Audio, Impact Sounds, Sci-fi Sounds; 365 .ogg files; License.txt files not copied in) and asked for the credits to name only the artists (written "Tricks & Traps" and "Kenney", the artists' spellings).
+Done: SoundFx (Run and LevelTest scenes) plays a sound for every move and outcome, count-in ticks on beats -4..-1 scheduled on the audio clock (Conductor.DspTimeAtBeat, new), pause/resume sounds; MainMenu plays move/open/back sounds (the player object survives the scene change so "open" is not cut off). Choices and volumes in GreyboxSetup.Sound.cs, wired by Set Up Visuals; list in Docs/AUDIO.md. Lengths and loudness measured here (ffmpeg); volumes set against them.
+Credits: menu text "Music: Tricks & Traps" / "Sound effects: Kenney"; Docs/CREDITS.md rows for the four packs.
+Tested: compile check, Core tests. Not heard: every choice and volume is a first guess for ELIA to approve by ear. Size: the used files are about 20 small clips.

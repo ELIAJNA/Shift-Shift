@@ -48,6 +48,9 @@ namespace ShiftShift
             : -(startDelay + CountInSeconds) - _offsetSeconds; // frozen at the start value until the run begins
 
         // Through the tempo map: identical to beat x 60 / bpm for a level with one tempo.
+        /// <summary>The dspTime at which a beat sounds (for PlayScheduled sounds, e.g. the count-in ticks). Only valid once started.</summary>
+        public double DspTimeAtBeat(double beat) => _audioStartDsp + _offsetSeconds + SongTimeAtBeat(beat);
+
         public double BeatAt(double songTime) => _tempo != null ? _tempo.BeatAtTime(songTime) : songTime * Bpm / 60.0;
         public double SongTimeAtBeat(double beat) => _tempo != null ? _tempo.TimeAtBeat(beat) : beat * 60.0 / Bpm;
 
