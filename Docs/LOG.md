@@ -931,3 +931,9 @@ Tested: compile checks (normal and Web), Core tests 175, the jslib run in Node a
 second Left press during a held Right both register; auto-repeat 30 ms later ignored).
 Not run: a Web build with the new template (written by hand, not copied from Unity's; if the page fails to load, the
 first suspect is it), real Chrome on Windows, the editor focus pause (clicking outside the Game view now pauses a run).
+
+## 2026-11-17 — D25: calibration screen background
+
+ELIA: the Calibrate scene showed Unity's default sky, so the white text was hard to read. LatencyCalibration now sets
+the camera to the menu's plain #101418 on Awake (no scene change). Depends on: Calibrate scene only.
+Tested: compile check. Not run: in Unity.
