@@ -1044,3 +1044,13 @@ letters in the six obstacle colours, mirrored pairs from the outside in. MainMen
 orange (lane), H..F yellow (slide), I..I cyan (sprint), F..H pink (jump), T..S blue (phase), + red (charge); extrusion
 layers tinted grey so each letter's sides are darker shades of its own colour; glow takes the letter colours.
 Tested: compile check (normal and Web). Not run: in Unity.
+
+## 2026-11-17 — D27: satin title
+
+ELIA: the coloured title "looks horrible": the coloured extrusion merged the letters into blobs; wanted a 3D satin
+fill, not solid. MainMenu.SatinTitle: dark navy extrusion (7 layers) and a dark outline, the same for every letter;
+the face in the letter's action colour; a soft light sheen over the top half with a thin bright line near the top, and
+shading towards the bottom, drawn as 1 px clipped slices (GUI.BeginGroup) of the text, each tinted (IMGUI cannot fill
+text with a gradient). Previewed here with the same steps in Pillow (DejaVu Sans Bold standing in for Unity's font):
+first version showed stripes from overlapping slices, fixed with whole-pixel 1 px slices.
+Tested: compile check (normal and Web), the preview. Not run: in Unity.
