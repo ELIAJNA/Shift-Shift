@@ -430,11 +430,11 @@ def main():
     # Instead the hook line and, right under it, the hint, above the Run game button, where the title was (fully
     # visible in itch's frame). itch.io crops this image to the embed's size, so both stay near the middle.
     band = Image.new("RGBA", im.size, (0, 0, 0, 0))
-    ImageDraw.Draw(band).rectangle([0, 145 * SS, w * SS, 245 * SS], fill=(6, 8, 22, 130))
+    ImageDraw.Draw(band).rectangle([0, 122 * SS, w * SS, 220 * SS], fill=(6, 8, 22, 130))
     im.alpha_composite(band.filter(ImageFilter.GaussianBlur(24 * SS)))
-    text(im, "You've pressed Shift a million times. Never like this.", 24, (w * SS / 2, 182 * SS), COL["white"], bold,
+    text(im, "You've pressed Shift a million times. Never like this.", 24, (w * SS / 2, 156 * SS), COL["white"], bold,
          glow=(92, 225, 230), stroke=1)
-    text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 222 * SS), COL["white"], med, stroke=1)  # right under the hook (ELIA)
+    text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 192 * SS), COL["white"], med, stroke=1)  # right under the hook (ELIA)
     finish(im, w, h, os.path.join(a.out, "embed_bg_960x600.png"))
 
     # Cover 630x500 (itch.io's recommended size): title over the scene, the two keys at the bottom.
