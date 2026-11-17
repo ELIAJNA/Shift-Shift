@@ -1059,3 +1059,17 @@ Tested: compile check (normal and Web), the preview. Not run: in Unity.
 
 ELIA: pink and red looked similar in the title. Previewed two lighter pinks; ELIA chose #FF4FE8 (magenta-pink). Title
 only: the game keeps #F40E9D, since a lighter jump pink would come close to the light pink ghost blocks (#FFB5D9).
+
+## 2026-11-17 — D27: custom title lettering
+
+ELIA asked for title lettering like the Shift legend on a gaming keyboard (ROG Strix), but bold. ROG's typeface is
+ASUS's own (not licensable for a public game, and it would borrow their brand look), so the title is an original
+design instead: Core/TitleArt draws S, H, I, F, T and + from a few straight-edged shapes each (stroke 3, cap 12,
+diagonal corner cuts), anti-aliased, and bakes in the pair colours (title pink #FF4FE8), a dark navy extrusion, an
+outline and the satin sheen. MainMenu turns the pixels into a texture once per size (redrawn only if the screen height
+changes) and draws it in place of the text title; the earlier IMGUI satin and rich-text title code is removed. The
+tagline keeps its text look. No font file or licence needed.
+ELIA then asked for more options: eight variants (current, keycap = all corners cut, italic, italic keycap, split,
+italic split, wide, wide italic keycap) rendered with a preview copy of the same code; waiting for a choice.
+Tested: Core tests 178 (TitleArtTests: size, coverage, the outer S orange, the + red), compile check (normal and Web).
+Not run: in Unity.

@@ -159,84 +159,32 @@ namespace ShiftShift
             _tagline.fontSize = Mathf.RoundToInt(22 * _k);
             _title.normal.textColor = _tagline.normal.textColor = Color.white; // tinted per layer with GUI.color
             var titleRect = new Rect(0, h * 0.08f, w, 110 * _k);
-            SatinTitle(titleRect, _title, _k);
+            // Custom lettering (Core/TitleArt): made once per size, drawn as an image.
+            int cap = Mathf.Max(24, Mathf.RoundToInt(78 * _k));
+            if (_logo == null || _logoCap != cap) MakeLogo(cap);
+            float lw = _logo.width, lh = _logo.height;
+            GUI.DrawTexture(new Rect((w - lw) * 0.5f, titleRect.y + (titleRect.height - lh) * 0.5f, lw, lh), _logo);
             var tagRect = new Rect(0, h * 0.08f + 108 * _k, w, 34 * _k);
             Extruded(tagRect, "A Rhythm Runner Played With Just Two Keys", _tagline, Mathf.RoundToInt(4 * _k), 1f * _k,
                 new Color(0.79f, 0.82f, 0.85f), new Color(0.75f, 0.06f, 0.48f), new Color(0.12f, 0.02f, 0.08f),
                 new Color(0f, 0.98f, 0.97f));
         }
 
-        /// <summary>
-        /// SHIFT+SHIFT with mirrored letter pairs in the six action colours, outside in (ELIA, day 27): S..T lane
-        /// orange, H..F slide yellow, I..I sprint cyan, F..H jump pink (lighter here), T..S phase blue, and the + charge red.
-        /// </summary>
-        private static readonly string TitleColoured = BuildTitle();
+        private static Texture2D _logo;
+        private static int _logoCap;
 
-        /// <summary>
-        /// The title as satin 3D lettering (ELIA, day 27: coloured sides merged the letters into blobs): thin dark
-        /// neutral sides and outline keep every letter separate; the face is the letter's colour with a soft light sheen
-        /// across the top and gentle shading at the bottom. IMGUI cannot fill text with a gradient, so the sheen and
-        /// shade are drawn as thin horizontal slices of the text, each clipped and tinted on its own.
-        /// </summary>
-        private static void SatinTitle(Rect r, GUIStyle style, float k)
+        private static void MakeLogo(int cap)
         {
-            const string plain = "SHIFT+SHIFT";
-            Color old = GUI.color;
-
-            // Sides: a short extrusion down and to the right, dark navy, the same for every letter.
-            int depth = Mathf.Max(3, Mathf.RoundToInt(7 * k));
-            float step = 1.1f * k;
-            for (int i = depth; i >= 1; i--)
-            {
-                GUI.color = Color.Lerp(new Color(0.13f, 0.17f, 0.3f), new Color(0.03f, 0.04f, 0.08f), (i - 1f) / Mathf.Max(1, depth - 1));
-                GUI.Label(new Rect(r.x + i * step * 0.6f, r.y + i * step, r.width, r.height), plain, style);
-            }
-            // Outline: separates the letters from their sides and from each other.
-            GUI.color = new Color(0.02f, 0.03f, 0.06f, 0.9f);
-            float o = Mathf.Max(1f, 1.6f * k);
-            for (int dx = -1; dx <= 1; dx++)
-                for (int dy = -1; dy <= 1; dy++)
-                    if (dx != 0 || dy != 0) GUI.Label(new Rect(r.x + dx * o, r.y + dy * o, r.width, r.height), plain, style);
-
-            // Face: each letter in its action colour.
-            GUI.color = Color.white;
-            GUI.Label(r, TitleColoured, style);
-
-            // Satin: where the capitals sit inside the label (text is centred vertically).
-            // One-pixel slices on whole pixels: no gaps or overlaps, so no stripes.
-            float cap = style.fontSize * 0.72f, top = Mathf.Floor(r.y + r.height * 0.5f - cap * 0.5f);
-            int slices = Mathf.Max(12, Mathf.CeilToInt(cap));
-            const float sliceH = 1f;
-            for (int i = 0; i < slices; i++)
-            {
-                float t = (i + 0.5f) / slices; // 0 top .. 1 bottom of the letters
-                float light = t < 0.5f ? 0.55f * (1f - t / 0.5f) * (1f - t / 0.5f) : 0f;   // soft sheen, strongest at the top
-                if (t > 0.2f && t < 0.28f) light += 0.25f;                                  // a thin bright satin line
-                float dark = t > 0.55f ? 0.38f * (t - 0.55f) / 0.45f : 0f;                   // shade towards the bottom
-                if (light <= 0f && dark <= 0f) continue;
-                var clip = new Rect(r.x, top + i * sliceH, r.width, sliceH);
-                GUI.BeginGroup(clip);
-                var inner = new Rect(0, r.y - clip.y, r.width, r.height);
-                if (light > 0f) { GUI.color = new Color(1f, 1f, 1f, light); GUI.Label(inner, plain, style); }
-                if (dark > 0f) { GUI.color = new Color(0f, 0f, 0.05f, dark); GUI.Label(inner, plain, style); }
-                GUI.EndGroup();
-            }
-            GUI.color = old;
-        }
-
-        private static string BuildTitle()
-        {
-            const string text = "SHIFT+SHIFT";
-            // The jump pink is lighter and more magenta here than in the game (#F40E9D), so it does not read like the
-            // charge red next to it (ELIA, day 27). In the game it stays as it is, apart from the light pink ghost blocks.
-            string[] colours = { "#F27017", "#FCC41E", "#00FCF9", "#FF4FE8", "#3D8BFF", "#F21E3D" };
-            var sb = new System.Text.StringBuilder();
-            for (int i = 0; i < text.Length; i++)
-            {
-                int fromOutside = Mathf.Min(i, text.Length - 1 - i); // 0 for the outer pair .. 5 for the +
-                sb.Append("<color=").Append(colours[fromOutside]).Append('>').Append(text[i]).Append("</color>");
-            }
-            return sb.ToString();
+            byte[] rows = ShiftShift.Core.TitleArt.Render(cap, out int lw, out int lh);
+            // TitleArt writes rows from the top; Unity textures start at the bottom.
+            var flipped = new byte[rows.Length];
+            int stride = lw * 4;
+            for (int y = 0; y < lh; y++) System.Buffer.BlockCopy(rows, y * stride, flipped, (lh - 1 - y) * stride, stride);
+            if (_logo != null) Destroy(_logo);
+            _logo = new Texture2D(lw, lh, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+            _logo.LoadRawTextureData(flipped);
+            _logo.Apply();
+            _logoCap = cap;
         }
 
         private static void Extruded(Rect r, string text, GUIStyle style, int depth, float step, Color face, Color sideNear, Color sideFar,
