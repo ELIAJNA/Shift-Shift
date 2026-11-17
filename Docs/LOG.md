@@ -1173,3 +1173,12 @@ The cloud session keeps the old address for its remote: its GitHub access is tie
 was refused, 403); GitHub forwards the old address, so pushes still arrive. Older log entries keep the old name as history.
 To update on ELIA's side: the PC's git remote, the "Source code" link in the itch.io description, the YouTube
 description if it links the repo.
+
+## 2026-11-17 — D27: results heading names the level
+
+ELIA: the results screen should say which level was completed, with a cheer ("Hurray! Level 1 complete", "Awesome!
+Level 2 complete", ...). GameFlow.CompleteHeading: Hurray / Awesome / Brilliant / Fantastic / Unstoppable / Legendary
+for levels 1-6 (number read from the level's asset name); "Level complete" for test levels. Results box widened from
+40% to 50% of the screen so the longest heading fits at 960 px wide.
+Tested: the heading function run on every level name (level01-06, level00, test_track, none); compile check.
+Not run: in Unity.
