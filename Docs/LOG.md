@@ -912,3 +912,22 @@ Not checked: how they look on the itch page.
 
 ELIA: the trailer came out fine (edited in a session on the PC from the trailer-mode recordings) and is linked on the
 itch.io page (YouTube). Plan day 29 "screenshots and video": video done; screenshots still to take.
+
+## 2026-11-17 — D25: tester fixes (lane move during sprint, fullscreen)
+
+Tester 1: holding Right Shift and tapping Left twice moved only one lane. Cause (browser build): Windows sends no key-up
+for one Shift while the other is held and flags its next press as a repeat; ShiftKeys.jslib discarded it as auto-repeat.
+Fix: jslib reports such a press as a re-press (gap over 100 ms since that key's last key-down, other Shift held);
+ShiftInput counts it as a tap only if the key's last press was already a tap (Docs/INPUT.md).
+Tester 2: itch.io's fullscreen button froze the game until a click inside, and fullscreen did not fill the screen.
+Causes: Run In Background was off (Unity stops when the page loses focus; the music kept going), and Unity's Default
+page draws a fixed 960x600 canvas. Fix: new page template Assets/WebGLTemplates/ShiftShift (fills the frame and the
+screen, gives focus back to the game on click, fullscreen and resize, resolution capped at 1.5x); Build WebGL now sets
+that template and Run In Background on; GameFlow pauses the run when the game loses focus (not in trailer mode), and
+the pause screen says to click the game if the keys do nothing.
+Depends on / could break: ShiftKeys/ShiftInput (web input only; Runner, GameFlow, MainMenu, SoundFx read ShiftInput),
+GameFlow (Run, LevelTest), BuildScript and the template (Web build only: loading, compression fallback).
+Tested: compile checks (normal and Web), Core tests 175, the jslib run in Node against simulated Chrome events (first and
+second Left press during a held Right both register; auto-repeat 30 ms later ignored).
+Not run: a Web build with the new template (written by hand, not copied from Unity's; if the page fails to load, the
+first suspect is it), real Chrome on Windows, the editor focus pause (clicking outside the Game view now pauses a run).

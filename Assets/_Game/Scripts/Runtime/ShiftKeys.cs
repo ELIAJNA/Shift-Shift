@@ -25,9 +25,10 @@ namespace ShiftShift
         /// <summary>
         /// Call once per frame. "Hit" = pressed since the last call (so a tap shorter than a frame counts).
         /// "Again" = pressed while still marked as down: its key-up was lost, so it is a release and a new press.
+        /// "Repress" = pressed again while the other Shift is held, but flagged by Windows as a repeat (day 25).
         /// </summary>
         public static void Read(out bool leftDown, out bool rightDown, out bool leftHit, out bool rightHit,
-            out bool leftAgain, out bool rightAgain)
+            out bool leftAgain, out bool rightAgain, out bool leftRepress, out bool rightRepress)
         {
             if (!_ready)
             {
@@ -41,14 +42,16 @@ namespace ShiftShift
             rightHit = (bits & 8) != 0;
             leftAgain = (bits & 16) != 0;
             rightAgain = (bits & 32) != 0;
+            leftRepress = (bits & 64) != 0;
+            rightRepress = (bits & 128) != 0;
         }
 #else
         public static readonly bool FromBrowser = false;
 
         public static void Read(out bool leftDown, out bool rightDown, out bool leftHit, out bool rightHit,
-            out bool leftAgain, out bool rightAgain)
+            out bool leftAgain, out bool rightAgain, out bool leftRepress, out bool rightRepress)
         {
-            leftDown = rightDown = leftHit = rightHit = leftAgain = rightAgain = false;
+            leftDown = rightDown = leftHit = rightHit = leftAgain = rightAgain = leftRepress = rightRepress = false;
         }
 #endif
     }

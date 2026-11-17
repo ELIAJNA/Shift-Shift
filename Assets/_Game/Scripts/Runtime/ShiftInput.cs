@@ -103,9 +103,9 @@ namespace ShiftShift
             {
                 // Web build: the browser's own view of the keys (see ShiftKeys: Unity's can stick on Windows).
                 ShiftKeys.Read(out bool leftDown, out bool rightDown, out bool leftHit, out bool rightHit,
-                    out bool leftAgain, out bool rightAgain);
-                Poll(leftDown, leftHit, leftAgain, Side.Left, Side.Right, now);
-                Poll(rightDown, rightHit, rightAgain, Side.Right, Side.Left, now);
+                    out bool leftAgain, out bool rightAgain, out bool leftRepress, out bool rightRepress);
+                Poll(leftDown, leftHit, leftAgain, leftRepress, Side.Left, Side.Right, now);
+                Poll(rightDown, rightHit, rightAgain, rightRepress, Side.Right, Side.Left, now);
             }
             else
             {
@@ -123,10 +123,15 @@ namespace ShiftShift
         private readonly double[] _downAt = new double[2];
         private readonly bool[] _countedAsTap = new bool[2];
 
-        private void Poll(bool down, bool hit, bool again, Side side, Side other, double now)
+        private void Poll(bool down, bool hit, bool again, bool repress, Side side, Side other, double now)
         {
             int i = side == Side.Left ? 0 : 1, o = 1 - i;
             if (!down) _countedAsTap[i] = false;
+
+            // Day 25 (tester): the second press of a key during the other key's hold arrives flagged as a repeat
+            // (ShiftKeys.jslib). Only a key whose last press was already counted as a tap can be pressed again
+            // this way; for any other key it is real auto-repeat (a held phase or slide) and is ignored.
+            if (repress && !hit && _countedAsTap[i]) hit = true;
 
             if (hit)
             {
