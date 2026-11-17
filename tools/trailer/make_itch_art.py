@@ -233,53 +233,74 @@ TILE_ORDER = ["lane", "slide", "sprint", "jump", "phase", "charge"]
 TILE_COL = dict(COL, jump=(255, 79, 232))  # the title pink, lighter than the game's jump pink
 
 
-def logo_block(im, x, title_cy, k, bold, med, tagline, align="centre"):
-    """The menu's title block (MainMenu.DrawLogo, day 27): six tiles over the two SHIFTs (none over the +), the boxy
-    runner leaping from the 3rd tile to the 4th, the 3D title (white face, cyan sides, faint glow) and the tagline
-    with a small dark shadow. Sizes as in the menu at scale k; x is the title's centre, or its left edge."""
+def logo_geom(x, title_cy, k, bold, align="centre"):
+    """Where the title block's parts sit (shared by the static art and the animated cover)."""
     f = ImageFont.truetype(bold, int(84 * k * SS))
     full, wS = f.getlength("SHIFT+SHIFT"), f.getlength("SHIFT")
     wP = full - 2 * wS
     left = x - full / 2 if align == "centre" else x
-    cy = title_cy
-    d = ImageDraw.Draw(im)
-
-    # Tiles.
-    ty, th = cy - 84 * k * SS, 14 * k * SS
+    ty, th = title_cy - 84 * k * SS, 14 * k * SS
     tiles = []
     for g in range(2):
         a = left + g * (wS + wP)
         tw = wS / (3 + 2 * 0.16)
         for i in range(3):
             tiles.append((a + i * tw * 1.16, a + i * tw * 1.16 + tw, TILE_COL[TILE_ORDER[g * 3 + i]]))
+    x3, x4 = (tiles[2][0] + tiles[2][1]) / 2, (tiles[3][0] + tiles[3][1]) / 2
+    return dict(f=f, left=left, x=x, cy=title_cy, k=k, align=align, bold=bold, ty=ty, th=th, tiles=tiles,
+                x3=x3, x4=x4, top=ty - 4 * k * SS, apex=42 * k * SS)
+
+
+def draw_tiles(im, g, flash=None):
+    """The six tiles. flash = (tile index, 0..1) brightens one tile (the landing in the animated cover)."""
+    k, ty, th = g["k"], g["ty"], g["th"]
     glow = Image.new("RGBA", im.size, (0, 0, 0, 0))
     gd = ImageDraw.Draw(glow)
-    for x0, x1, c in tiles:
-        gd.rounded_rectangle([x0, ty, x1, ty + th], radius=4 * k * SS, fill=c + (200,))
+    for i, (x0, x1, c) in enumerate(g["tiles"]):
+        a = 200
+        if flash and flash[0] == i:
+            a = min(255, int(200 + 55 * flash[1]))
+            e = 8 * k * SS * flash[1]
+            gd.rounded_rectangle([x0 - e, ty - e, x1 + e, ty + th + e], radius=6 * k * SS, fill=c + (int(160 * flash[1]),))
+        gd.rounded_rectangle([x0, ty, x1, ty + th], radius=4 * k * SS, fill=c + (a,))
     im.alpha_composite(glow.filter(ImageFilter.GaussianBlur(10 * k * SS)))
     d = ImageDraw.Draw(im)
-    for x0, x1, c in tiles:
+    for i, (x0, x1, c) in enumerate(g["tiles"]):
+        lit = lerp(c, (255, 255, 255), 0.45 * flash[1]) if flash and flash[0] == i else c
         d.rounded_rectangle([x0 + 3 * k * SS, ty + 5 * k * SS, x1 + 3 * k * SS, ty + th + 5 * k * SS], radius=4 * k * SS,
                             fill=lerp(c, (0, 0, 0), 0.6))
-        d.rounded_rectangle([x0, ty, x1, ty + th], radius=4 * k * SS, fill=c)
-        d.rounded_rectangle([x0, ty, x1, ty + th * 0.4], radius=4 * k * SS, fill=lerp(c, (255, 255, 255), 0.35))
+        d.rounded_rectangle([x0, ty, x1, ty + th], radius=4 * k * SS, fill=lit)
+        d.rounded_rectangle([x0, ty, x1, ty + th * 0.4], radius=4 * k * SS, fill=lerp(lit, (255, 255, 255), 0.35))
 
-    # Jump arc and runner.
-    x3, x4 = (tiles[2][0] + tiles[2][1]) / 2, (tiles[3][0] + tiles[3][1]) / 2
-    top, apex = ty - 4 * k * SS, 42 * k * SS
+
+def draw_arc(im, g, upto=1.0):
+    """Dotted jump arc from the 3rd tile to the 4th, up to fraction `upto` (the runner's trail); the top is left clear."""
+    d = ImageDraw.Draw(im)
     for n in range(2, 30, 2):
         t = n / 30
-        if abs(t - 0.5) <= 0.12:
+        if abs(t - 0.5) <= 0.12 or t > upto:
             continue
-        px, py = x3 + (x4 - x3) * t, top - 4 * apex * t * (1 - t)
-        r = 2.2 * k * SS
+        px, py = g["x3"] + (g["x4"] - g["x3"]) * t, g["top"] - 4 * g["apex"] * t * (1 - t)
+        r = 2.2 * g["k"] * SS
         d.ellipse([px - r, py - r, px + r, py + r], fill=(190, 225, 232, 140))
+
+
+def draw_runner(im, g, t=0.5, alpha=1.0, streaks=True):
+    """The boxy runner, feet on the jump arc at fraction t (0 = on the 3rd tile, 0.5 = over the +, 1 = on the 4th).
+    Near limbs white, far limbs grey and behind the body (ELIA, day 27)."""
+    if alpha <= 0:
+        return
+    k = g["k"]
+    L = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(L)
     u = 7.6 * k * SS
-    rx = (x3 + x4) / 2
-    hip = (rx - 0.6 * u, top - apex + 6 * k * SS - 2.8 * u)
-    for dy, ln in [(-5.5, 5), (-3.6, 8), (-1.7, 4)]:
-        d.rectangle([hip[0] - 3.6 * u - ln * u, hip[1] + dy * u - 0.28 * u, hip[0] - 3.0 * u, hip[1] + dy * u + 0.28 * u],
-                    fill=(0, 250, 247, 130))
+    fx = g["x3"] + (g["x4"] - g["x3"]) * t
+    fy = g["top"] - 4 * g["apex"] * t * (1 - t) + 6 * k * SS
+    hip = (fx - 0.6 * u, fy - 2.8 * u)
+    if streaks:
+        for dy, ln in [(-5.5, 5), (-3.6, 8), (-1.7, 4)]:
+            d.rectangle([hip[0] - 3.6 * u - ln * u, hip[1] + dy * u - 0.28 * u, hip[0] - 3.0 * u, hip[1] + dy * u + 0.28 * u],
+                        fill=(0, 250, 247, 130))
 
     def seg(p, ang, ln, wd, col):
         a = math.radians(ang)
@@ -313,16 +334,23 @@ def logo_block(im, x, title_cy, k, bold, med, tagline, align="centre"):
     for l in limbs:
         if not l[6]:
             limb(l, white)
+    if alpha < 1:
+        L.putalpha(L.getchannel("A").point(lambda v: int(v * alpha)))
+    im.alpha_composite(L)
 
-    # Title: 12 layers of cyan fading to dark, a faint cyan glow, white face.
-    anchor = "mm" if align == "centre" else "lm"
-    tx = x if align == "centre" else left
+
+def draw_title(im, g, tagline):
+    """The 3D title (white face, cyan sides, faint glow) and the tagline with a small dark shadow. Returns its bottom."""
+    k, cy, f = g["k"], g["cy"], g["f"]
+    anchor = "mm" if g["align"] == "centre" else "lm"
+    tx = g["x"] if g["align"] == "centre" else g["left"]
     # The same depth as the menu (12 layers of 1.1 px at scale k), drawn in 1 px steps so large sizes show no stripes.
     depth, step = max(3, round(12 * 1.1 * k * SS)), 1.0
 
-    def layer(dx, dy, col):
+    def layer(dx, dy, col, font=f, xy=None):
         L = Image.new("RGBA", im.size, (0, 0, 0, 0))
-        ImageDraw.Draw(L).text((tx + dx, cy + dy), "SHIFT+SHIFT", font=f, fill=col, anchor=anchor)
+        ImageDraw.Draw(L).text(xy or (tx + dx, cy + dy), "SHIFT+SHIFT" if xy is None else tagline, font=font, fill=col,
+                               anchor=anchor)
         im.alpha_composite(L)
     for i in range(depth, 0, -1):
         layer(i * step * 0.6, i * step, lerp((0, 191, 199), (5, 31, 41), (i - 1) / max(1, depth - 1)) + (255,))
@@ -331,19 +359,24 @@ def logo_block(im, x, title_cy, k, bold, med, tagline, align="centre"):
             if gx or gy:
                 layer(gx * SS, gy * SS, (0, 250, 247, 46))
     layer(0, 0, (247, 247, 242, 255))
-
-    # Tagline: clean, a 2 px dark shadow.
-    tf = ImageFont.truetype(bold, int(22 * k * SS))
+    tf = ImageFont.truetype(g["bold"], int(22 * k * SS))
     ty2 = cy + 70 * k * SS
-    tx2 = x if align == "centre" else left + 4 * SS
+    tx2 = g["x"] if g["align"] == "centre" else g["left"] + 4 * SS
     for i in (2, 1):
-        L = Image.new("RGBA", im.size, (0, 0, 0, 0))
-        ImageDraw.Draw(L).text((tx2 + i * 0.6 * k * SS, ty2 + i * k * SS), tagline, font=tf, fill=(10, 14, 28, 255), anchor=anchor)
-        im.alpha_composite(L)
-    L = Image.new("RGBA", im.size, (0, 0, 0, 0))
-    ImageDraw.Draw(L).text((tx2, ty2), tagline, font=tf, fill=(236, 240, 245, 255), anchor=anchor)
-    im.alpha_composite(L)
+        layer(0, 0, (10, 14, 28, 255), tf, (tx2 + i * 0.6 * k * SS, ty2 + i * k * SS))
+    layer(0, 0, (236, 240, 245, 255), tf, (tx2, ty2))
     return ty2 + 16 * k * SS
+
+
+def logo_block(im, x, title_cy, k, bold, med, tagline, align="centre"):
+    """The menu's title block (MainMenu.DrawLogo, day 27): six tiles over the two SHIFTs (none over the +), the boxy
+    runner leaping from the 3rd tile to the 4th, the 3D title (white face, cyan sides, faint glow) and the tagline
+    with a small dark shadow. Sizes as in the menu at scale k; x is the title's centre, or its left edge."""
+    g = logo_geom(x, title_cy, k, bold, align)
+    draw_tiles(im, g)
+    draw_arc(im, g)
+    draw_runner(im, g, 0.5)
+    return draw_title(im, g, tagline)
 
 
 def finish(im, w, h, path):
@@ -393,13 +426,15 @@ def main():
     w, h = 960, 600
     im = scene_image(w, h, 0.46, 0.5, runner_z=5.0)  # runner a little further, so the hint fits under its feet
     im.alpha_composite(Image.new("RGBA", im.size, (6, 8, 22, 70)))
-    # itch.io crops this image to the embed's size, so the text stays near the middle: the title above the
-    # Run game button, the hint below it.
+    # No title here (ELIA, day 27: the banner's logo sits right above the game frame, a second title repeated it).
+    # Instead the hook line and, right under it, the hint, above the Run game button, where the title was (fully
+    # visible in itch's frame). itch.io crops this image to the embed's size, so both stay near the middle.
     band = Image.new("RGBA", im.size, (0, 0, 0, 0))
-    ImageDraw.Draw(band).rectangle([0, 140 * SS, w * SS, 230 * SS], fill=(6, 8, 22, 110))
-    im.alpha_composite(band.filter(ImageFilter.GaussianBlur(30 * SS)))
-    text(im, "SHIFT+SHIFT", 60, (w * SS / 2, 180 * SS), COL["white"], bold, glow=(92, 225, 230), stroke=1)
-    text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 452 * SS), COL["white"], med, stroke=1)
+    ImageDraw.Draw(band).rectangle([0, 122 * SS, w * SS, 220 * SS], fill=(6, 8, 22, 130))
+    im.alpha_composite(band.filter(ImageFilter.GaussianBlur(24 * SS)))
+    text(im, "You've pressed Shift a million times. Never like this.", 24, (w * SS / 2, 156 * SS), COL["white"], bold,
+         glow=(92, 225, 230), stroke=1)
+    text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 192 * SS), COL["white"], med, stroke=1)  # right under the hook (ELIA)
     finish(im, w, h, os.path.join(a.out, "embed_bg_960x600.png"))
 
     # Cover 630x500 (itch.io's recommended size): title over the scene, the two keys at the bottom.
@@ -418,6 +453,72 @@ def main():
     text(im, "+", 32, (w / 2 * SS, 452 * SS), COL["white"], bold)
     keycap(im, (w / 2 + 95) * SS, 452 * SS, "RIGHT  ⇧", COL["jump"], bold, 0.95)
     finish(im, w, h, os.path.join(a.out, "cover_630x500.png"))
+    cover_gif(os.path.join(a.out, "cover_630x500.gif"), bold, med)
+
+
+def cover_gif(path, bold, med, fps=20):
+    """Animated cover (ELIA, day 27), a 2.2 s loop: the runner waits on the 3rd tile, leaps over the + leaving a dotted
+    trail, lands on the 4th tile (it flashes, pink sparks burst like a PERFECT), then fades back to the start.
+    Everything else is the static cover."""
+    w, h = 630, 500
+    base = scene_image(w, h, 0.6, 0.5)
+    top = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    dt = ImageDraw.Draw(top)
+    for y in range(int(base.size[1] * 0.3)):
+        dt.line([(0, y), (base.size[0], y)], fill=(6, 8, 22, int(200 * (1 - y / (base.size[1] * 0.3)))))
+    for y in range(int(base.size[1] * 0.7), base.size[1]):
+        t = (y - base.size[1] * 0.7) / (base.size[1] * 0.3)
+        dt.line([(0, y), (base.size[0], y)], fill=(6, 8, 22, int(210 * t)))
+    base.alpha_composite(top)
+    g = logo_geom(w * SS / 2, 170 * SS, 0.8, bold)
+    draw_title(base, g, "Two Keys. Seven Moves. One Beat.")
+    keycap(base, (w / 2 - 95) * SS, 452 * SS, "⇧  LEFT", COL["sprint"], bold, 0.95)
+    text(base, "+", 32, (w / 2 * SS, 452 * SS), COL["white"], bold)
+    keycap(base, (w / 2 + 95) * SS, 452 * SS, "RIGHT  ⇧", COL["jump"], bold, 0.95)
+
+    frames, n = [], int(2.2 * fps)
+    wait, fly, hold = int(0.3 * fps), int(0.6 * fps), int(0.75 * fps)   # then the fade back
+    land = wait + fly
+    rnd = random.Random(4)
+    tile4 = g["tiles"][3]
+    sparks = [(rnd.uniform(-1, 1) * 260, -rnd.uniform(160, 420), rnd.uniform(3, 6)) for _ in range(22)]
+    for f in range(n):
+        im = base.copy()
+        flash = None
+        if land <= f < land + hold:
+            flash = (3, 1 - (f - land) / hold)
+        draw_tiles(im, g, flash)
+        if f < wait:
+            t, a_now, a_back = 0.0, 1.0, 0.0
+        elif f < land:
+            x = (f - wait) / fly
+            t, a_now, a_back = x * x * (3 - 2 * x), 1.0, 0.0   # eased leap
+        elif f < land + hold:
+            t, a_now, a_back = 1.0, 1.0, 0.0
+        else:
+            x = (f - land - hold) / max(1, n - land - hold)
+            t, a_now, a_back = 1.0, 1 - x, x                    # fade out on the 4th tile, back in on the 3rd
+        if f < land + hold:
+            draw_arc(im, g, t)
+        draw_runner(im, g, t, a_now, streaks=wait <= f < land)
+        if a_back > 0:
+            draw_runner(im, g, 0.0, a_back, streaks=False)
+        if land <= f < land + hold:                             # PERFECT sparks from the landing tile
+            age = (f - land) / fps
+            d = ImageDraw.Draw(im)
+            cx, cy = (tile4[0] + tile4[1]) / 2, g["ty"]
+            for vx, vy, size in sparks:
+                px = cx + vx * age * SS * 0.8
+                py = cy + (vy * age + 600 * age * age) * SS * 0.8
+                sz = size * SS * (1 - age / (hold / fps) * 0.7)
+                c = lerp(tile4[2], (255, 255, 255), 0.3)
+                fade = 1 - (f - land) / hold
+                d.rectangle([px - sz / 2, py - sz / 2, px + sz / 2, py + sz / 2], fill=c + (int(255 * fade),))
+        frames.append(im.convert("RGB").resize((w, h), Image.LANCZOS))
+    pal = frames[land + 2].quantize(colors=255, method=Image.MEDIANCUT)
+    q = [fr.quantize(palette=pal, dither=Image.Dither.NONE) for fr in frames]
+    q[0].save(path, save_all=True, append_images=q[1:], duration=int(1000 / fps), loop=0, optimize=True, disposal=1)
+    print(path, len(frames), "frames", os.path.getsize(path) // 1024, "KB")
 
 
 if __name__ == "__main__":

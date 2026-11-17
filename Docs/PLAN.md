@@ -390,13 +390,13 @@ close.
 
 **Accounts and setup (day 9)**
 
-- [ ] GitHub account; public repo shift-shift created with Unity
+- [x] GitHub account; public repo shift-shift created with Unity
   .gitignore and Git LFS
 
 - [ ] itch.io account linked to GitHub; joined the Game Off 2026 jam
   page
 
-- [ ] itch.io project created as a draft, HTML project type
+- [x] itch.io project created as a draft, HTML project type
 
 - [ ] butler installed for command-line uploads
 
@@ -407,9 +407,9 @@ close.
 - [ ] README.md: one-line pitch, controls, how to build, link to the
   itch page
 
-- [ ] CREDITS.md: every third-party asset with licence and source URL
+- [x] CREDITS.md: every third-party asset with licence and source URL
 
-- [ ] SCOPE.md: scope lock and post-jam list
+- [x] SCOPE.md: scope lock and post-jam list
 
 - [x] LICENSE chosen: MIT for code (LICENSE), All Rights Reserved for assets
   and Docs/ (LICENSE-ASSETS), copyright ELIA. Third-party assets keep their
@@ -424,10 +424,10 @@ close.
 **Builds (day 28 to 29)**
 
 - [ ] WebGL build under 20 MB compressed, Brotli with fallback, tested
-  in Chrome, Firefox, Edge
+  in Chrome, Firefox, Edge (16 MB, Brotli with fallback, Chrome tested; Firefox and Edge on day 28)
 
-- [ ] WebGL viewport set on itch to the game's resolution (16:9, 960 x
-  540 or 1280 x 720) with fullscreen button enabled
+- [x] WebGL viewport set on itch (960 x 600, the build's canvas) with fullscreen button enabled; the page
+  template fills the frame and the screen (day 25)
 
 - [ ] Windows x64 zip as a downloadable backup
 
@@ -436,23 +436,23 @@ close.
 
 **itch page (day 29)**
 
-- [ ] Title, one-line tagline, 2 to 4 sentence description leading with
+- [x] Title, one-line tagline, 2 to 4 sentence description leading with
   the two-button hook
 
-- [ ] Controls stated on the page (Left Shift, Right Shift; tip to
+- [x] Controls stated on the page (Left Shift, Right Shift; tip to
   disable Sticky Keys)
 
 - [ ] 6 to 8 screenshots, at least two from level 4 or later
 
-- [ ] Animated GIF cover (630 x 500) showing a gesture sequence
+- [ ] Animated GIF cover (630 x 500) showing a gesture sequence (made day 27: the leap over the +; to upload)
 
-- [ ] 30 to 45 s gameplay video uploaded to YouTube and embedded
+- [x] 30 to 45 s gameplay video uploaded to YouTube and embedded
 
 - [ ] Theme interpretation stated in one sentence
 
 - [ ] Link to the GitHub repo
 
-- [ ] Credits section mirrors CREDITS.md
+- [x] Credits section mirrors CREDITS.md
 
 **Submit (1 Dec)**
 
