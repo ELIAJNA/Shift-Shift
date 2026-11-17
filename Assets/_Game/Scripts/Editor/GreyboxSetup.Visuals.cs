@@ -43,6 +43,7 @@ namespace ShiftShift.EditorTools
             AddTrackLines(log);
             AddGapRims(log);
             RebuildOpeningLayouts(log); // step 5: solid wide bar slabs, framed gate doorway (before edges are added)
+            RebuildGhostBlock(log);     // day 27: the ghost block shaped like a ghost (before edges are added)
             AddGlowEdges(log);       // step 2: glowing obstacle edges
             MakeBarrierSeeThrough(log); // day 17 (ELIA): see the road behind the phase barrier
             MakeWallBrick(log);         // day 17 (ELIA): the charge wall looks like bricks
