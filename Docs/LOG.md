@@ -1117,3 +1117,10 @@ Tested: compile check (normal and Web), previews of the itch art. Not run: the m
 
 ELIA's screenshot of the menu in Unity (no console errors): tiles, leaping runner, 3D title and tagline drawn as in the
 preview; layout intact. "Looks really good." Juice step (plan day 27) done, plus the title work.
+
+## 2026-11-17 — D27: trailer retake prepared
+
+ELIA asked whether to retake the trailer with the new look and logo: yes (sparks on every PERFECT, speed lines,
+readable HUD, new title). make_cards.py's end card now uses make_itch_art.logo_block (tiles, leaping runner, 3D title,
+tagline) above the call to action. logo_block draws the title sides in 1 px steps (at end-card size the 2-4 px steps
+showed stripes); banner and cover re-rendered. Docs/TRAILER-EDIT.md: "Retake (day 27)" steps for the PC session.

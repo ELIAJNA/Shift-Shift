@@ -34,3 +34,17 @@ BPM: level01 120, level02 128, level03 130, level04 144, level05 150, level06 19
    each pick (a contact sheet) before rendering.
 4. Render each shot at 1920x1080 30 fps, overlay its caption card, concatenate, add the music, fade out.
 5. Check: length 44.2 s, cuts on bar lines, no debug text, captions readable. Send ELIA the file path.
+
+## Retake (day 27)
+
+The game changed after the first trailer: spark bursts on every PERFECT, speed lines while sprinting, crash shake,
+readable HUD text, and a new menu title (six tiles, the runner leaping over the +). Redo it the same way:
+1. `git pull`, then in Unity: Shift+Shift > Trailer Mode (autoplay) ticked, Unity Recorder as before
+   (1920x1080, Playback Variable, max 60 fps, no audio). Record all six levels again; replace the old recordings
+   in `Recordings/` (keep the old ones elsewhere if wanted).
+2. Optional: untick Trailer Mode, open the Menu scene and record 4 s of the menu (the new title), for a shot before
+   the end card if it fits.
+3. Run `python tools/trailer/make_cards.py --out Recordings/trailer/cards` again: the end card (shot 15) now shows
+   the game's title block (tiles, leaping runner, 3D title) above "Play free in your browser · itch.io".
+4. Re-cut from the new recordings with the same shot list and timings; prefer moments where the PERFECT sparks show.
+   Same output: `Recordings/trailer/shiftshift_trailer.mp4`.

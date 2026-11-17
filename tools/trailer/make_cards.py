@@ -6,8 +6,11 @@ Needs Pillow (pip install pillow). Font: Inter Display (SIL Open Font License) i
 (Windows) or DejaVu Sans Bold (Linux). Writes cards.json: [file, start s, length s, what goes under it].
 Captions are transparent PNGs to lay over the footage; black cards and the end card are opaque.
 """
-import argparse, json, os
+import argparse, json, os, sys
 from PIL import Image, ImageDraw, ImageFont
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import make_itch_art  # the title block (tiles, leaping runner, 3D title), shared with the menu look and itch.io art
 
 W, H = 1920, 1080
 BAR = 4 * 60 / 190  # one bar of Celebration and Fear = 1.263 s
@@ -78,19 +81,19 @@ def main():
         return im
 
     def endcard():
-        im = Image.new("RGBA", (W, H), (16, 20, 24, 255))
+        # The game's title block (day 27: tiles, the runner leaping over the +, 3D title, tagline), drawn at double
+        # size and scaled down, then the call to action.
+        ss = make_itch_art.SS
+        big = Image.new("RGBA", (W * ss, H * ss), (16, 20, 24, 255))
+        make_itch_art.logo_block(big, W * ss / 2, 520 * ss, 1.9, bold, med, "A Rhythm Runner Played With Just Two Keys")
+        im = big.resize((W, H), Image.LANCZOS)
         d = ImageDraw.Draw(im)
 
         def ctext(t, f, y, fill):
             bb = f.getbbox(t)
             d.text(((W - (bb[2] - bb[0])) // 2 - bb[0], y), t, font=f, fill=fill)
-        ctext("SHIFT+SHIFT", font(bold, 190), 300, "#F7F7F2")
-        ctext("A Rhythm Runner Played With Just Two Keys", font(med, 54), 540, "#C9D1D8")
-        ctext("Play free in your browser  ·  itch.io", font(bold, 58), 700, "#00FCF9")
-        ctext("GitHub Game Off 2026", font(med, 40), 800, "#8A939C")
-        x0 = (W - 6 * 120) // 2
-        for i, c in enumerate(["lane", "slide", "sprint", "jump", "phase", "charge"]):
-            d.rectangle([x0 + i * 120, 250, x0 + i * 120 + 100, 262], fill=COL[c])
+        ctext("Play free in your browser  ·  itch.io", font(bold, 58), 760, "#00FCF9")
+        ctext("GitHub Game Off 2026", font(med, 40), 860, "#8A939C")
         return im
 
     rows = []

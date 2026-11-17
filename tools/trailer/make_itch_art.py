@@ -317,7 +317,8 @@ def logo_block(im, x, title_cy, k, bold, med, tagline, align="centre"):
     # Title: 12 layers of cyan fading to dark, a faint cyan glow, white face.
     anchor = "mm" if align == "centre" else "lm"
     tx = x if align == "centre" else left
-    depth, step = max(3, round(12 * k)), 1.1 * k * SS
+    # The same depth as the menu (12 layers of 1.1 px at scale k), drawn in 1 px steps so large sizes show no stripes.
+    depth, step = max(3, round(12 * 1.1 * k * SS)), 1.0
 
     def layer(dx, dy, col):
         L = Image.new("RGBA", im.size, (0, 0, 0, 0))
