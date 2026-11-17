@@ -1169,6 +1169,7 @@ the wall's top (y 220); both still inside the 640x360 centre crop.
 ## 2026-11-17 — D27: GitHub username ELIAJNA
 
 ELIA renamed the GitHub account: the repo is now github.com/ELIAJNA/Shift-Shift (the old JNA1980 address redirects).
-Cloud remote switched to the new address (fetch and push tested). Older log entries keep the old name as history.
+The cloud session keeps the old address for its remote: its GitHub access is tied to it (a push to the new address
+was refused, 403); GitHub forwards the old address, so pushes still arrive. Older log entries keep the old name as history.
 To update on ELIA's side: the PC's git remote, the "Source code" link in the itch.io description, the YouTube
 description if it links the repo.
