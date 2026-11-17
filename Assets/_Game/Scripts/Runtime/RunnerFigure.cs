@@ -52,14 +52,27 @@ namespace ShiftShift
         private bool _flaming;
         private float _lean;
 
+        // Celebration dance at the end of a level (ELIA, day 27): one per level, timed to the level's tempo.
+        private Conductor _conductor;
+        private double _danceStart = -1; // audio clock (dspTime): the dance follows the beat
+        private Vector3 _basePos;
+        private int _danceLevel;
+        private float _danceBpm = 120f;
+
         private void Start()
         {
             if (runner == null) runner = GetComponentInParent<Runner>();
             if (runner == null) enabled = false;
+            _conductor = FindAnyObjectByType<Conductor>();
         }
 
         private void LateUpdate()
         {
+            if (runner.State == Runner.RunState.Completed)
+            {
+                Dance();
+                return;
+            }
             // Half-strides since the start: the whole part counts footfalls, the fraction drives the swing.
             float half = runner.Distance / strideMetres * 2f;
             float swing = Mathf.Sin(half * Mathf.PI);
@@ -118,5 +131,122 @@ namespace ShiftShift
                 else flame.Stop(); // flames already in the air burn out
             }
         }
+
+        /// <summary>
+        /// The celebration: the runner turns to face the camera, then dances the level's dance on the beat until the scene
+        /// ends (the results box appears over it after a few seconds; GameFlow). Look only: rules and timing are done.
+        /// 1 victory pump, 2 disco point, 3 jumping jacks, 4 spin and pose, 5 running man, 6 finale (spin, big jump,
+        /// arms up with the flame lit).
+        /// </summary>
+        private void Dance()
+        {
+            if (_danceStart < 0f)
+            {
+                _danceStart = AudioSettings.dspTime;
+                _basePos = transform.localPosition;
+                _danceLevel = _conductor != null ? GameFlow.LevelNumber(_conductor.LevelAssetName) : 1;
+                if (_danceLevel < 1 || _danceLevel > 6) _danceLevel = 1;
+                if (_conductor != null && _conductor.Level != null)
+                    _danceBpm = Mathf.Clamp((float)_conductor.BpmAtBeat(_conductor.Level.lengthBeats), 60f, 200f);
+                if (normalMaterial != null)
+                    foreach (Renderer r in parts)
+                        if (r != null) r.sharedMaterial = normalMaterial;
+                _applied = normalMaterial;
+                if (flame != null) { flame.Stop(); _flaming = false; }
+            }
+            float t = (float)(AudioSettings.dspTime - _danceStart);
+            float p = t * _danceBpm / 60f;                 // beats since the end of the level
+            float f = p - Mathf.Floor(p);
+            float pulse = Mathf.Sin(f * Mathf.PI);          // 0 -> 1 -> 0 within each beat
+            float sw = Mathf.Sin(p * Mathf.PI);             // swings one way on even beats, the other on odd
+            bool even = ((int)Mathf.Floor(p) & 1) == 0;
+            float turn = Smooth(Mathf.Clamp01(t / 0.35f)) * 180f; // face the camera
+
+            // Pose (limbs hang from their pivots: X negative swings forward then up; Z swings sideways, + to the right).
+            Quaternion aL = Quaternion.identity, aR = Quaternion.identity, lL = Quaternion.identity, lR = Quaternion.identity;
+            float hop = 0f, spin = 0f, roll = 0f;
+            bool fire = false;
+            switch (_danceLevel)
+            {
+                case 1: // victory pump
+                    aL = aR = Quaternion.Euler(-150f - 25f * pulse, 0f, 0f);
+                    hop = 0.12f * pulse;
+                    break;
+                case 2: // disco point
+                    aR = even ? Quaternion.Euler(-155f, 0f, 25f) : Quaternion.Euler(-35f, 0f, -40f);
+                    aL = Quaternion.Euler(0f, 0f, -35f);
+                    lL = Quaternion.Euler(-15f * pulse, 0f, 0f);
+                    roll = 6f * sw;
+                    break;
+                case 3: // jumping jacks
+                    aL = Quaternion.Euler(0f, 0f, -160f * pulse);
+                    aR = Quaternion.Euler(0f, 0f, 160f * pulse);
+                    lL = Quaternion.Euler(0f, 0f, -22f * pulse);
+                    lR = Quaternion.Euler(0f, 0f, 22f * pulse);
+                    hop = 0.15f * pulse;
+                    break;
+                case 4: // spin and pose, every 4 beats
+                {
+                    float c = p % 4f;
+                    if (c < 2f)
+                    {
+                        spin = 360f * Smooth(c / 2f);
+                        aL = Quaternion.Euler(0f, 0f, -90f);
+                        aR = Quaternion.Euler(0f, 0f, 90f);
+                    }
+                    else
+                    {
+                        aR = Quaternion.Euler(-160f, 0f, 20f);
+                        aL = Quaternion.Euler(0f, 0f, -30f);
+                        hop = 0.06f * pulse;
+                    }
+                    break;
+                }
+                case 5: // running man
+                    lL = Quaternion.Euler(50f * sw, 0f, 0f);
+                    lR = Quaternion.Euler(-50f * sw, 0f, 0f);
+                    aL = Quaternion.Euler(-60f * sw, 0f, 0f);
+                    aR = Quaternion.Euler(60f * sw, 0f, 0f);
+                    hop = 0.06f * pulse;
+                    break;
+                default: // 6: finale - spin, big jump, then arms up with the flame
+                    if (p < 2f)
+                    {
+                        spin = 360f * Smooth(p / 2f);
+                        aL = Quaternion.Euler(0f, 0f, -90f);
+                        aR = Quaternion.Euler(0f, 0f, 90f);
+                    }
+                    else if (p < 3f)
+                    {
+                        hop = 0.7f * Mathf.Sin((p - 2f) * Mathf.PI);
+                        lL = lR = Quaternion.Euler(-55f, 0f, 0f);
+                        aL = Quaternion.Euler(-170f, 0f, -10f);
+                        aR = Quaternion.Euler(-170f, 0f, 10f);
+                    }
+                    else
+                    {
+                        aL = Quaternion.Euler(-160f - 15f * pulse, 0f, -15f);
+                        aR = Quaternion.Euler(-160f - 15f * pulse, 0f, 15f);
+                        hop = 0.08f * pulse;
+                        fire = true;
+                    }
+                    break;
+            }
+            if (armLeft != null) armLeft.localRotation = aL;
+            if (armRight != null) armRight.localRotation = aR;
+            if (legLeft != null) legLeft.localRotation = lL;
+            if (legRight != null) legRight.localRotation = lR;
+            if (upperBody != null) upperBody.localRotation = Quaternion.identity;
+            transform.localRotation = Quaternion.Euler(0f, turn + spin, roll);
+            transform.localPosition = _basePos + Vector3.up * hop;
+            if (flame != null && fire != _flaming)
+            {
+                _flaming = fire;
+                if (fire) flame.Play();
+                else flame.Stop();
+            }
+        }
+
+        private static float Smooth(float x) => x * x * (3f - 2f * x);
     }
 }
