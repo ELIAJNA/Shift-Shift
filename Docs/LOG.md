@@ -967,3 +967,10 @@ Tested: compile check. Not run: in Unity.
 ELIA added the four Kenney packs' License.txt files (Audio/SFX/*). Two pulls stopped on LOG.md conflicts (entries
 added on both machines); ELIA resolved them by hand. .gitattributes now merges Docs/LOG.md with the union driver,
 so appended entries from both sides are kept automatically (order of the two blocks may need a look).
+
+## 2026-11-17 — D25: new build on itch.io
+
+ELIA built Web (Build/*.unityweb, 16.05 MB; a measured 32 MB was the old shift-shift.zip left inside Builds/WebGL),
+zipped it outside the folder, uploaded it to itch.io in place of the old zip; testers are re-checking the sprint lane
+move and fullscreen. Not confirmed: that index.html is the new ShiftShift template (TemplateData/profiler.js in the
+folder may be left over from an older build).
