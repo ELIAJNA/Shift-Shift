@@ -1086,3 +1086,9 @@ A straight, B italic, C italic with deeper 3D. Waiting for ELIA's choice before 
 ELIA asked about white letters with each pair's colour as a shadow. make_title.py --white: white satin face, the 3D
 sides in each letter's colour darkening with depth. All styles now drawn at double size and scaled down (the stepped
 extrusion showed fine diagonal stripes). Previews sent: C colour letters, D white letters, E white with deeper sides.
+
+## 2026-11-17 — D27: Russo One title previews
+
+ELIA asked to try Russo One (SIL OFL). make_title.py takes --font (font files beside it: Black Ops One, Russo One,
+each with its OFL text) and --gap (Russo One sits tight: 0.14 of the letter height between letters). Previews sent:
+C colour letters, D white letters, E white with deeper sides, F upright E.
