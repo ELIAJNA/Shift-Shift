@@ -1215,3 +1215,9 @@ figure's pivots, not seen: a dance may need its angles flipped (an arm going int
 ELIA: "The dances are really good." ELIA then felt the music tracks had changed; checked: no audio, level or timing
 change since day 20, and the six music files on ELIA's PC match the committed SHA-256 fingerprints with no local
 changes. ELIA compared again: "it sounds same". Nothing changed.
+
+## 2026-11-17 — D27: game frame at 960x600; runner clear of the Run button
+
+ELIA set the itch viewport to 960x600: the whole background shows, but the Run game button (frame centre) covered the
+runner. embed_bg: scene moved down (horizon 46% -> 62%): the button now sits on the wall top, the runner fully below
+it. Checked with a stand-in button drawn at the centre.
