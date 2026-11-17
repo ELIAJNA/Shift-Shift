@@ -385,8 +385,8 @@ namespace ShiftShift
 
                 case Phase.Results:
                     Dim(w, h);
-                    GUI.Box(new Rect(w * 0.3f, h * 0.2f, w * 0.4f, h * 0.55f), GUIContent.none);
-                    Label(new Rect(0, h * 0.23f, w, 60), "<b>Level complete</b>", _mid);
+                    GUI.Box(new Rect(w * 0.25f, h * 0.2f, w * 0.5f, h * 0.55f), GUIContent.none); // wide enough for "Unstoppable! Level 5 complete" at 960 px
+                    Label(new Rect(0, h * 0.23f, w, 60), $"<b>{CompleteHeading(conductor.LevelAssetName)}</b>", _mid);
                     Label(new Rect(0, h * 0.33f, w, 40), $"Score  {Score.Points}" + (_newBest ? "   <color=yellow>NEW BEST</color>" : ""), _mid);
                     Label(new Rect(0, h * 0.41f, w, 40), $"Best streak  {Score.BestStreak}", _mid);
                     Label(new Rect(0, h * 0.49f, w, 40), $"Perfect  {Score.PerfectPercent:0}%", _mid);
@@ -438,6 +438,19 @@ namespace ShiftShift
             if (p.z <= 0f) return;
             float x = p.x, y = Screen.height - p.y; // GUI y runs down
             DrawDots(x, y - 20, taps, lit, new Color(0.95f, 0.12f, 0.24f), new Color(1f, 1f, 1f, 0.55f), 16f);
+        }
+
+        // A cheer per level, growing towards the finale (ELIA, day 27: levels 1 and 2 hers, the rest to match).
+        private static readonly string[] Cheers = { "Hurray!", "Awesome!", "Brilliant!", "Fantastic!", "Unstoppable!", "Legendary!" };
+
+        /// <summary>"Hurray! Level 1 complete" for "level01"; plain "Level complete" for test levels (level00, others).</summary>
+        public static string CompleteHeading(string levelAssetName)
+        {
+            string name = levelAssetName ?? "";
+            int i = name.Length;
+            while (i > 0 && char.IsDigit(name[i - 1])) i--;
+            if (!int.TryParse(name.Substring(i), out int n) || n < 1 || n > Cheers.Length) return "Level complete";
+            return $"{Cheers[n - 1]} Level {n} complete";
         }
 
         /// <summary>
