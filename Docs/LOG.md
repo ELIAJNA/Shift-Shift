@@ -1241,3 +1241,12 @@ size in the game frame's phase wall (left lane); the phase wall now comes first 
 Depends on / could break: GhostBlock.prefab (level 4's ghostbar/ghostwide and level 6; Greybox scene), its glow edges
 (added per box: the ghost's steps get edge strips).
 Tested: compile check (Editor assembly). Not run: Set Up Visuals in Unity; how the glow edges look on the stepped shape.
+
+## 2026-11-17 — D27: ghost blocks see-through
+
+ELIA: make the ghost slightly transparent like the wall. GreyboxSetup.Track: the barrier's transparent-material setup
+moved into SeeThrough(material, alpha, queue); the Ghost material gets it too at the wall's 65%, render queue 3001
+(drawn after the wall's 3000: the ghost sits inside the wall's glass and two see-through surfaces at the same place
+would otherwise swap order and flicker). PaletteApplier keeps a material's own alpha when recolouring (day 17), so the
+pink stays see-through. Art: the ghost at 65% too.
+Tested: compile check (Editor). Not run: Set Up Visuals; how the overlapping see-through boxes look in the game.

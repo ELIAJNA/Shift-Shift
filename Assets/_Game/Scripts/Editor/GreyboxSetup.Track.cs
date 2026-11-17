@@ -223,27 +223,32 @@ namespace ShiftShift.EditorTools
 
         private const float BarrierAlpha = 0.65f; // ELIA, day 17: 0.3, then 0.5, were too see-through
 
+        /// <summary>URP Lit, transparent surface (what the Inspector's Surface Type = Transparent sets), at an opacity.</summary>
+        private static void SeeThrough(Material m, float alpha, int queue, string label, List<string> log)
+        {
+            Color c = m.GetColor("_BaseColor");
+            if (Mathf.Abs(c.a - alpha) <= 0.01f && m.renderQueue == queue) return;
+            c.a = alpha;
+            m.SetColor("_BaseColor", c);
+            m.SetFloat("_Surface", 1f);
+            m.SetFloat("_Blend", 0f);
+            m.SetOverrideTag("RenderType", "Transparent");
+            m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.SetFloat("_ZWrite", 0f);
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            m.renderQueue = queue;
+            EditorUtility.SetDirty(m);
+            log.Add($"{label} material: see-through ({alpha * 100f:0}% solid)");
+        }
+
         /// <summary>The phase barrier becomes a see-through panel in a bright frame: you can see the road go on behind it.</summary>
         private static void MakeBarrierSeeThrough(List<string> log)
         {
-            Material m = Mats["Barrier"];
-            Color c = m.GetColor("_BaseColor");
-            if (Mathf.Abs(c.a - BarrierAlpha) > 0.01f || m.renderQueue < 3000)
-            {
-                // URP Lit, transparent surface (what the Inspector's Surface Type = Transparent sets).
-                c.a = BarrierAlpha;
-                m.SetColor("_BaseColor", c);
-                m.SetFloat("_Surface", 1f);
-                m.SetFloat("_Blend", 0f);
-                m.SetOverrideTag("RenderType", "Transparent");
-                m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                m.SetFloat("_ZWrite", 0f);
-                m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
-                m.renderQueue = 3000;
-                EditorUtility.SetDirty(m);
-                log.Add($"Barrier material: see-through ({BarrierAlpha * 100f:0}% solid)");
-            }
+            SeeThrough(Mats["Barrier"], BarrierAlpha, 3000, "Barrier", log);
+            // The ghost blocks too, like the wall (ELIA, day 27). They sit inside the wall's glass: drawn after it
+            // (queue 3001), so the two see-through surfaces never swap order and flicker.
+            SeeThrough(Mats["Ghost"], BarrierAlpha, 3001, "Ghost", log);
 
             string path = $"{ObstacleDir}/PhaseBarrier.prefab";
             if (!System.IO.File.Exists(path)) return;
