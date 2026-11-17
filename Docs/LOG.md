@@ -1054,3 +1054,8 @@ shading towards the bottom, drawn as 1 px clipped slices (GUI.BeginGroup) of the
 text with a gradient). Previewed here with the same steps in Pillow (DejaVu Sans Bold standing in for Unity's font):
 first version showed stripes from overlapping slices, fixed with whole-pixel 1 px slices.
 Tested: compile check (normal and Web), the preview. Not run: in Unity.
+
+## 2026-11-17 — D27: title pink
+
+ELIA: pink and red looked similar in the title. Previewed two lighter pinks; ELIA chose #FF4FE8 (magenta-pink). Title
+only: the game keeps #F40E9D, since a lighter jump pink would come close to the light pink ghost blocks (#FFB5D9).
