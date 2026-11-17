@@ -18,6 +18,9 @@ namespace ShiftShift
         private Camera _cam;
         private float _x, _y, _vx, _vy, _roll, _rollVel, _lastTargetX;
         private bool _hasLast;
+        private float _shake; // 1 at a crash, down to 0 (real time: the hit-stop freezes game time)
+
+        public CameraFeel Feel => feel;
 
         private void Awake()
         {
@@ -30,7 +33,21 @@ namespace ShiftShift
             _cam.fieldOfView = feel.baseFov;
             _x = feel.offset.x;
             _y = feel.offset.y;
+            // Day 27 juice: PERFECT sparks and sprint speed lines, drawn over this camera (added here, no scene change).
+            if (target != null && GetComponent<JuiceOverlay>() == null) gameObject.AddComponent<JuiceOverlay>().Init(target, this);
         }
+
+        private void OnEnable()
+        {
+            if (target != null) target.RunFailed += OnCrash;
+        }
+
+        private void OnDisable()
+        {
+            if (target != null) target.RunFailed -= OnCrash;
+        }
+
+        private void OnCrash(Obstacle o) => _shake = 1f;
 
         /// <summary>Camera height change from the track: up when the road ahead climbs (if enabled), down inside tunnels.</summary>
         private float SlopeLift(TrackBuilder track, float s)
@@ -74,6 +91,16 @@ namespace ShiftShift
             float wantedRoll = -feel.rollDegrees * Mathf.Clamp(sideways / feel.fullRollSpeed, -1f, 1f);
             _roll = Mathf.SmoothDamp(_roll, wantedRoll, ref _rollVel, feel.rollEaseSeconds);
             transform.Rotate(0f, 0f, _roll, Space.Self);
+
+            // Crash shake (day 27): a short jolt that fades out, in real time so it plays through the hit-stop.
+            if (_shake > 0f && feel.crashShakeMetres > 0f)
+            {
+                float a = feel.crashShakeMetres * _shake * _shake;
+                float time = Time.unscaledTime * 38f;
+                transform.position += transform.right * (a * (Mathf.PerlinNoise(time, 0.3f) * 2f - 1f)) +
+                                      transform.up * (a * (Mathf.PerlinNoise(0.7f, time) * 2f - 1f));
+                _shake = Mathf.Max(0f, _shake - Time.unscaledDeltaTime / feel.crashShakeSeconds);
+            }
 
             float wanted = target.IsPhased ? feel.phaseFov : target.IsSprinting ? feel.sprintFov : feel.baseFov;
             float rate = Mathf.Max(Mathf.Abs(feel.phaseFov - feel.baseFov), 1f) / feel.fovEaseSeconds;

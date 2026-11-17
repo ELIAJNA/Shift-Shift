@@ -1004,3 +1004,21 @@ Kenney". Not run: in Unity (scene text edited in the file).
 ## 2026-11-17 — D25: confirmed
 
 ELIA: credits, menu text fit and the itch build all good.
+
+## 2026-11-17 — D27: juice; 3D title; mobile noted post-jam
+
+ELIA: go ahead with the juice list; make the logo and tagline look 3D; asked whether a mobile version (two thumb
+buttons, landscape) is possible.
+Done (visual only, no rules or timing touched):
+- Camera shake on a crash: ChaseCamera listens to Runner.RunFailed; Perlin jolt, fading over crashShakeSeconds in real
+  time so it plays through the hit-stop. Settings added to CameraFeel (the asset gets the defaults: 0.25 m, 0.35 s).
+- JuiceOverlay (new, added by ChaseCamera.Awake, no scene change): spark burst at the runner on every PERFECT, in the
+  obstacle's action colour (22 sparks, 0.3-0.55 s); speed lines streaming out at the screen edges while sprinting
+  (not while phased), fading in and out over 0.12 s. Drawn with OnGUI and the white texture: no particle shaders that
+  the Web build could strip. Game time: freezes with the pause. CameraFeel: perfectSparks, speedLines (0 = off).
+- MainMenu: title and tagline drawn as extruded 3D lettering (layers stepping down-right in darkening cyan / magenta,
+  a faint cyan glow, white face).
+- Mobile: out of scope (SCOPE.md: no touch or mobile builds); noted under Post-jam with what it would take.
+Depends on / could break: ChaseCamera (Run, LevelTest, Greybox scenes), CameraFeel asset, MainMenu (Menu scene).
+Tested: compile check (normal and Web), Core tests. Not run: anything in Unity; how the sparks, lines, shake and the 3D
+title look is untested.
