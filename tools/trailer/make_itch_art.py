@@ -424,7 +424,7 @@ def main():
 
     # Embed background 960x600: shown behind the "Run game" button.
     w, h = 960, 600
-    im = scene_image(w, h, 0.46, 0.5, runner_z=5.0)  # runner a little further, so the hint fits under its feet
+    im = scene_image(w, h, 0.62, 0.5, runner_z=5.0)  # scene low: the Run game button (frame centre) sits above the runner
     im.alpha_composite(Image.new("RGBA", im.size, (6, 8, 22, 70)))
     # No title here (ELIA, day 27: the banner's logo sits right above the game frame, a second title repeated it).
     # Instead the hook line and, right under it, the hint, above the Run game button, where the title was (fully
