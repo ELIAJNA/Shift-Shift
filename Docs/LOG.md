@@ -993,3 +993,10 @@ tips. The page dots were never visible in the browser (the Web font has no dot c
 small squares now. Depends on: Menu scene only.
 Tested: compile check (normal and Web); layout worked out by hand for 450 and 1080 px high. Not run: in Unity or the
 browser.
+
+## 2026-11-17 — D25: credits text
+
+ELIA: music credit should read only "Tricks & Traps (CC0)". The Menu scene still held the older long credits (track
+list, no Kenney line): Set Up Visuals had not been re-run and saved since day 23. Updated both the generator
+(GreyboxSetup.Menu CreditsText) and the saved Menu scene's credits field: "Music: Tricks & Traps (CC0)", "Sound effects:
+Kenney". Not run: in Unity (scene text edited in the file).

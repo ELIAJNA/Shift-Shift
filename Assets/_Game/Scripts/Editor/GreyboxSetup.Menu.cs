@@ -20,7 +20,7 @@ namespace ShiftShift.EditorTools
             "Made for GitHub Game Off 2026. Theme: SHIFT.\n\n" +
             "Design, code, levels and testing: ELIA\n" +
             "Engine: Unity 6 (URP)\n" +
-            "Music: Tricks & Traps\n" +
+            "Music: Tricks & Traps (CC0)\n" +
             "Sound effects: Kenney\n\n" +
             "Thank you for playing.";
 
