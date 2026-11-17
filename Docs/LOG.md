@@ -1209,3 +1209,9 @@ Depends on / could break: RunnerFigure (Run, LevelTest, Greybox scenes; only act
 results flow (Run, LevelTest).
 Tested: compile check (normal and Web), Core tests 175. Not run: in Unity. The limb angles are worked out from the
 figure's pivots, not seen: a dance may need its angles flipped (an arm going into the body instead of out).
+
+## 2026-11-17 — D27: dances approved; music check
+
+ELIA: "The dances are really good." ELIA then felt the music tracks had changed; checked: no audio, level or timing
+change since day 20, and the six music files on ELIA's PC match the committed SHA-256 fingerprints with no local
+changes. ELIA compared again: "it sounds same". Nothing changed.
