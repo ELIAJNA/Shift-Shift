@@ -62,6 +62,44 @@ namespace ShiftShift.EditorTools
             log.Add($"{Path.GetFileNameWithoutExtension(path)}: one layout per open lane ({(frame ? "wall + framed doorway" : "solid slab")})");
         }
 
+        private const string GhostVersion = "GhostV1";
+
+        /// <summary>
+        /// The ghost block as a ghost (ELIA, day 27: it was a box like the orange lane block): a body, a rounded top of
+        /// three narrowing layers, three tails with gaps so it seems to float, and two dark eyes on the side facing the
+        /// runner. Same footprint as before (1.6 x 2 m, 0.6 deep), so nothing about the game changes, only the look.
+        /// Rebuilt once (marker GhostV1), before the glow edges are added.
+        /// </summary>
+        private static void RebuildGhostBlock(List<string> log)
+        {
+            string path = $"{ObstacleDir}/GhostBlock.prefab";
+            if (!File.Exists(path)) return;
+            GameObject root = PrefabUtility.LoadPrefabContents(path);
+            if (root.transform.Find(GhostVersion) != null)
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+                return;
+            }
+            var old = new List<GameObject>();
+            foreach (Transform child in root.transform) old.Add(child.gameObject); // the old box and its glow edges
+            foreach (GameObject g in old) Object.DestroyImmediate(g);
+
+            Box(root, "Body", new Vector3(0f, 1.0f, 0f), new Vector3(1.6f, 1.1f, 0.6f), "Ghost");
+            Box(root, "Dome1", new Vector3(0f, 1.65f, 0f), new Vector3(1.3f, 0.2f, 0.6f), "Ghost");
+            Box(root, "Dome2", new Vector3(0f, 1.83f, 0f), new Vector3(0.95f, 0.16f, 0.6f), "Ghost");
+            Box(root, "Dome3", new Vector3(0f, 1.96f, 0f), new Vector3(0.5f, 0.1f, 0.6f), "Ghost");
+            for (int i = -1; i <= 1; i++)
+                Box(root, "Tail" + (i + 1), new Vector3(i * 0.6f, 0.32f, 0f), new Vector3(0.4f, 0.26f, 0.6f), "Ghost");
+            // Eyes on the face the runner sees (it comes from -z).
+            Box(root, "EyeL", new Vector3(-0.32f, 1.22f, -0.31f), new Vector3(0.24f, 0.34f, 0.04f), "Hole");
+            Box(root, "EyeR", new Vector3(0.32f, 1.22f, -0.31f), new Vector3(0.24f, 0.34f, 0.04f), "Hole");
+
+            new GameObject(GhostVersion).transform.SetParent(root.transform, false);
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+            PrefabUtility.UnloadPrefabContents(root);
+            log.Add("GhostBlock: ghost shape (rounded top, tails, eyes)");
+        }
+
         private static void Piece(GameObject parent, string name, float x0, float x1, float height, string mat)
         {
             if (x1 - x0 < 0.01f) return;

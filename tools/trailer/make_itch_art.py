@@ -162,11 +162,21 @@ def runner(im, sc, x, z, flame=True):
     box(im, sc, x + 0.13, x + 0.19, 0.5, 0.84, z + 0.1, 0.08, (200, 200, 196), glow=False)
 
 
+def ghost(im, sc, x, z, col=(255, 181, 217)):
+    """The game's ghost block (GreyboxSetup.RebuildGhostBlock) at half size: body, rounded top, three tails, two eyes."""
+    parts = [(-0.4, 0.4, 0.225, 0.775), (-0.325, 0.325, 0.775, 0.875), (-0.24, 0.24, 0.875, 0.955), (-0.125, 0.125, 0.955, 1.005)]
+    parts += [(i * 0.3 - 0.1, i * 0.3 + 0.1, 0.095, 0.225) for i in (-1, 0, 1)]
+    for x0, x1, y0, y1 in parts:
+        box(im, sc, x + x0, x + x1, y0, y1, z, 0.3, col, alpha=235, glow=False)
+    for ex in (-0.16, 0.16):
+        box(im, sc, x + ex - 0.06, x + ex + 0.06, 0.525, 0.695, z - 0.01, 0.01, (25, 22, 34), glow=False)
+
+
 def obstacles(im, sc, set_="full"):
     L = sc.lane_w
     items = {  # (lane or None for all, kind, z)
         "full": [(None, "charge", 17), (-1, "lane", 7.5)],
-        "slide_phase": [(None, "phase", 18), (None, "slide", 9)],   # the game frame (ELIA, day 27: not the same block and wall)
+        "slide_phase": [(None, "slide", 17), (None, "phase", 9)],   # the game frame (ELIA, day 27: not the same block and wall)
     }[set_]
     for lane, kind, z in sorted(items, key=lambda t: -t[2]):
         if kind == "lane":
@@ -181,7 +191,7 @@ def obstacles(im, sc, set_="full"):
             box(im, sc, L * 0.5, L * 1.5, 1.4, 1.6, z, 0.3, COL["sprint"])
         elif kind == "phase":
             box(im, sc, -1.5 * L, 1.5 * L, 0, 1.8, z, 0.2, COL["phase"], alpha=150)
-            box(im, sc, -L - 0.32, -L + 0.32, 0, 1.0, z, 0.6, (255, 181, 217), alpha=230)  # a ghost block, left lane
+            ghost(im, sc, -L, z)  # a ghost block in the left lane, shaped like a ghost as in the game
         elif kind == "charge":
             box(im, sc, -1.5 * L, 1.5 * L, 0, 2.2, z, 0.5, COL["charge"])
             d = ImageDraw.Draw(im)  # brick lines

@@ -1229,3 +1229,15 @@ embed_bg: a yellow low bar (slide) across the road and a translucent blue phase 
 in the left lane; the runner seen from behind mid-stride (left leg planted, right leg kicking back with the sole
 showing, arms swinging) with dust puffs trailing from the heels, no flame. The banner and cover keep the block, wall
 and flame. Still checked with a stand-in Run button: clear of the runner.
+
+## 2026-11-17 — D27: ghost blocks shaped like ghosts
+
+ELIA: the ghost block should not look like the orange lane block. Game: GreyboxSetup.RebuildGhostBlock (run by Set Up
+Visuals, before the glow edges, once: marker GhostV1) rebuilds GhostBlock.prefab as a ghost from boxes: body, a rounded
+top of three narrowing layers, three tails with gaps (it floats 0.19 m up), two dark eyes (Hole material) on the -z face
+the runner sees. Same footprint (1.6 x 2 x 0.6 m) and lane: rules unchanged, look only. Itch art: the same ghost at half
+size in the game frame's phase wall (left lane); the phase wall now comes first (z 9) and the slide bar behind it
+(z 17) so the ghost is not hidden.
+Depends on / could break: GhostBlock.prefab (level 4's ghostbar/ghostwide and level 6; Greybox scene), its glow edges
+(added per box: the ghost's steps get edge strips).
+Tested: compile check (Editor assembly). Not run: Set Up Visuals in Unity; how the glow edges look on the stepped shape.
