@@ -444,7 +444,7 @@ close.
 
 - [ ] 6 to 8 screenshots, at least two from level 4 or later
 
-- [ ] Animated GIF cover (630 x 500) showing a gesture sequence
+- [ ] Animated GIF cover (630 x 500) showing a gesture sequence (made day 27: the leap over the +; to upload)
 
 - [x] 30 to 45 s gameplay video uploaded to YouTube and embedded
 

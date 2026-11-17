@@ -1129,3 +1129,11 @@ showed stripes); banner and cover re-rendered. Docs/TRAILER-EDIT.md: "Retake (da
 
 ELIA: retake done and on YouTube with the new description (challenge tone). Next: browser pass (day 28), screenshots,
 README / PLAN checklist, final signing on 30 Nov, submission 1 Dec.
+
+## 2026-11-17 — D27: animated GIF cover
+
+ELIA wanted the animated cover from the checklist. make_itch_art.py: the title block split into logo_geom /
+draw_tiles / draw_arc / draw_runner / draw_title (static art unchanged); cover_gif makes cover_630x500.gif, a 2.2 s
+loop at 20 fps: the runner waits on the 3rd tile, leaps over the + leaving the dotted trail, lands on the 4th tile
+(the tile flashes, pink sparks burst), then fades back to the start. 39 frames (duplicates merged), 133 KB, one
+shared palette, no dithering. Checked frame by frame here; not yet seen on itch.io.
