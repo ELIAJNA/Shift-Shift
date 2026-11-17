@@ -427,7 +427,13 @@ def main():
     im = scene_image(w, h, 0.46, 0.5, runner_z=5.0)  # runner a little further, so the hint fits under its feet
     im.alpha_composite(Image.new("RGBA", im.size, (6, 8, 22, 70)))
     # No title here (ELIA, day 27: the banner's logo sits right above the game frame, a second title repeated it).
-    # itch.io crops this image to the embed's size, so the hint stays near the middle, below the Run game button.
+    # Instead the hook line above the Run game button, where the title was (fully visible in itch's frame), and the
+    # hint below it. itch.io crops this image to the embed's size, so both stay near the middle.
+    band = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    ImageDraw.Draw(band).rectangle([0, 150 * SS, w * SS, 215 * SS], fill=(6, 8, 22, 120))
+    im.alpha_composite(band.filter(ImageFilter.GaussianBlur(24 * SS)))
+    text(im, "You've pressed Shift a million times. Never like this.", 30, (w * SS / 2, 182 * SS), COL["white"], bold,
+         glow=(92, 225, 230), stroke=1)
     text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 452 * SS), COL["white"], med, stroke=1)
     finish(im, w, h, os.path.join(a.out, "embed_bg_960x600.png"))
 
