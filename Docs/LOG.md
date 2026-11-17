@@ -1165,3 +1165,10 @@ game's canvas) so the game plays larger too.
 
 ELIA: the click hint sat on the red wall. Hook at y 156 and hint at y 192 (were 182 / 222): the hint now ends above
 the wall's top (y 220); both still inside the 640x360 centre crop.
+
+## 2026-11-17 — D27: GitHub username ELIAJNA
+
+ELIA renamed the GitHub account: the repo is now github.com/ELIAJNA/Shift-Shift (the old JNA1980 address redirects).
+Cloud remote switched to the new address (fetch and push tested). Older log entries keep the old name as history.
+To update on ELIA's side: the PC's git remote, the "Source code" link in the itch.io description, the YouTube
+description if it links the repo.
