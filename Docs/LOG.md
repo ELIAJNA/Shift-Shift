@@ -898,6 +898,7 @@ tools/trailer/make_cards.py (the 14 caption/end cards, portable: Arial Bold on W
 /Recordings/ added to .gitignore so the videos are never committed.
 Tested: make_cards.py runs here (Inter). Not run: on Windows (Arial fallback), the edit itself.
 
+
 ## 2026-11-17 — D23: trailer rendered (Recordings/trailer/shiftshift_trailer.mp4)
 
 Cut from Recordings/Movie_003.mp4 only (all six levels in trailer mode). Movie_001 (level 1 with fails) and
@@ -912,3 +913,38 @@ frame 303 = 10.10 s, the drop; 14d -> end card at 1213); mid-shot frames show ca
 Found: trailer mode failed once in level 5 (phase, about 312 s into Movie_003) and retried; the bot is supposed
 never to fail. Not investigated. Uncertain: obstacle moments were placed from chart times read off frames
 (about +-0.1 s); not watched in real time with sound by a person here.
+
+## 2026-11-17 — D23: itch.io page art
+
+ELIA set up the draft page (jna1980.itch.io/shift-shift: browser embed, description, AI disclosure) and asked for
+images. tools/trailer/make_itch_art.py draws them from the game's look (night palette, three-lane road with cyan
+edges, orange lane block, red brick wall, the boxy runner with the charge flame, skyline with lit windows):
+banner 960x300 (title, tagline, the two Shift keys), page background 1920x1080 (sky, skyline, empty road, darkened
+for the page column), embed background 960x600 (scene plus "Click to play · headphones on"), cover 630x500 (title, "Two keys. Seven moves. One beat.", scene, the two keys). Images go to itch-art/
+(ignored by git: PNGs are LFS and cannot be pushed from the cloud session); sent to ELIA.
+Not checked: how they look on the itch page.
+
+## 2026-11-17 — D23: trailer done
+
+ELIA: the trailer came out fine (edited in a session on the PC from the trailer-mode recordings) and is linked on the
+itch.io page (YouTube). Plan day 29 "screenshots and video": video done; screenshots still to take.
+
+## 2026-11-17 — D25: tester fixes (lane move during sprint, fullscreen)
+
+Tester 1: holding Right Shift and tapping Left twice moved only one lane. Cause (browser build): Windows sends no key-up
+for one Shift while the other is held and flags its next press as a repeat; ShiftKeys.jslib discarded it as auto-repeat.
+Fix: jslib reports such a press as a re-press (gap over 100 ms since that key's last key-down, other Shift held);
+ShiftInput counts it as a tap only if the key's last press was already a tap (Docs/INPUT.md).
+Tester 2: itch.io's fullscreen button froze the game until a click inside, and fullscreen did not fill the screen.
+Causes: Run In Background was off (Unity stops when the page loses focus; the music kept going), and Unity's Default
+page draws a fixed 960x600 canvas. Fix: new page template Assets/WebGLTemplates/ShiftShift (fills the frame and the
+screen, gives focus back to the game on click, fullscreen and resize, resolution capped at 1.5x); Build WebGL now sets
+that template and Run In Background on; GameFlow pauses the run when the game loses focus (not in trailer mode), and
+the pause screen says to click the game if the keys do nothing.
+Depends on / could break: ShiftKeys/ShiftInput (web input only; Runner, GameFlow, MainMenu, SoundFx read ShiftInput),
+GameFlow (Run, LevelTest), BuildScript and the template (Web build only: loading, compression fallback).
+Tested: compile checks (normal and Web), Core tests 175, the jslib run in Node against simulated Chrome events (first and
+second Left press during a held Right both register; auto-repeat 30 ms later ignored).
+Not run: a Web build with the new template (written by hand, not copied from Unity's; if the page fails to load, the
+first suspect is it), real Chrome on Windows, the editor focus pause (clicking outside the Game view now pauses a run).
+

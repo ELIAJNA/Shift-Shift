@@ -61,3 +61,12 @@ So in Web builds ShiftInput reads the keys from the browser itself (`Assets/Plug
 What a Web build therefore cannot do: start a second hold while the first is still held (e.g. sprint without letting go of a slide), or notice that one of two held keys was let go before the other. Jump and phase are not affected (their presses land together). Windows desktop builds and the editor use the Input System and have neither limit.
 
 Sound in the browser: Shift does not count as a user gesture in Chrome, so a click (or Space / Enter) is needed once before sound plays; the menu asks for it (Docs/MENU.md).
+
+## Second tap during the other key's hold (day 25, tester)
+Holding Right Shift (sprint) and tapping Left Shift twice moved only one lane in the browser. With one Shift held,
+Windows sends no key-up for the other, and flags its next press as a repeat; ShiftKeys.jslib dropped it as auto-repeat.
+Now a repeat-flagged press while the other Shift is held, more than 100 ms after that key's last key-down, is reported
+as a re-press (bits 64/128), and ShiftInput counts it as a tap only if that key's last press was already counted as a
+tap. Real auto-repeat (every ~30-50 ms) is still ignored, and a held phase or slide is never cut.
+Known cost: holding the second key for over about half a second during the other's hold (not a move) gives one more tap,
+when Windows' first auto-repeat arrives.

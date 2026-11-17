@@ -24,6 +24,11 @@ namespace ShiftShift.EditorTools
             // so the decompression fallback is required for Brotli to load there.
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
             PlayerSettings.WebGL.decompressionFallback = true;
+            // Day 25 (tester): the page fills its frame, so itch.io's fullscreen button really fills the screen, and
+            // gives the keys back to the game (Assets/WebGLTemplates/ShiftShift). Running in the background lets the
+            // game show its pause screen when focus moves away, instead of freezing with the music still playing.
+            PlayerSettings.WebGL.template = "PROJECT:ShiftShift";
+            PlayerSettings.runInBackground = true;
             Build(BuildTarget.WebGL, WebGLDir);
         }
 
