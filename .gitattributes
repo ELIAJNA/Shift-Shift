@@ -25,3 +25,6 @@
 *.cs     text eol=lf
 *.json   text eol=lf
 *.sh     text eol=lf
+
+# The log is only ever appended to: keep both sides of a merge instead of stopping with a conflict.
+Docs/LOG.md merge=union

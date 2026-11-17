@@ -961,3 +961,9 @@ ELIA asked for a pointer to calibration. How to play (MainMenu.DrawHowTo) now ha
 (for example with Bluetooth headphones)? Use Calibrate timing in the menu." Fits in the existing 60 px tip area (two
 lines at 17 px); checked by arithmetic for 600 and 1080 px high screens, not seen. Depends on: Menu scene only.
 Tested: compile check. Not run: in Unity.
+
+## 2026-11-17 — D25: Kenney licence files; log merges
+
+ELIA added the four Kenney packs' License.txt files (Audio/SFX/*). Two pulls stopped on LOG.md conflicts (entries
+added on both machines); ELIA resolved them by hand. .gitattributes now merges Docs/LOG.md with the union driver,
+so appended entries from both sides are kept automatically (order of the two blocks may need a look).
