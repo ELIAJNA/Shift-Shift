@@ -152,22 +152,138 @@ namespace ShiftShift
         /// The title and tagline as extruded 3D lettering (ELIA, day 27): the text is drawn many times, stepping down and
         /// to the right in darkening shades of the sprint cyan, then a soft glow, then the face on top.
         /// </summary>
-        private void DrawLogo(float w, float h)
+        /// <summary>
+        /// Title block (ELIA, day 27): six tiles in the action colours above the title, three over each SHIFT and none over
+        /// the +, the boxy runner leaping from the 3rd tile to the 4th over the +; the first 3D title (white, cyan sides);
+        /// the tagline clean, with a small dark shadow. Returns the bottom of the tagline.
+        /// </summary>
+        private float DrawLogo(float w, float h)
         {
             if (_tagline == null)
                 _tagline = new GUIStyle(_small) { fontStyle = FontStyle.Bold, wordWrap = false };
             _tagline.fontSize = Mathf.RoundToInt(22 * _k);
             _title.normal.textColor = _tagline.normal.textColor = Color.white; // tinted per layer with GUI.color
-            var titleRect = new Rect(0, h * 0.08f, w, 110 * _k);
-            // The first 3D version (ELIA chose it back on day 27, after trying coloured letters, satin, custom lettering,
-            // Black Ops One and Russo One): white face, cyan sides fading to dark, a faint cyan glow.
+
+            // The runner reaches about 205 px (x scale) above the title's centre: keep it on screen.
+            float titleCY = Mathf.Max(h * 0.08f + 150 * _k, 214 * _k);
+            var titleRect = new Rect(0, titleCY - 55 * _k, w, 110 * _k);
+            DrawTilesAndRunner(w, titleCY);
             Extruded(titleRect, "SHIFT+SHIFT", _title, Mathf.RoundToInt(12 * _k), 1.1f * _k,
                 new Color(0.97f, 0.97f, 0.95f), new Color(0f, 0.75f, 0.78f), new Color(0.02f, 0.12f, 0.16f),
                 new Color(0f, 0.98f, 0.97f));
-            var tagRect = new Rect(0, h * 0.08f + 108 * _k, w, 34 * _k);
-            Extruded(tagRect, "A Rhythm Runner Played With Just Two Keys", _tagline, Mathf.RoundToInt(4 * _k), 1f * _k,
-                new Color(0.79f, 0.82f, 0.85f), new Color(0.75f, 0.06f, 0.48f), new Color(0.12f, 0.02f, 0.08f),
-                new Color(0f, 0.98f, 0.97f));
+            var tagRect = new Rect(0, titleCY + 53 * _k, w, 34 * _k);
+            var shadow = new Color(0.04f, 0.055f, 0.11f);
+            Extruded(tagRect, "A Rhythm Runner Played With Just Two Keys", _tagline, 2, 1f * _k,
+                new Color(0.93f, 0.94f, 0.96f), shadow, shadow, Color.clear);
+            return tagRect.yMax;
+        }
+
+        private static readonly Color[] TileColours =
+        {
+            new Color(0.95f, 0.44f, 0.09f), new Color(0.99f, 0.77f, 0.12f), new Color(0f, 0.99f, 0.98f),     // lane, slide, sprint
+            new Color(1f, 0.31f, 0.91f), new Color(0.24f, 0.55f, 1f), new Color(0.95f, 0.12f, 0.24f),        // jump, phase, charge
+        };
+        private static readonly Color RunnerWhite = new Color(0.97f, 0.97f, 0.95f);
+        private static readonly Color RunnerGrey = new Color(0.59f, 0.63f, 0.67f);
+
+        private void DrawTilesAndRunner(float w, float titleCY)
+        {
+            float k = _k;
+            Texture2D tex = Texture2D.whiteTexture;
+            Color old = GUI.color;
+
+            // Tiles over the two SHIFTs, measured from the title as drawn.
+            float full = _title.CalcSize(new GUIContent("SHIFT+SHIFT")).x;
+            float wS = _title.CalcSize(new GUIContent("SHIFT")).x, wP = full - 2 * wS;
+            float left = (w - full) * 0.5f, ty = titleCY - 84 * k, th = 14 * k;
+            var tiles = new Rect[6];
+            for (int g = 0; g < 2; g++)
+            {
+                float a = left + g * (wS + wP), tw = wS / (3 + 2 * 0.16f);
+                for (int i = 0; i < 3; i++) tiles[g * 3 + i] = new Rect(a + i * tw * 1.16f, ty, tw, th);
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                Rect r = tiles[i];
+                Color c = TileColours[i];
+                for (int gl = 3; gl >= 1; gl--) // soft glow
+                {
+                    float e = gl * 4 * k;
+                    GUI.color = new Color(c.r, c.g, c.b, 0.07f);
+                    GUI.DrawTexture(new Rect(r.x - e, r.y - e, r.width + 2 * e, r.height + 2 * e), tex);
+                }
+                GUI.color = Color.Lerp(c, Color.black, 0.6f); // thickness
+                GUI.DrawTexture(new Rect(r.x + 3 * k, r.y + 5 * k, r.width, r.height), tex);
+                GUI.color = c;
+                GUI.DrawTexture(r, tex);
+                GUI.color = Color.Lerp(c, Color.white, 0.35f); // satin top
+                GUI.DrawTexture(new Rect(r.x, r.y, r.width, r.height * 0.4f), tex);
+            }
+
+            // Dotted jump arc from the 3rd tile to the 4th; the runner at its top.
+            float x3 = tiles[2].center.x, x4 = tiles[3].center.x, top = ty - 4 * k, apex = 42 * k, dotSize = 4.4f * k;
+            GUI.color = new Color(0.75f, 0.88f, 0.91f, 0.55f);
+            for (int n = 2; n < 30; n += 2)
+            {
+                float t = n / 30f;
+                if (Mathf.Abs(t - 0.5f) <= 0.12f) continue;
+                float x = Mathf.Lerp(x3, x4, t), y = top - 4 * apex * t * (1 - t);
+                GUI.DrawTexture(new Rect(x - dotSize * 0.5f, y - dotSize * 0.5f, dotSize, dotSize), tex);
+            }
+
+            float u = 7.6f * k;
+            var hip = new Vector2(w * 0.5f - 0.6f * u, top - apex + 6 * k - 2.8f * u);
+            GUI.color = new Color(0f, 0.98f, 0.97f, 0.5f); // speed streaks
+            float[,] streaks = { { -5.5f, 5f }, { -3.6f, 8f }, { -1.7f, 4f } };
+            for (int i = 0; i < 3; i++)
+            {
+                float x1 = hip.x - 3.0f * u, x0 = hip.x - 3.6f * u - streaks[i, 1] * u;
+                GUI.DrawTexture(new Rect(x0, hip.y + streaks[i, 0] * u - 0.28f * u, x1 - x0, 0.56f * u), tex);
+            }
+
+            const float torso = 160f; // degrees clockwise from straight down: up, leaning forward
+            Vector2 neck = hip + Dir(torso) * 4.4f * u;
+            Vector2 shoulder = hip + (neck - hip) * 0.85f;
+            // (joint, upper angle, lower angle, upper length, lower length, width, far side). The far side is grey and drawn
+            // behind the body (ELIA: a grey arm must not show across the torso); the near side is white, in front.
+            var limbs = new (Vector2 p, float a1, float a2, float l1, float l2, float wd, bool far)[]
+            {
+                (hip, -55f, -110f, 2.4f * u, 2.2f * u, 1.2f * u, false),        // back leg trailing
+                (shoulder, 60f, 120f, 2.5f * u, 2.3f * u, 1.0f * u, false),    // arm reaching forward
+                (hip, 75f, 20f, 2.4f * u, 2.2f * u, 1.25f * u, true),          // front leg reaching ahead
+                (shoulder, -50f, -100f, 2.5f * u, 2.3f * u, 1.0f * u, true),   // arm swinging back
+            };
+            foreach (var l in limbs) if (l.far) Limb(l.p, l.a1, l.a2, l.l1, l.l2, l.wd, RunnerGrey);
+            Segment(hip, torso, 4.4f * u, 2.6f * u, RunnerWhite);
+            Vector2 head = neck + Dir(torso) * 1.3f * u;
+            Segment(head - Dir(torso) * 1.1f * u, torso, 2.2f * u, 2.2f * u, RunnerWhite);
+            foreach (var l in limbs) if (!l.far) Limb(l.p, l.a1, l.a2, l.l1, l.l2, l.wd, RunnerWhite);
+            GUI.color = old;
+        }
+
+        /// <summary>Direction for an angle measured clockwise from straight down (screen y runs down): 90 = right.</summary>
+        private static Vector2 Dir(float degrees)
+        {
+            float a = degrees * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Sin(a), Mathf.Cos(a));
+        }
+
+        private static void Limb(Vector2 p, float a1, float a2, float l1, float l2, float wd, Color c)
+        {
+            Vector2 knee = Segment(p, a1, l1, wd, c);
+            Segment(knee, a2, l2, wd * 0.92f, c);
+        }
+
+        /// <summary>A box from joint p along the angle, as a rotated rectangle. Returns its far end.</summary>
+        private static Vector2 Segment(Vector2 p, float degrees, float length, float width, Color c)
+        {
+            Vector2 q = p + Dir(degrees) * length, mid = (p + q) * 0.5f;
+            Matrix4x4 m = GUI.matrix;
+            GUIUtility.RotateAroundPivot(-degrees, mid); // a box pointing down, turned to the angle
+            GUI.color = c;
+            GUI.DrawTexture(new Rect(mid.x - width * 0.5f, mid.y - length * 0.5f, width, length), Texture2D.whiteTexture);
+            GUI.matrix = m;
+            return q;
         }
 
         private static void Extruded(Rect r, string text, GUIStyle style, int depth, float step, Color face, Color sideNear, Color sideFar,
@@ -179,11 +295,14 @@ namespace ShiftShift
                 GUI.color = Color.Lerp(sideNear, sideFar, (i - 1f) / Mathf.Max(1, depth - 1));
                 GUI.Label(new Rect(r.x + i * step * 0.6f, r.y + i * step, r.width, r.height), text, style);
             }
-            // A thin dark outline and a cyan glow lift the face off the sides.
-            GUI.color = new Color(glow.r, glow.g, glow.b, 0.18f);
-            for (int dx = -2; dx <= 2; dx += 2)
-                for (int dy = -2; dy <= 2; dy += 2)
-                    if (dx != 0 || dy != 0) GUI.Label(new Rect(r.x + dx, r.y + dy, r.width, r.height), text, style);
+            // A faint glow lifts the face off the sides (none when glow is clear: small text turned hazy, ELIA).
+            if (glow.a > 0f)
+            {
+                GUI.color = new Color(glow.r, glow.g, glow.b, 0.18f);
+                for (int dx = -2; dx <= 2; dx += 2)
+                    for (int dy = -2; dy <= 2; dy += 2)
+                        if (dx != 0 || dy != 0) GUI.Label(new Rect(r.x + dx, r.y + dy, r.width, r.height), text, style);
+            }
             GUI.color = face;
             GUI.Label(r, text, style);
             GUI.color = old;
@@ -280,28 +399,30 @@ namespace ShiftShift
                 return;
             }
 
-            DrawLogo(w, h);
+            float logoBottom = DrawLogo(w, h);
             if (!WebAudioUnlock.Ready)
             {
                 // Web build only: the browser needs one click before it plays sound (it does not count Shift).
 
-                GUI.Label(new Rect(0, h * 0.42f, w, 70), "Click to start", _big);
+                float startY = Mathf.Max(h * 0.42f, logoBottom + 30 * _k);
+                GUI.Label(new Rect(0, startY, w, 70), "Click to start", _big);
                 const string why = "(or press Space). Your browser needs this once before it plays sound. After that, just the two Shift keys.";
-                GUI.Label(new Rect(w * 0.1f, h * 0.42f + 75 * _k, w * 0.8f, Fit(_mid, why, w * 0.8f)), why, _mid);
+                GUI.Label(new Rect(w * 0.1f, startY + 75 * _k, w * 0.8f, Fit(_mid, why, w * 0.8f)), why, _mid);
                 return;
             }
 
 
             Entry e = _entries[_index];
-            GUI.Label(new Rect(0, h * 0.40f, w, 70 * _k), e.Title, _big);
+            float entryY = Mathf.Max(h * 0.40f, logoBottom + 17 * _k); // below the title block on short screens
+            GUI.Label(new Rect(0, entryY, w, 70 * _k), e.Title, _big);
             // Arrows are drawn as images: the Web build's font has no arrow characters (ELIA, day 20: missing in the browser).
-            float half = _big.CalcSize(new GUIContent(e.Title)).x * 0.5f, size = 44f * _k, gap = 50f * _k, cy = h * 0.40f + 35f * _k;
+            float half = _big.CalcSize(new GUIContent(e.Title)).x * 0.5f, size = 44f * _k, gap = 50f * _k, cy = entryY + 35f * _k;
             Color old = GUI.color;
             GUI.color = new Color(0.55f, 0.55f, 0.55f, 1f);
             GUI.DrawTexture(new Rect(w * 0.5f - half - gap - size, cy - size * 0.5f, size, size), Arrow(false));
             GUI.DrawTexture(new Rect(w * 0.5f + half + gap, cy - size * 0.5f, size, size), Arrow(true));
             GUI.color = old;
-            float detailY = h * 0.40f + 75 * _k;
+            float detailY = entryY + 75 * _k;
             float detailH = Fit(_mid, e.Detail, w * 0.8f);
             GUI.Label(new Rect(w * 0.1f, detailY, w * 0.8f, detailH), e.Detail, _mid);
 
