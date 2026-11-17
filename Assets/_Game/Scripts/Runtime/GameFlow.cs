@@ -325,9 +325,9 @@ namespace ShiftShift
             switch (Current)
             {
                 case Phase.Ready:
-                    GUI.Label(new Rect(0, h * 0.30f, w, 60), $"<b>{conductor.Level.name}</b>", _mid);
-                    GUI.Label(new Rect(0, h * 0.40f, w, 80), conductor.IsWaitingForAudio ? "Loading music..." : "Press Shift to start", _big);
-                    GUI.Label(new Rect(0, h * 0.55f, w, 30),
+                    Label(new Rect(0, h * 0.30f, w, 60), $"<b>{conductor.Level.name}</b>", _mid);
+                    Label(new Rect(0, h * 0.40f, w, 80), conductor.IsWaitingForAudio ? "Loading music..." : "Press Shift to start", _big);
+                    Label(new Rect(0, h * 0.55f, w, 30),
                         $"Best {_best}   ·   F1 debug   ·   F2 calibrate (offset {conductor.UserOffsetMs:+0;-0;0} ms)", _small);
                     break;
 
@@ -344,17 +344,15 @@ namespace ShiftShift
                         {
                             // Last bar: 4-3-2-1, each number pulsing on its beat.
                             var style = new GUIStyle(_big) { fontSize = 90 + Mathf.RoundToInt(70 * (1f - frac)) };
-                            GUI.Label(new Rect(0, h * 0.3f, w, 200), (-whole).ToString(), style);
+                            Label(new Rect(0, h * 0.3f, w, 200), (-whole).ToString(), style);
                         }
                         else
                         {
                             // Earlier bar: "Get ready" stays put (ELIA: pulsing read as showing 4 times); a dot per beat.
                             var style = new GUIStyle(_big) { fontSize = 64 };
-                            GUI.Label(new Rect(0, h * 0.3f, w, 120), "Get ready", style);
+                            Label(new Rect(0, h * 0.3f, w, 120), "Get ready", style);
                             int lit = (whole + conductor.CountInBeats) % 4 + 1; // 1..4 across each "Get ready" bar
-                            string dots = "";
-                            for (int i = 1; i <= 4; i++) dots += i <= lit ? "● " : "○ ";
-                            GUI.Label(new Rect(0, h * 0.3f + 110, w, 60), dots.TrimEnd(), _mid);
+                            DrawDots(w * 0.5f, h * 0.3f + 140, 4, lit, Color.white, new Color(1f, 1f, 1f, 0.3f), 16f);
                         }
                     }
                     DrawScore(w);
@@ -368,7 +366,7 @@ namespace ShiftShift
                         var go = new GUIStyle(_big) { fontSize = 140 };
                         Color old = GUI.color;
                         GUI.color = new Color(1f, 1f, 1f, fade);
-                        GUI.Label(new Rect(0, h * 0.3f, w, 200), "GO", go);
+                        Label(new Rect(0, h * 0.3f, w, 200), "GO", go);
                         GUI.color = old;
                     }
                     DrawScore(w);
@@ -376,40 +374,43 @@ namespace ShiftShift
                     break;
 
                 case Phase.Failed:
+                    if (_canRestart) Dim(w, h);
                     DrawScore(w);
                     if (_canRestart)
                     {
-                        GUI.Label(new Rect(0, h * 0.45f, w, 80), "Shift to retry", _big);
-                        GUI.Label(new Rect(0, h * 0.45f + 70, w, 30), "Esc: menu", _small);
+                        Label(new Rect(0, h * 0.45f, w, 80), "Shift to retry", _big);
+                        Label(new Rect(0, h * 0.45f + 70, w, 30), "Esc: menu", _small);
                     }
                     break;
 
                 case Phase.Results:
+                    Dim(w, h);
                     GUI.Box(new Rect(w * 0.3f, h * 0.2f, w * 0.4f, h * 0.55f), GUIContent.none);
-                    GUI.Label(new Rect(0, h * 0.23f, w, 60), "<b>Level complete</b>", _mid);
-                    GUI.Label(new Rect(0, h * 0.33f, w, 40), $"Score  {Score.Points}" + (_newBest ? "   <color=yellow>NEW BEST</color>" : ""), _mid);
-                    GUI.Label(new Rect(0, h * 0.41f, w, 40), $"Best streak  {Score.BestStreak}", _mid);
-                    GUI.Label(new Rect(0, h * 0.49f, w, 40), $"Perfect  {Score.PerfectPercent:0}%", _mid);
-                    GUI.Label(new Rect(0, h * 0.57f, w, 40), $"Best score  {_best}", _mid);
-                    GUI.Label(new Rect(0, h * 0.67f, w, 30),
+                    Label(new Rect(0, h * 0.23f, w, 60), "<b>Level complete</b>", _mid);
+                    Label(new Rect(0, h * 0.33f, w, 40), $"Score  {Score.Points}" + (_newBest ? "   <color=yellow>NEW BEST</color>" : ""), _mid);
+                    Label(new Rect(0, h * 0.41f, w, 40), $"Best streak  {Score.BestStreak}", _mid);
+                    Label(new Rect(0, h * 0.49f, w, 40), $"Perfect  {Score.PerfectPercent:0}%", _mid);
+                    Label(new Rect(0, h * 0.57f, w, 40), $"Best score  {_best}", _mid);
+                    Label(new Rect(0, h * 0.67f, w, 30),
                         "Left Shift: retry   ·   Right Shift: " + (_nextLevel != null ? "next level" : "menu") + "   ·   Both: menu", _small);
                     break;
             }
 
             if (IsPaused)
             {
+                Dim(w, h);
                 GUI.Box(new Rect(w * 0.3f, h * 0.28f, w * 0.4f, h * 0.4f), GUIContent.none);
-                GUI.Label(new Rect(0, h * 0.32f, w, 60), "<b>Paused</b>", _big);
-                GUI.Label(new Rect(0, h * 0.45f, w, 30), "Left Shift or Esc: resume", _mid);
+                Label(new Rect(0, h * 0.32f, w, 60), "<b>Paused</b>", _big);
+                Label(new Rect(0, h * 0.45f, w, 30), "Left Shift or Esc: resume", _mid);
                 if (ShiftKeys.FromBrowser)
-                    GUI.Label(new Rect(0, h * 0.45f + 34, w, 30), "(keys do nothing? click the game first)", _small);
-                GUI.Label(new Rect(0, h * 0.51f, w, 30), "Right Shift: restart", _mid);
-                GUI.Label(new Rect(0, h * 0.57f, w, 30), "Both: menu", _mid);
+                    Label(new Rect(0, h * 0.45f + 34, w, 30), "(keys do nothing? click the game first)", _small);
+                Label(new Rect(0, h * 0.51f, w, 30), "Right Shift: restart", _mid);
+                Label(new Rect(0, h * 0.57f, w, 30), "Both: menu", _mid);
                 return;
             }
 
             if (Time.unscaledTime - _lastGradeAt < 0.5f && (Current == Phase.Playing || Current == Phase.Failed))
-                GUI.Label(new Rect(0, h * 0.62f, w, 60), _lastGrade, _mid);
+                Label(new Rect(0, h * 0.62f, w, 60), _lastGrade, _mid);
 
             if (_flash > 0f)
             {
@@ -436,15 +437,52 @@ namespace ShiftShift
             Vector3 p = cam.WorldToScreenPoint(runner.transform.position + Vector3.up * 2.6f);
             if (p.z <= 0f) return;
             float x = p.x, y = Screen.height - p.y; // GUI y runs down
-            string dots = "";
-            for (int i = 1; i <= taps; i++) dots += i <= lit ? "<color=#F21E3D>●</color> " : "<color=#FFFFFF88>○</color> ";
-            GUI.Label(new Rect(x - 150, y - 40, 300, 40), dots.TrimEnd(), _mid);
+            DrawDots(x, y - 20, taps, lit, new Color(0.95f, 0.12f, 0.24f), new Color(1f, 1f, 1f, 0.55f), 16f);
+        }
+
+        /// <summary>
+        /// A label with a soft dark shadow, so white text reads on the light levels too (ELIA, day 27: "Shift to retry"
+        /// was hard to read over the overcast sky). Follows GUI.color's alpha (the fading GO).
+        /// </summary>
+        private static void Label(Rect r, string text, GUIStyle style)
+        {
+            Color old = GUI.color;
+            float o = Mathf.Max(2f, style.fontSize / 18f);
+            GUI.color = new Color(0f, 0f, 0f, 0.7f * old.a); // multiplies rich-text colours too: the shadow stays dark
+            GUI.Label(new Rect(r.x + o, r.y + o, r.width, r.height), text, style);
+            GUI.color = old;
+            GUI.Label(r, text, style);
+        }
+
+        /// <summary>Darkens the game behind the fail, results and pause screens, so their text stands out on any level.</summary>
+        private static void Dim(float w, float h)
+        {
+            Color old = GUI.color;
+            GUI.color = new Color(0f, 0f, 0f, 0.45f);
+            GUI.DrawTexture(new Rect(0, 0, w, h), Texture2D.whiteTexture);
+            GUI.color = old;
+        }
+
+        /// <summary>A row of square dots centred on (cx, cy), the first <paramref name="lit"/> lit (the Web font has no dot characters).</summary>
+        private static void DrawDots(float cx, float cy, int count, int lit, Color on, Color off, float size)
+        {
+            Color old = GUI.color;
+            float step = size * 1.9f, x0 = cx - (count * step - (step - size)) * 0.5f;
+            for (int i = 0; i < count; i++)
+            {
+                var r = new Rect(x0 + i * step, cy - size * 0.5f, size, size);
+                GUI.color = new Color(0f, 0f, 0f, 0.6f);
+                GUI.DrawTexture(new Rect(r.x + 2, r.y + 2, size, size), Texture2D.whiteTexture);
+                GUI.color = i < lit ? on : off;
+                GUI.DrawTexture(r, Texture2D.whiteTexture);
+            }
+            GUI.color = old;
         }
 
         private void DrawScore(float w)
         {
             string mult = Score.Multiplier > 1 ? $"   <color=yellow>x{Score.Multiplier}</color>" : "";
-            GUI.Label(new Rect(0, 12, w, 40), $"<b>{Score.Points}</b>   streak {Score.Streak}{mult}", _mid);
+            Label(new Rect(0, 12, w, 40), $"<b>{Score.Points}</b>   streak {Score.Streak}{mult}", _mid);
         }
 
         private void EnsureStyles()

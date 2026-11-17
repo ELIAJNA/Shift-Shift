@@ -1022,3 +1022,12 @@ Done (visual only, no rules or timing touched):
 Depends on / could break: ChaseCamera (Run, LevelTest, Greybox scenes), CameraFeel asset, MainMenu (Menu scene).
 Tested: compile check (normal and Web), Core tests. Not run: anything in Unity; how the sparks, lines, shake and the 3D
 title look is untested.
+
+## 2026-11-17 — D27: HUD readable on light levels; HUD dots
+
+ELIA: sparks, speed lines and crash shake are good. "Shift to retry" was hard to read over the overcast (light) level.
+GameFlow: every HUD label now has a soft dark shadow (Label helper; follows the GO fade); the fail (once retry is
+possible), results and pause screens darken the game behind them (45% black). The count-in "Get ready" beat dots and
+the charge counter above the runner used the characters ● and ○, which the Web font does not have (as with the menu):
+now drawn as squares (DrawDots). Depends on: GameFlow (Run, LevelTest).
+Tested: compile check (normal and Web). Not run: in Unity or the browser.
