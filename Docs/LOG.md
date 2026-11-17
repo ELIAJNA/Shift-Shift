@@ -1124,3 +1124,8 @@ ELIA asked whether to retake the trailer with the new look and logo: yes (sparks
 readable HUD, new title). make_cards.py's end card now uses make_itch_art.logo_block (tiles, leaping runner, 3D title,
 tagline) above the call to action. logo_block draws the title sides in 1 px steps (at end-card size the 2-4 px steps
 showed stripes); banner and cover re-rendered. Docs/TRAILER-EDIT.md: "Retake (day 27)" steps for the PC session.
+
+## 2026-11-17 — D27: trailer retaken
+
+ELIA: retake done and on YouTube with the new description (challenge tone). Next: browser pass (day 28), screenshots,
+README / PLAN checklist, final signing on 30 Nov, submission 1 Dec.
