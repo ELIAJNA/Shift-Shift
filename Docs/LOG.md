@@ -1073,3 +1073,10 @@ ELIA then asked for more options: eight variants (current, keycap = all corners 
 italic split, wide, wide italic keycap) rendered with a preview copy of the same code; waiting for a choice.
 Tested: Core tests 178 (TitleArtTests: size, coverage, the outer S orange, the + red), compile check (normal and Web).
 Not run: in Unity.
+
+## 2026-11-17 — D27: Black Ops One title previews
+
+ELIA asked to stylize Black Ops One (SIL OFL, stencil) for the title. tools/title/make_title.py bakes SHIFT+SHIFT in
+that font with the pair colours, dark navy extrusion, outline and satin face, optional lean (--skew) and depth
+(--depth); the font file and its OFL licence sit beside it (tools only, not in the game yet). Three previews sent:
+A straight, B italic, C italic with deeper 3D. Waiting for ELIA's choice before it replaces the TitleArt lettering.
