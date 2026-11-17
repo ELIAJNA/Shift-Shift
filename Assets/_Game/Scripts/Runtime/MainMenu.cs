@@ -159,32 +159,15 @@ namespace ShiftShift
             _tagline.fontSize = Mathf.RoundToInt(22 * _k);
             _title.normal.textColor = _tagline.normal.textColor = Color.white; // tinted per layer with GUI.color
             var titleRect = new Rect(0, h * 0.08f, w, 110 * _k);
-            // Custom lettering (Core/TitleArt): made once per size, drawn as an image.
-            int cap = Mathf.Max(24, Mathf.RoundToInt(78 * _k));
-            if (_logo == null || _logoCap != cap) MakeLogo(cap);
-            float lw = _logo.width, lh = _logo.height;
-            GUI.DrawTexture(new Rect((w - lw) * 0.5f, titleRect.y + (titleRect.height - lh) * 0.5f, lw, lh), _logo);
+            // The first 3D version (ELIA chose it back on day 27, after trying coloured letters, satin, custom lettering,
+            // Black Ops One and Russo One): white face, cyan sides fading to dark, a faint cyan glow.
+            Extruded(titleRect, "SHIFT+SHIFT", _title, Mathf.RoundToInt(12 * _k), 1.1f * _k,
+                new Color(0.97f, 0.97f, 0.95f), new Color(0f, 0.75f, 0.78f), new Color(0.02f, 0.12f, 0.16f),
+                new Color(0f, 0.98f, 0.97f));
             var tagRect = new Rect(0, h * 0.08f + 108 * _k, w, 34 * _k);
             Extruded(tagRect, "A Rhythm Runner Played With Just Two Keys", _tagline, Mathf.RoundToInt(4 * _k), 1f * _k,
                 new Color(0.79f, 0.82f, 0.85f), new Color(0.75f, 0.06f, 0.48f), new Color(0.12f, 0.02f, 0.08f),
                 new Color(0f, 0.98f, 0.97f));
-        }
-
-        private static Texture2D _logo;
-        private static int _logoCap;
-
-        private static void MakeLogo(int cap)
-        {
-            byte[] rows = ShiftShift.Core.TitleArt.Render(cap, out int lw, out int lh);
-            // TitleArt writes rows from the top; Unity textures start at the bottom.
-            var flipped = new byte[rows.Length];
-            int stride = lw * 4;
-            for (int y = 0; y < lh; y++) System.Buffer.BlockCopy(rows, y * stride, flipped, (lh - 1 - y) * stride, stride);
-            if (_logo != null) Destroy(_logo);
-            _logo = new Texture2D(lw, lh, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
-            _logo.LoadRawTextureData(flipped);
-            _logo.Apply();
-            _logoCap = cap;
         }
 
         private static void Extruded(Rect r, string text, GUIStyle style, int depth, float step, Color face, Color sideNear, Color sideFar,

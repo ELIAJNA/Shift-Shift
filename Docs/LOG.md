@@ -1092,3 +1092,11 @@ extrusion showed fine diagonal stripes). Previews sent: C colour letters, D whit
 ELIA asked to try Russo One (SIL OFL). make_title.py takes --font (font files beside it: Black Ops One, Russo One,
 each with its OFL text) and --gap (Russo One sits tight: 0.14 of the letter height between letters). Previews sent:
 C colour letters, D white letters, E white with deeper sides, F upright E.
+
+## 2026-11-17 — D27: title back to the first 3D version
+
+ELIA chose the first 3D title (commit 47f2824): white face, cyan extrusion fading to dark, faint cyan glow, Unity's
+default font. MainMenu.DrawLogo draws it again with Extruded; Core/TitleArt and its tests are removed (unused; in git
+history at ae0b8c8). tools/title (Black Ops One / Russo One generator with fonts and OFL texts) is kept as a tool; the
+game uses no extra font, so the credits need no font line.
+Tested: compile check (normal and Web), Core tests 175. Not run: in Unity (same drawing ELIA saw on day 27).
