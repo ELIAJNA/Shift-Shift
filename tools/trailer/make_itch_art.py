@@ -167,7 +167,7 @@ def ghost(im, sc, x, z, col=(255, 181, 217)):
     parts = [(-0.4, 0.4, 0.225, 0.775), (-0.325, 0.325, 0.775, 0.875), (-0.24, 0.24, 0.875, 0.955), (-0.125, 0.125, 0.955, 1.005)]
     parts += [(i * 0.3 - 0.1, i * 0.3 + 0.1, 0.095, 0.225) for i in (-1, 0, 1)]
     for x0, x1, y0, y1 in parts:
-        box(im, sc, x + x0, x + x1, y0, y1, z, 0.3, col, alpha=235, glow=False)
+        box(im, sc, x + x0, x + x1, y0, y1, z, 0.3, col, alpha=166, glow=False)  # 65% solid, like the wall
     for ex in (-0.16, 0.16):
         box(im, sc, x + ex - 0.06, x + ex + 0.06, 0.525, 0.695, z - 0.01, 0.01, (25, 22, 34), glow=False)
 
