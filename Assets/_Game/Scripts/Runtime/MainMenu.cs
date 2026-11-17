@@ -168,7 +168,7 @@ namespace ShiftShift
 
         /// <summary>
         /// SHIFT+SHIFT with mirrored letter pairs in the six action colours, outside in (ELIA, day 27): S..T lane
-        /// orange, H..F slide yellow, I..I sprint cyan, F..H jump pink, T..S phase blue, and the + charge red.
+        /// orange, H..F slide yellow, I..I sprint cyan, F..H jump pink (lighter here), T..S phase blue, and the + charge red.
         /// </summary>
         private static readonly string TitleColoured = BuildTitle();
 
@@ -227,7 +227,9 @@ namespace ShiftShift
         private static string BuildTitle()
         {
             const string text = "SHIFT+SHIFT";
-            string[] colours = { "#F27017", "#FCC41E", "#00FCF9", "#F40E9D", "#3D8BFF", "#F21E3D" };
+            // The jump pink is lighter and more magenta here than in the game (#F40E9D), so it does not read like the
+            // charge red next to it (ELIA, day 27). In the game it stays as it is, apart from the light pink ghost blocks.
+            string[] colours = { "#F27017", "#FCC41E", "#00FCF9", "#FF4FE8", "#3D8BFF", "#F21E3D" };
             var sb = new System.Text.StringBuilder();
             for (int i = 0; i < text.Length; i++)
             {
