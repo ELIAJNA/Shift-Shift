@@ -216,6 +216,16 @@ namespace ShiftShift
             else if (_nextLevel != null && conductor.LevelAssetName != TrailerMode.LastLevel) Play(_nextLevel, gameObject.scene.name);
         }
 
+        /// <summary>
+        /// Day 25 (tester): clicking outside the game (itch.io's fullscreen button, another window) takes the keys
+        /// away from it. Pause, rather than let the runner crash with no way to answer.
+        /// </summary>
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus || !enabled || TrailerMode.Enabled || IsPaused) return;
+            if (Current == Phase.CountIn || Current == Phase.Playing) SetPaused(true);
+        }
+
         private void SetPaused(bool paused)
         {
             if (paused == IsPaused) return;
@@ -391,6 +401,8 @@ namespace ShiftShift
                 GUI.Box(new Rect(w * 0.3f, h * 0.28f, w * 0.4f, h * 0.4f), GUIContent.none);
                 GUI.Label(new Rect(0, h * 0.32f, w, 60), "<b>Paused</b>", _big);
                 GUI.Label(new Rect(0, h * 0.45f, w, 30), "Left Shift or Esc: resume", _mid);
+                if (ShiftKeys.FromBrowser)
+                    GUI.Label(new Rect(0, h * 0.45f + 34, w, 30), "(keys do nothing? click the game first)", _small);
                 GUI.Label(new Rect(0, h * 0.51f, w, 30), "Right Shift: restart", _mid);
                 GUI.Label(new Rect(0, h * 0.57f, w, 30), "Both: menu", _mid);
                 return;
