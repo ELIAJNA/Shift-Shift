@@ -1221,3 +1221,11 @@ changes. ELIA compared again: "it sounds same". Nothing changed.
 ELIA set the itch viewport to 960x600: the whole background shows, but the Run game button (frame centre) covered the
 runner. embed_bg: scene moved down (horizon 46% -> 62%): the button now sits on the wall top, the runner fully below
 it. Checked with a stand-in button drawn at the centre.
+
+## 2026-11-17 — D27: game frame scene - other obstacles, running runner
+
+ELIA: not the same orange block and red wall as the banner and cover; the runner running with smoke.
+embed_bg: a yellow low bar (slide) across the road and a translucent blue phase wall behind it with a pink ghost block
+in the left lane; the runner seen from behind mid-stride (left leg planted, right leg kicking back with the sole
+showing, arms swinging) with dust puffs trailing from the heels, no flame. The banner and cover keep the block, wall
+and flame. Still checked with a stand-in Run button: clear of the runner.

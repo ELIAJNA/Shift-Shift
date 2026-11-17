@@ -112,6 +112,30 @@ def box(im, sc, x0, x1, y0, y1, z, depth, col, alpha=255, glow=True):
     im.alpha_composite(layer)
 
 
+def runner_running(im, sc, x, z):
+    """The boxy runner from behind, mid-stride (one leg planted, the other kicking back, arms swinging), with dust puffs
+    at the heels as in the game."""
+    smoke = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(smoke)
+    rnd = random.Random(11)
+    k = sc.focal / z / 250
+    for i in range(40):                        # puffs trailing back toward the camera from the planted foot
+        back = rnd.random() ** 1.2 * 1.6
+        px, py = sc.p(x - 0.08 + rnd.gauss(0, 0.07) * (1 + back), 0.04 + back * 0.12 + rnd.uniform(0, 0.08), z - back)
+        r = (9 + back * 16) * SS * k * rnd.uniform(0.7, 1.2)
+        g = rnd.randint(170, 215)
+        d.ellipse([px - r, py - r * 0.8, px + r, py + r * 0.8], fill=(g, g, g + 8, int(200 * (1 - back / 1.8))))
+    im.alpha_composite(smoke.filter(ImageFilter.GaussianBlur(5 * SS)))
+    body, shade = (240, 240, 236), (196, 198, 200)
+    box(im, sc, x + 0.03, x + 0.12, 0.22, 0.46, z - 0.18, 0.1, shade, glow=False)   # right leg kicking back, foot up
+    box(im, sc, x + 0.03, x + 0.12, 0.18, 0.26, z - 0.28, 0.12, shade, glow=False)  # its foot, sole toward us
+    box(im, sc, x + 0.14, x + 0.2, 0.46, 0.74, z - 0.12, 0.08, shade, glow=False)   # right arm swinging back
+    box(im, sc, x - 0.13, x + 0.13, 0.42, 0.85, z, 0.12, body, glow=False)            # torso
+    box(im, sc, x - 0.09, x + 0.09, 0.88, 1.06, z, 0.12, body, glow=False)            # head
+    box(im, sc, x - 0.12, x - 0.03, 0.0, 0.44, z + 0.05, 0.1, body, glow=False)       # left leg planted
+    box(im, sc, x - 0.21, x - 0.15, 0.58, 0.86, z + 0.12, 0.08, body, glow=False)     # left arm swinging forward, up
+
+
 def runner(im, sc, x, z, flame=True):
     """The boxy runner, mid-stride, seen from behind, with the charge flame."""
     if flame:
@@ -140,9 +164,10 @@ def runner(im, sc, x, z, flame=True):
 
 def obstacles(im, sc, set_="full"):
     L = sc.lane_w
-    items = [  # (lane or None for all, kind, z)
-        (None, "charge", 17), (-1, "lane", 7.5),
-    ]
+    items = {  # (lane or None for all, kind, z)
+        "full": [(None, "charge", 17), (-1, "lane", 7.5)],
+        "slide_phase": [(None, "phase", 18), (None, "slide", 9)],   # the game frame (ELIA, day 27: not the same block and wall)
+    }[set_]
     for lane, kind, z in sorted(items, key=lambda t: -t[2]):
         if kind == "lane":
             box(im, sc, lane * L - 0.4, lane * L + 0.4, 0, 1.0, z, 0.8, COL["lane"])
@@ -156,7 +181,7 @@ def obstacles(im, sc, set_="full"):
             box(im, sc, L * 0.5, L * 1.5, 1.4, 1.6, z, 0.3, COL["sprint"])
         elif kind == "phase":
             box(im, sc, -1.5 * L, 1.5 * L, 0, 1.8, z, 0.2, COL["phase"], alpha=150)
-            box(im, sc, -0.35, 0.35, 0, 1.0, z, 0.6, (255, 181, 217), alpha=230)  # a ghost block
+            box(im, sc, -L - 0.32, -L + 0.32, 0, 1.0, z, 0.6, (255, 181, 217), alpha=230)  # a ghost block, left lane
         elif kind == "charge":
             box(im, sc, -1.5 * L, 1.5 * L, 0, 2.2, z, 0.5, COL["charge"])
             d = ImageDraw.Draw(im)  # brick lines
@@ -192,7 +217,8 @@ def vignette(im, amount=0.6):
     im.paste(Image.alpha_composite(im, dark), (0, 0), m)
 
 
-def scene_image(w, h, horizon_frac, vx_frac, full=True, runner_on=True, scenery=True, runner_z=4.4):
+def scene_image(w, h, horizon_frac, vx_frac, full=True, runner_on=True, scenery=True, runner_z=4.4,
+                obstacle_set="full", running=False):
     W, H = w * SS, h * SS
     im = Image.new("RGBA", (W, H))
     horizon = int(H * horizon_frac)
@@ -203,9 +229,12 @@ def scene_image(w, h, horizon_frac, vx_frac, full=True, runner_on=True, scenery=
     road(im, sc)
     fog(im, horizon)
     if full:
-        obstacles(im, sc)
+        obstacles(im, sc, obstacle_set)
     if runner_on:
-        runner(im, sc, 0.0, runner_z)
+        if running:
+            runner_running(im, sc, 0.0, runner_z)
+        else:
+            runner(im, sc, 0.0, runner_z)
     return im
 
 
@@ -424,7 +453,7 @@ def main():
 
     # Embed background 960x600: shown behind the "Run game" button.
     w, h = 960, 600
-    im = scene_image(w, h, 0.62, 0.5, runner_z=5.0)  # scene low: the Run game button (frame centre) sits above the runner
+    im = scene_image(w, h, 0.62, 0.5, runner_z=5.0, obstacle_set="slide_phase", running=True)  # scene low: the Run game button (frame centre) sits above the runner
     im.alpha_composite(Image.new("RGBA", im.size, (6, 8, 22, 70)))
     # No title here (ELIA, day 27: the banner's logo sits right above the game frame, a second title repeated it).
     # Instead the hook line and, right under it, the hint, above the Run game button, where the title was (fully
