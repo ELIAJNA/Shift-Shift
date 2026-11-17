@@ -1160,3 +1160,8 @@ ELIA's screenshot: the hook line was cut at both ends. The itch embed is still 6
 suggested on day 23 but not set), and itch shows the background at 1:1, centred, so only x 160-800, y 120-480 of the
 960x600 image show. Hook font 30 -> 24 px: fits the middle 640 px. Asked ELIA to set the viewport to 960x600 (the
 game's canvas) so the game plays larger too.
+
+## 2026-11-17 — D27: hook and hint clear of the wall
+
+ELIA: the click hint sat on the red wall. Hook at y 156 and hint at y 192 (were 182 / 222): the hint now ends above
+the wall's top (y 220); both still inside the 640x360 centre crop.
