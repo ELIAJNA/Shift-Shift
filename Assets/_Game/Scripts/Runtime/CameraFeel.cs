@@ -48,5 +48,14 @@ namespace ShiftShift
         [Min(0.01f)] public float rollEaseSeconds = 0.12f;
         [Tooltip("Sideways speed (m/s) that counts as a full lane change for the roll.")]
         [Min(0.1f)] public float fullRollSpeed = 12f;
+
+        [Header("Juice (day 27)")]
+        [Tooltip("Camera shake on a crash: how far the camera jolts (m), fading out.")]
+        [Range(0f, 1f)] public float crashShakeMetres = 0.25f;
+        [Min(0.01f)] public float crashShakeSeconds = 0.35f;
+        [Tooltip("Spark burst when an obstacle is answered PERFECT: number of sparks (0 = off).")]
+        [Range(0, 60)] public int perfectSparks = 22;
+        [Tooltip("Speed lines at the screen edges while sprinting: how strong (0 = off).")]
+        [Range(0f, 1f)] public float speedLines = 0.45f;
     }
 }

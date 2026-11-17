@@ -146,6 +146,43 @@ namespace ShiftShift
         };
 
         private float _k = 1f; // text scale for the screen height
+        private GUIStyle _tagline;
+
+        /// <summary>
+        /// The title and tagline as extruded 3D lettering (ELIA, day 27): the text is drawn many times, stepping down and
+        /// to the right in darkening shades of the sprint cyan, then a soft glow, then the face on top.
+        /// </summary>
+        private void DrawLogo(float w, float h)
+        {
+            if (_tagline == null)
+                _tagline = new GUIStyle(_small) { fontStyle = FontStyle.Bold, wordWrap = false };
+            _tagline.fontSize = Mathf.RoundToInt(22 * _k);
+            _title.normal.textColor = _tagline.normal.textColor = Color.white; // tinted per layer with GUI.color
+            var titleRect = new Rect(0, h * 0.08f, w, 110 * _k);
+            Extruded(titleRect, "SHIFT+SHIFT", _title, Mathf.RoundToInt(12 * _k), 1.1f * _k,
+                new Color(0.97f, 0.97f, 0.95f), new Color(0f, 0.75f, 0.78f), new Color(0.02f, 0.12f, 0.16f));
+            var tagRect = new Rect(0, h * 0.08f + 108 * _k, w, 34 * _k);
+            Extruded(tagRect, "A Rhythm Runner Played With Just Two Keys", _tagline, Mathf.RoundToInt(4 * _k), 1f * _k,
+                new Color(0.79f, 0.82f, 0.85f), new Color(0.75f, 0.06f, 0.48f), new Color(0.12f, 0.02f, 0.08f));
+        }
+
+        private static void Extruded(Rect r, string text, GUIStyle style, int depth, float step, Color face, Color sideNear, Color sideFar)
+        {
+            Color old = GUI.color;
+            for (int i = depth; i >= 1; i--) // back to front
+            {
+                GUI.color = Color.Lerp(sideNear, sideFar, (i - 1f) / Mathf.Max(1, depth - 1));
+                GUI.Label(new Rect(r.x + i * step * 0.6f, r.y + i * step, r.width, r.height), text, style);
+            }
+            // A thin dark outline and a cyan glow lift the face off the sides.
+            GUI.color = new Color(0f, 0.98f, 0.97f, 0.18f);
+            for (int dx = -2; dx <= 2; dx += 2)
+                for (int dy = -2; dy <= 2; dy += 2)
+                    if (dx != 0 || dy != 0) GUI.Label(new Rect(r.x + dx, r.y + dy, r.width, r.height), text, style);
+            GUI.color = face;
+            GUI.Label(r, text, style);
+            GUI.color = old;
+        }
 
         /// <summary>Height a wrapped label needs at this width.</summary>
         private static float Fit(GUIStyle style, string text, float width) => style.CalcHeight(new GUIContent(text), width) + 4f;
@@ -238,17 +275,17 @@ namespace ShiftShift
                 return;
             }
 
-            GUI.Label(new Rect(0, h * 0.08f, w, 110 * _k), "SHIFT+SHIFT", _title);
+            DrawLogo(w, h);
             if (!WebAudioUnlock.Ready)
             {
                 // Web build only: the browser needs one click before it plays sound (it does not count Shift).
-                GUI.Label(new Rect(0, h * 0.08f + 105 * _k, w, 30 * _k), "A Rhythm Runner Played With Just Two Keys", _small);
+
                 GUI.Label(new Rect(0, h * 0.42f, w, 70), "Click to start", _big);
                 const string why = "(or press Space). Your browser needs this once before it plays sound. After that, just the two Shift keys.";
                 GUI.Label(new Rect(w * 0.1f, h * 0.42f + 75 * _k, w * 0.8f, Fit(_mid, why, w * 0.8f)), why, _mid);
                 return;
             }
-            GUI.Label(new Rect(0, h * 0.08f + 105 * _k, w, 30 * _k), "A Rhythm Runner Played With Just Two Keys", _small);
+
 
             Entry e = _entries[_index];
             GUI.Label(new Rect(0, h * 0.40f, w, 70 * _k), e.Title, _big);

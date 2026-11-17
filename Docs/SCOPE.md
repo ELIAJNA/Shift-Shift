@@ -41,3 +41,7 @@ Rule: any task more than two days late gets cut in this order rather than caught
 
 ## Post-jam
 - Global leaderboard
+- Mobile version (ELIA, day 27): two on-screen buttons, one per thumb, landscape. Out of scope for the jam ("touch or
+  mobile builds"). Notes: input maps cleanly (each button = one Shift key, the classifier is unchanged); needs touch
+  input, a landscape lock, UI sized for phones, a performance pass for phone GPUs, and timing calibration (touch
+  screens add 30-80 ms). Browser on phones first, app stores later.
