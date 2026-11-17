@@ -1036,3 +1036,11 @@ Tested: compile check (normal and Web). Not run: in Unity or the browser.
 
 ELIA's screenshots: "Shift to retry" readable on the overcast level with the dimmed background. The big GO's shadow
 (8 px away at 140 px text) read as a grey double: shadow offset now capped at 4 px.
+
+## 2026-11-17 — D27: title in the six action colours
+
+ELIA saw the 3D title (the Game view was zoomed to 1.4x, hiding the top and bottom of the screen) and asked for the
+letters in the six obstacle colours, mirrored pairs from the outside in. MainMenu: SHIFT+SHIFT as rich text, S..T
+orange (lane), H..F yellow (slide), I..I cyan (sprint), F..H pink (jump), T..S blue (phase), + red (charge); extrusion
+layers tinted grey so each letter's sides are darker shades of its own colour; glow takes the letter colours.
+Tested: compile check (normal and Web). Not run: in Unity.

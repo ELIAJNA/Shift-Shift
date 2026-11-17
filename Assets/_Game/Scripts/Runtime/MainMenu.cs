@@ -159,14 +159,37 @@ namespace ShiftShift
             _tagline.fontSize = Mathf.RoundToInt(22 * _k);
             _title.normal.textColor = _tagline.normal.textColor = Color.white; // tinted per layer with GUI.color
             var titleRect = new Rect(0, h * 0.08f, w, 110 * _k);
-            Extruded(titleRect, "SHIFT+SHIFT", _title, Mathf.RoundToInt(12 * _k), 1.1f * _k,
-                new Color(0.97f, 0.97f, 0.95f), new Color(0f, 0.75f, 0.78f), new Color(0.02f, 0.12f, 0.16f));
+            // Each letter in its own action colour (rich text); the layers are tinted grey, so every letter's sides are
+            // darker shades of its own colour.
+            Extruded(titleRect, TitleColoured, _title, Mathf.RoundToInt(12 * _k), 1.1f * _k,
+                Color.white, new Color(0.5f, 0.5f, 0.5f), new Color(0.12f, 0.12f, 0.12f), Color.white);
             var tagRect = new Rect(0, h * 0.08f + 108 * _k, w, 34 * _k);
             Extruded(tagRect, "A Rhythm Runner Played With Just Two Keys", _tagline, Mathf.RoundToInt(4 * _k), 1f * _k,
-                new Color(0.79f, 0.82f, 0.85f), new Color(0.75f, 0.06f, 0.48f), new Color(0.12f, 0.02f, 0.08f));
+                new Color(0.79f, 0.82f, 0.85f), new Color(0.75f, 0.06f, 0.48f), new Color(0.12f, 0.02f, 0.08f),
+                new Color(0f, 0.98f, 0.97f));
         }
 
-        private static void Extruded(Rect r, string text, GUIStyle style, int depth, float step, Color face, Color sideNear, Color sideFar)
+        /// <summary>
+        /// SHIFT+SHIFT with mirrored letter pairs in the six action colours, outside in (ELIA, day 27): S..T lane
+        /// orange, H..F slide yellow, I..I sprint cyan, F..H jump pink, T..S phase blue, and the + charge red.
+        /// </summary>
+        private static readonly string TitleColoured = BuildTitle();
+
+        private static string BuildTitle()
+        {
+            const string text = "SHIFT+SHIFT";
+            string[] colours = { "#F27017", "#FCC41E", "#00FCF9", "#F40E9D", "#3D8BFF", "#F21E3D" };
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < text.Length; i++)
+            {
+                int fromOutside = Mathf.Min(i, text.Length - 1 - i); // 0 for the outer pair .. 5 for the +
+                sb.Append("<color=").Append(colours[fromOutside]).Append('>').Append(text[i]).Append("</color>");
+            }
+            return sb.ToString();
+        }
+
+        private static void Extruded(Rect r, string text, GUIStyle style, int depth, float step, Color face, Color sideNear, Color sideFar,
+            Color glow)
         {
             Color old = GUI.color;
             for (int i = depth; i >= 1; i--) // back to front
@@ -175,7 +198,7 @@ namespace ShiftShift
                 GUI.Label(new Rect(r.x + i * step * 0.6f, r.y + i * step, r.width, r.height), text, style);
             }
             // A thin dark outline and a cyan glow lift the face off the sides.
-            GUI.color = new Color(0f, 0.98f, 0.97f, 0.18f);
+            GUI.color = new Color(glow.r, glow.g, glow.b, 0.18f);
             for (int dx = -2; dx <= 2; dx += 2)
                 for (int dy = -2; dy <= 2; dy += 2)
                     if (dx != 0 || dy != 0) GUI.Label(new Rect(r.x + dx, r.y + dy, r.width, r.height), text, style);
