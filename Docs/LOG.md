@@ -1153,3 +1153,10 @@ embed_bg_960x600.png: the hook above the Run game button (where the old title sa
 ## 2026-11-17 — D27: click hint under the hook
 
 ELIA: move "Click to play · headphones on" up too. Now right under the hook line, both above the Run game button.
+
+## 2026-11-17 — D27: hook fits the small frame
+
+ELIA's screenshot: the hook line was cut at both ends. The itch embed is still 640x360 (the default; 960x600 was
+suggested on day 23 but not set), and itch shows the background at 1:1, centred, so only x 160-800, y 120-480 of the
+960x600 image show. Hook font 30 -> 24 px: fits the middle 640 px. Asked ELIA to set the viewport to 960x600 (the
+game's canvas) so the game plays larger too.

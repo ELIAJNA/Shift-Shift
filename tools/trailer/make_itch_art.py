@@ -432,7 +432,7 @@ def main():
     band = Image.new("RGBA", im.size, (0, 0, 0, 0))
     ImageDraw.Draw(band).rectangle([0, 145 * SS, w * SS, 245 * SS], fill=(6, 8, 22, 130))
     im.alpha_composite(band.filter(ImageFilter.GaussianBlur(24 * SS)))
-    text(im, "You've pressed Shift a million times. Never like this.", 30, (w * SS / 2, 182 * SS), COL["white"], bold,
+    text(im, "You've pressed Shift a million times. Never like this.", 24, (w * SS / 2, 182 * SS), COL["white"], bold,
          glow=(92, 225, 230), stroke=1)
     text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 222 * SS), COL["white"], med, stroke=1)  # right under the hook (ELIA)
     finish(im, w, h, os.path.join(a.out, "embed_bg_960x600.png"))
