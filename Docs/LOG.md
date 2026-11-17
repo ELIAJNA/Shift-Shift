@@ -1112,3 +1112,8 @@ start" follow it on short screens (worked out for 450, 600 and 1080 px high). Ex
 itch.io art (tools/trailer/make_itch_art.py, logo_block with the same measurements): banner now 960x360 (title block
 on the left, the keys below it), cover 630x500 with the title block at the top. Images in itch-art/ (not in git).
 Tested: compile check (normal and Web), previews of the itch art. Not run: the menu in Unity.
+
+## 2026-11-17 — D27: title block approved
+
+ELIA's screenshot of the menu in Unity (no console errors): tiles, leaping runner, 3D title and tagline drawn as in the
+preview; layout intact. "Looks really good." Juice step (plan day 27) done, plus the title work.
