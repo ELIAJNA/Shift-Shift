@@ -1,4 +1,4 @@
-"""Shift+Shift menu title: SHIFT+SHIFT in Black Ops One (SIL OFL), styled and baked into a PNG.
+"""Shift+Shift menu title: SHIFT+SHIFT in Black Ops One or Russo One (both SIL OFL), styled and baked into a PNG.
 
     python tools/title/make_title.py --out <file.png> [--skew 0.2] [--cap 150] [--depth 0.11]
 
@@ -19,9 +19,9 @@ def hexc(h):
     return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
 
 
-def render(cap=150, skew=0.0, depth_frac=0.11, letter_gap=0.06, white=False):
+def render(cap=150, skew=0.0, depth_frac=0.11, letter_gap=0.06, white=False, font_file="BlackOpsOne-Regular.ttf"):
     font_px = int(cap / 0.72)
-    font = ImageFont.truetype(os.path.join(HERE, "BlackOpsOne-Regular.ttf"), font_px)
+    font = ImageFont.truetype(os.path.join(HERE, font_file), font_px)
     cap_h = -font.getbbox("H", anchor="ls")[1]
     gap = int(cap_h * letter_gap)
     widths = [font.getlength(c) for c in TEXT]
@@ -98,9 +98,11 @@ if __name__ == "__main__":
     ap.add_argument("--skew", type=float, default=0.0)
     ap.add_argument("--depth", type=float, default=0.11)
     ap.add_argument("--white", action="store_true", help="white satin letters, each pair's colour as the 3D side")
+    ap.add_argument("--gap", type=float, default=0.06, help="space between letters, as a fraction of the letter height")
+    ap.add_argument("--font", default="BlackOpsOne-Regular.ttf", help="font file next to this script (SIL OFL)")
     a = ap.parse_args()
     # Drawn at double size and scaled down: smooth extrusion steps and edges.
-    big = render(a.cap * 2, a.skew, a.depth, white=a.white)
+    big = render(a.cap * 2, a.skew, a.depth, letter_gap=a.gap, white=a.white, font_file=a.font)
     img = big.resize((big.width // 2, big.height // 2), Image.LANCZOS)
     img.save(a.out, optimize=True)
     print(a.out, img.size, os.path.getsize(a.out) // 1024, "KB")
