@@ -1080,3 +1080,9 @@ ELIA asked to stylize Black Ops One (SIL OFL, stencil) for the title. tools/titl
 that font with the pair colours, dark navy extrusion, outline and satin face, optional lean (--skew) and depth
 (--depth); the font file and its OFL licence sit beside it (tools only, not in the game yet). Three previews sent:
 A straight, B italic, C italic with deeper 3D. Waiting for ELIA's choice before it replaces the TitleArt lettering.
+
+## 2026-11-17 — D27: white-letter title option
+
+ELIA asked about white letters with each pair's colour as a shadow. make_title.py --white: white satin face, the 3D
+sides in each letter's colour darkening with depth. All styles now drawn at double size and scaled down (the stepped
+extrusion showed fine diagonal stripes). Previews sent: C colour letters, D white letters, E white with deeper sides.
