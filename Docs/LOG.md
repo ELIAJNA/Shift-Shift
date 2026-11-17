@@ -1149,3 +1149,7 @@ now at jna24.itch.io/shift-shift (username changed); use that in the README and 
 ELIA chose the hook "You've pressed Shift a million times. Never like this." followed by the click hint.
 embed_bg_960x600.png: the hook above the Run game button (where the old title sat, fully visible in itch's frame,
 740 px wide so it survives a side crop to 800), "Click to play · headphones on" below the runner as before.
+
+## 2026-11-17 — D27: click hint under the hook
+
+ELIA: move "Click to play · headphones on" up too. Now right under the hook line, both above the Run game button.
