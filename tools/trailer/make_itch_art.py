@@ -279,8 +279,7 @@ def main():
     w, h = 960, 600
     im = scene_image(w, h, 0.46, 0.5)
     im.alpha_composite(Image.new("RGBA", im.size, (6, 8, 22, 70)))
-    text(im, "SHIFT+SHIFT", 64, (w * SS / 2, 70 * SS), COL["white"], bold, glow=(92, 225, 230))
-    text(im, "Click to play  ·  headphones on", 22, (w * SS / 2, 122 * SS), (201, 209, 216), med)
+    # No text: itch.io crops this image to the embed's size, and the Run game button sits in the middle.
     finish(im, w, h, os.path.join(a.out, "embed_bg_960x600.png"))
 
     # Cover 630x500 (itch.io's recommended size): title over the scene, the two keys at the bottom.
