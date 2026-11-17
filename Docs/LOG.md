@@ -1137,3 +1137,9 @@ draw_tiles / draw_arc / draw_runner / draw_title (static art unchanged); cover_g
 loop at 20 fps: the runner waits on the 3rd tile, leaps over the + leaving the dotted trail, lands on the 4th tile
 (the tile flashes, pink sparks burst), then fades back to the start. 39 frames (duplicates merged), 133 KB, one
 shared palette, no dithering. Checked frame by frame here; not yet seen on itch.io.
+
+## 2026-11-17 — D27: embed background without the title
+
+ELIA: the banner's logo and a second plain SHIFT+SHIFT on the game frame's background right below it looked doubled.
+embed_bg_960x600.png now carries only the scene and "Click to play · headphones on". Also noted: the itch.io page is
+now at jna24.itch.io/shift-shift (username changed); use that in the README and the YouTube description.
