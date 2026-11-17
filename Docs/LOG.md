@@ -1137,3 +1137,75 @@ Tested: frames by index at cuts (black card -> TAP at frame 303 = the drop; 14d 
 of every shot (captions readable, HUD visible, no debug text), audio drops over the last 2 s.
 Uncertain: the PERFECT sparks are small in the footage (a few dots for a few frames); not watched in real time with
 sound here.
+## 2026-11-17 — D27: trailer retaken
+
+ELIA: retake done and on YouTube with the new description (challenge tone). Next: browser pass (day 28), screenshots,
+README / PLAN checklist, final signing on 30 Nov, submission 1 Dec.
+
+## 2026-11-17 — D27: animated GIF cover
+
+ELIA wanted the animated cover from the checklist. make_itch_art.py: the title block split into logo_geom /
+draw_tiles / draw_arc / draw_runner / draw_title (static art unchanged); cover_gif makes cover_630x500.gif, a 2.2 s
+loop at 20 fps: the runner waits on the 3rd tile, leaps over the + leaving the dotted trail, lands on the 4th tile
+(the tile flashes, pink sparks burst), then fades back to the start. 39 frames (duplicates merged), 133 KB, one
+shared palette, no dithering. Checked frame by frame here; not yet seen on itch.io.
+
+## 2026-11-17 — D27: embed background without the title
+
+ELIA: the banner's logo and a second plain SHIFT+SHIFT on the game frame's background right below it looked doubled.
+embed_bg_960x600.png now carries only the scene and "Click to play · headphones on". Also noted: the itch.io page is
+now at jna24.itch.io/shift-shift (username changed); use that in the README and the YouTube description.
+
+## 2026-11-17 — D27: hook line on the game frame
+
+ELIA chose the hook "You've pressed Shift a million times. Never like this." followed by the click hint.
+embed_bg_960x600.png: the hook above the Run game button (where the old title sat, fully visible in itch's frame,
+740 px wide so it survives a side crop to 800), "Click to play · headphones on" below the runner as before.
+
+## 2026-11-17 — D27: click hint under the hook
+
+ELIA: move "Click to play · headphones on" up too. Now right under the hook line, both above the Run game button.
+
+## 2026-11-17 — D27: hook fits the small frame
+
+ELIA's screenshot: the hook line was cut at both ends. The itch embed is still 640x360 (the default; 960x600 was
+suggested on day 23 but not set), and itch shows the background at 1:1, centred, so only x 160-800, y 120-480 of the
+960x600 image show. Hook font 30 -> 24 px: fits the middle 640 px. Asked ELIA to set the viewport to 960x600 (the
+game's canvas) so the game plays larger too.
+
+## 2026-11-17 — D27: hook and hint clear of the wall
+
+ELIA: the click hint sat on the red wall. Hook at y 156 and hint at y 192 (were 182 / 222): the hint now ends above
+the wall's top (y 220); both still inside the 640x360 centre crop.
+
+## 2026-11-17 — D27: GitHub username ELIAJNA
+
+ELIA renamed the GitHub account: the repo is now github.com/ELIAJNA/Shift-Shift (the old JNA1980 address redirects).
+The cloud session keeps the old address for its remote: its GitHub access is tied to it (a push to the new address
+was refused, 403); GitHub forwards the old address, so pushes still arrive. Older log entries keep the old name as history.
+To update on ELIA's side: the PC's git remote, the "Source code" link in the itch.io description, the YouTube
+description if it links the repo.
+
+## 2026-11-17 — D27: results heading names the level
+
+ELIA: the results screen should say which level was completed, with a cheer ("Hurray! Level 1 complete", "Awesome!
+Level 2 complete", ...). GameFlow.CompleteHeading: Hurray / Awesome / Brilliant / Fantastic / Unstoppable / Legendary
+for levels 1-6 (number read from the level's asset name); "Level complete" for test levels. Results box widened from
+40% to 50% of the screen so the longest heading fits at 960 px wide.
+Tested: the heading function run on every level name (level01-06, level00, test_track, none); compile check.
+Not run: in Unity.
+
+## 2026-11-17 — D27: celebration dances
+
+ELIA asked for a short celebratory dance per level at the end of the level. RunnerFigure.Dance (when the run is
+Completed): the runner turns to face the camera (0.35 s), then dances on the beat of the level's tempo, timed on the
+audio clock (dspTime): 1 victory pump, 2 disco point, 3 jumping jacks, 4 spin and pose, 5 running man, 6 finale
+(spin, big jump, arms up with the flame lit). Posed from the existing limb pivots (shoulders, hips); no new art.
+GameFlow: the results box waits celebrateSeconds (3 s, Inspector) after the level ends; meanwhile only the cheer
+heading (big, top of the screen) and the score show; results keys start when the box appears (keys reset then, so a
+held key cannot pick an option). Trailer mode waits 3 s longer on each level's results. GameFlow.LevelNumber added
+(shared by the heading and the dance).
+Depends on / could break: RunnerFigure (Run, LevelTest, Greybox scenes; only acts once a run is Completed), GameFlow
+results flow (Run, LevelTest).
+Tested: compile check (normal and Web), Core tests 175. Not run: in Unity. The limb angles are worked out from the
+figure's pivots, not seen: a dance may need its angles flipped (an arm going into the body instead of out).

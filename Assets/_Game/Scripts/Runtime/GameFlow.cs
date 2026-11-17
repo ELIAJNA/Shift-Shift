@@ -38,6 +38,8 @@ namespace ShiftShift
         [SerializeField] private bool openMenuWhenStartedHere = true;
         [SerializeField, Min(0f)] private float hitStopSeconds = 0.06f;
         [SerializeField, Min(0.01f)] private float flashSeconds = 0.3f;
+        [Tooltip("Seconds of the runner's celebration dance before the results box appears (day 27).")]
+        [SerializeField, Min(0f)] private float celebrateSeconds = 3f;
 
         /// <summary>Level asset name to play next (the menu sets it later). Null = first in the list.</summary>
         public static string LevelToLoad;
@@ -190,6 +192,15 @@ namespace ShiftShift
                 if (esc) ToMenu();
                 else if (_canRestart && pressed) Restart(); // any Shift, at once: the fast retry
             }
+            else if (Current == Phase.Results && !ResultsVisible)
+            {
+                // The celebration dance: no results options yet.
+            }
+            else if (Current == Phase.Results && !_resultsShown)
+            {
+                _resultsShown = true; // a key held through the dance must not pick an option the moment the box appears
+                _keys.Reset(left, right);
+            }
             else if (Current == Phase.Results)
             {
                 if (key == MenuKey.Left) Restart();
@@ -199,6 +210,9 @@ namespace ShiftShift
         }
 
         private float _trailerWait = -1f;
+        private float _resultsAt;
+        private bool _resultsShown;
+        private bool ResultsVisible => Time.unscaledTime >= _resultsAt;
 
         /// <summary>Trailer mode: results for a few seconds, then the next level (stops after the last); a fail retries.</summary>
         private void TrailerStep()
@@ -208,7 +222,7 @@ namespace ShiftShift
                 _trailerWait = -1f;
                 return;
             }
-            if (_trailerWait < 0f) _trailerWait = Current == Phase.Results ? 4f : 1f;
+            if (_trailerWait < 0f) _trailerWait = Current == Phase.Results ? 4f + celebrateSeconds : 1f;
             _trailerWait -= Time.unscaledDeltaTime;
             if (_trailerWait > 0f) return;
             _trailerWait = float.MaxValue; // once
@@ -290,6 +304,7 @@ namespace ShiftShift
         private void OnCompleted()
         {
             Current = Phase.Results;
+            _resultsAt = Time.unscaledTime + celebrateSeconds; // the dance plays first (RunnerFigure), then the results box
             Remember(PlayedKeyPrefix);
             Remember(ClearedKeyPrefix);
             // A key still held from the last obstacle must not pick a results option.
@@ -384,9 +399,16 @@ namespace ShiftShift
                     break;
 
                 case Phase.Results:
+                    if (!ResultsVisible)
+                    {
+                        // The dance: just the cheer, at the top, clear of the runner.
+                        Label(new Rect(0, h * 0.08f, w, 80), $"<b>{CompleteHeading(conductor.LevelAssetName)}</b>", _big);
+                        DrawScore(w);
+                        break;
+                    }
                     Dim(w, h);
-                    GUI.Box(new Rect(w * 0.3f, h * 0.2f, w * 0.4f, h * 0.55f), GUIContent.none);
-                    Label(new Rect(0, h * 0.23f, w, 60), "<b>Level complete</b>", _mid);
+                    GUI.Box(new Rect(w * 0.25f, h * 0.2f, w * 0.5f, h * 0.55f), GUIContent.none); // wide enough for "Unstoppable! Level 5 complete" at 960 px
+                    Label(new Rect(0, h * 0.23f, w, 60), $"<b>{CompleteHeading(conductor.LevelAssetName)}</b>", _mid);
                     Label(new Rect(0, h * 0.33f, w, 40), $"Score  {Score.Points}" + (_newBest ? "   <color=yellow>NEW BEST</color>" : ""), _mid);
                     Label(new Rect(0, h * 0.41f, w, 40), $"Best streak  {Score.BestStreak}", _mid);
                     Label(new Rect(0, h * 0.49f, w, 40), $"Perfect  {Score.PerfectPercent:0}%", _mid);
@@ -438,6 +460,26 @@ namespace ShiftShift
             if (p.z <= 0f) return;
             float x = p.x, y = Screen.height - p.y; // GUI y runs down
             DrawDots(x, y - 20, taps, lit, new Color(0.95f, 0.12f, 0.24f), new Color(1f, 1f, 1f, 0.55f), 16f);
+        }
+
+        // A cheer per level, growing towards the finale (ELIA, day 27: levels 1 and 2 hers, the rest to match).
+        private static readonly string[] Cheers = { "Hurray!", "Awesome!", "Brilliant!", "Fantastic!", "Unstoppable!", "Legendary!" };
+
+        /// <summary>"Hurray! Level 1 complete" for "level01"; plain "Level complete" for test levels (level00, others).</summary>
+        public static string CompleteHeading(string levelAssetName)
+        {
+            int n = LevelNumber(levelAssetName);
+            if (n < 1 || n > Cheers.Length) return "Level complete";
+            return $"{Cheers[n - 1]} Level {n} complete";
+        }
+
+        /// <summary>The number at the end of a level's asset name ("level03" -> 3); 0 when there is none.</summary>
+        public static int LevelNumber(string levelAssetName)
+        {
+            string name = levelAssetName ?? "";
+            int i = name.Length;
+            while (i > 0 && char.IsDigit(name[i - 1])) i--;
+            return int.TryParse(name.Substring(i), out int n) ? n : 0;
         }
 
         /// <summary>
