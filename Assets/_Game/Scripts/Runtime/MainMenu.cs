@@ -163,7 +163,8 @@ namespace ShiftShift
             }
             float tips = top + Moves.Length * row + 10;
             GUI.Label(new Rect(w * 0.1f, tips, w * 0.8f, 60),
-                "Act on the click for more points: PERFECT and GOOD build your streak and multiplier.   Esc: pause", _small);
+                "Act on the click for more points: PERFECT and GOOD build your streak and multiplier.   Esc: pause\n" +
+                "Timing feels off (for example with Bluetooth headphones)? Use Calibrate timing in the menu.", _small);
             GUI.Label(new Rect(0, h * 0.92f, w, 30), "Any Shift: back", _small);
         }
 

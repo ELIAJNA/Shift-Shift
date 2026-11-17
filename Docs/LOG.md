@@ -948,3 +948,16 @@ second Left press during a held Right both register; auto-repeat 30 ms later ign
 Not run: a Web build with the new template (written by hand, not copied from Unity's; if the page fails to load, the
 first suspect is it), real Chrome on Windows, the editor focus pause (clicking outside the Game view now pauses a run).
 
+
+## 2026-11-17 — D25: calibration screen background
+
+ELIA: the Calibrate scene showed Unity's default sky, so the white text was hard to read. LatencyCalibration now sets
+the camera to the menu's plain #101418 on Awake (no scene change). Depends on: Calibrate scene only.
+Tested: compile check. Not run: in Unity.
+
+## 2026-11-17 — D25: calibration hint on How to play
+
+ELIA asked for a pointer to calibration. How to play (MainMenu.DrawHowTo) now has a second tip line: "Timing feels off
+(for example with Bluetooth headphones)? Use Calibrate timing in the menu." Fits in the existing 60 px tip area (two
+lines at 17 px); checked by arithmetic for 600 and 1080 px high screens, not seen. Depends on: Menu scene only.
+Tested: compile check. Not run: in Unity.
