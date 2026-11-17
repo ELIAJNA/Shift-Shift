@@ -2,7 +2,7 @@
 
     python tools/title/make_title.py --out <file.png> [--skew 0.2] [--cap 150] [--depth 0.11]
 
-Style (ELIA, day 27): mirrored letter pairs in the six action colours, outside in (lane orange, slide yellow, sprint
+Style (ELIA, day 27; --white: white letters with the colours as the 3D sides): mirrored letter pairs in the six action colours, outside in (lane orange, slide yellow, sprint
 cyan, jump pink #FF4FE8, phase blue; + charge red); a dark navy 3D extrusion down-right; a dark outline; a satin face
 (soft sheen at the top, a thin bright line, shade towards the bottom). Optional forward lean (--skew).
 Needs Pillow. The font file and its licence sit next to this script.
@@ -19,7 +19,7 @@ def hexc(h):
     return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
 
 
-def render(cap=150, skew=0.0, depth_frac=0.11, letter_gap=0.06):
+def render(cap=150, skew=0.0, depth_frac=0.11, letter_gap=0.06, white=False):
     font_px = int(cap / 0.72)
     font = ImageFont.truetype(os.path.join(HERE, "BlackOpsOne-Regular.ttf"), font_px)
     cap_h = -font.getbbox("H", anchor="ls")[1]
@@ -53,12 +53,17 @@ def render(cap=150, skew=0.0, depth_frac=0.11, letter_gap=0.06):
     face, colour = lean_it(face), lean_it(colour)
 
     out = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    # Extrusion, back to front.
+    # Extrusion, back to front: dark navy, or (white style) each letter's own colour, darkening with depth.
     for d in range(depth, 0, -1):
         t = (d - 1) / max(1, depth - 1)
-        c = tuple(int(a + (b - a) * t) for a, b in zip((34, 44, 78), (8, 10, 20)))
-        layer = Image.new("RGBA", (W, H), c + (0,))
-        layer.putalpha(ImageChops.offset(face, int(round(d * 0.6)), d))
+        shift = lambda img: ImageChops.offset(img, int(round(d * 0.6)), d)
+        if white:
+            k = 1.0 - 0.6 * t
+            layer = shift(colour).point(lambda v, k=k: int(v * k)).convert("RGBA")
+        else:
+            c = tuple(int(a + (b - a) * t) for a, b in zip((34, 44, 78), (8, 10, 20)))
+            layer = Image.new("RGBA", (W, H), c + (0,))
+        layer.putalpha(shift(face))
         out.alpha_composite(layer)
     # Outline.
     ring = face.filter(ImageFilter.MaxFilter(2 * outline + 1))
@@ -77,7 +82,7 @@ def render(cap=150, skew=0.0, depth_frac=0.11, letter_gap=0.06):
             light += 0.25
         dark = 0.38 * (t - 0.55) / 0.45 if t > 0.55 else 0
         for xx in range(W):
-            r, g, b = cpx[xx, yy]
+            r, g, b = (236, 240, 245) if white else cpx[xx, yy]
             r += (255 - r) * light; g += (255 - g) * light; b += (255 - b) * light
             px[xx, yy] = (int(r * (1 - dark)), int(g * (1 - dark)), int(b * (1 - dark * 0.9)))
     layer = shade.convert("RGBA")
@@ -92,7 +97,10 @@ if __name__ == "__main__":
     ap.add_argument("--cap", type=int, default=150)
     ap.add_argument("--skew", type=float, default=0.0)
     ap.add_argument("--depth", type=float, default=0.11)
+    ap.add_argument("--white", action="store_true", help="white satin letters, each pair's colour as the 3D side")
     a = ap.parse_args()
-    img = render(a.cap, a.skew, a.depth)
+    # Drawn at double size and scaled down: smooth extrusion steps and edges.
+    big = render(a.cap * 2, a.skew, a.depth, white=a.white)
+    img = big.resize((big.width // 2, big.height // 2), Image.LANCZOS)
     img.save(a.out, optimize=True)
     print(a.out, img.size, os.path.getsize(a.out) // 1024, "KB")
