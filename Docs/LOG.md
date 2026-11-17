@@ -1182,3 +1182,18 @@ for levels 1-6 (number read from the level's asset name); "Level complete" for t
 40% to 50% of the screen so the longest heading fits at 960 px wide.
 Tested: the heading function run on every level name (level01-06, level00, test_track, none); compile check.
 Not run: in Unity.
+
+## 2026-11-17 — D27: celebration dances
+
+ELIA asked for a short celebratory dance per level at the end of the level. RunnerFigure.Dance (when the run is
+Completed): the runner turns to face the camera (0.35 s), then dances on the beat of the level's tempo, timed on the
+audio clock (dspTime): 1 victory pump, 2 disco point, 3 jumping jacks, 4 spin and pose, 5 running man, 6 finale
+(spin, big jump, arms up with the flame lit). Posed from the existing limb pivots (shoulders, hips); no new art.
+GameFlow: the results box waits celebrateSeconds (3 s, Inspector) after the level ends; meanwhile only the cheer
+heading (big, top of the screen) and the score show; results keys start when the box appears (keys reset then, so a
+held key cannot pick an option). Trailer mode waits 3 s longer on each level's results. GameFlow.LevelNumber added
+(shared by the heading and the dance).
+Depends on / could break: RunnerFigure (Run, LevelTest, Greybox scenes; only acts once a run is Completed), GameFlow
+results flow (Run, LevelTest).
+Tested: compile check (normal and Web), Core tests 175. Not run: in Unity. The limb angles are worked out from the
+figure's pivots, not seen: a dance may need its angles flipped (an arm going into the body instead of out).
