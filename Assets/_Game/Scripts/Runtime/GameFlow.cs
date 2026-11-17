@@ -447,7 +447,7 @@ namespace ShiftShift
         private static void Label(Rect r, string text, GUIStyle style)
         {
             Color old = GUI.color;
-            float o = Mathf.Max(2f, style.fontSize / 18f);
+            float o = Mathf.Clamp(style.fontSize / 18f, 2f, 4f); // tight even on the big GO (ELIA, day 27)
             GUI.color = new Color(0f, 0f, 0f, 0.7f * old.a); // multiplies rich-text colours too: the shadow stays dark
             GUI.Label(new Rect(r.x + o, r.y + o, r.width, r.height), text, style);
             GUI.color = old;

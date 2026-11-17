@@ -1031,3 +1031,8 @@ possible), results and pause screens darken the game behind them (45% black). Th
 the charge counter above the runner used the characters ● and ○, which the Web font does not have (as with the menu):
 now drawn as squares (DrawDots). Depends on: GameFlow (Run, LevelTest).
 Tested: compile check (normal and Web). Not run: in Unity or the browser.
+
+## 2026-11-17 — D27: HUD shadows checked
+
+ELIA's screenshots: "Shift to retry" readable on the overcast level with the dimmed background. The big GO's shadow
+(8 px away at 140 px text) read as a grey double: shadow offset now capped at 4 px.
