@@ -1124,3 +1124,16 @@ ELIA asked whether to retake the trailer with the new look and logo: yes (sparks
 readable HUD, new title). make_cards.py's end card now uses make_itch_art.logo_block (tiles, leaping runner, 3D title,
 tagline) above the call to action. logo_block draws the title sides in 1 px steps (at end-card size the 2-4 px steps
 showed stripes); banner and cover re-rendered. Docs/TRAILER-EDIT.md: "Retake (day 27)" steps for the PC session.
+
+## 2026-11-17 — D27: trailer retake rendered (Recordings/trailer/shiftshift_trailer.mp4)
+
+Re-cut from Recordings/Movie_005.mp4 (new trailer-mode recording of all six levels; no fails this time, level 5
+included). Same shot list and timings as the first trailer (first version kept in Recordings/trailer/v1/). Beat 0 of
+each level found from the count-in; levels 2 and 4 line up with the old recording exactly, the others by a fixed
+offset, and every pick was moved to the same moment (checked on contact sheets, approved by ELIA before render).
+Cards regenerated (new end card with the title block). Movie_004 (7 s of the new menu) not used: no slot in the
+fixed shot list. Output: 1920x1080, 30 fps, 1326 frames, 44.21 s, H.264 CRF 18, AAC 192k, 21.7 MB.
+Tested: frames by index at cuts (black card -> TAP at frame 303 = the drop; 14d -> end card at 1213), a mid frame
+of every shot (captions readable, HUD visible, no debug text), audio drops over the last 2 s.
+Uncertain: the PERFECT sparks are small in the footage (a few dots for a few frames); not watched in real time with
+sound here.
