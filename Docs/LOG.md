@@ -982,3 +982,14 @@ PowerShell 5.1 Compress-Archive (my instruction), which writes paths with backsl
 itch.io's server treats that as a file name, not a folder. Fix: zip the contents of Builds/WebGL with File Explorer
 (Compress to ZIP file). Never use Compress-Archive for the itch zip. The template itself loaded fine.
 Also: the YouTube trailer on the page is Private (shows "This video is private"): set it to Unlisted or Public.
+
+## 2026-11-17 — D25: itch build loads; menu text fitted to small screens
+
+ELIA re-zipped with File Explorer: the game loads on itch.io. In its small frame the menu text was cut off (the entry
+description and the Sticky Keys note wrapped onto lines their boxes had no room for). MainMenu: text shrinks on screens
+under 700 px high (to 70% at most; unchanged from 700 px up); wrapped labels measure their own height (CalcHeight);
+the bottom lines are placed from the bottom edge up; How to play's rows share the space left between the intro and the
+tips. The page dots were never visible in the browser (the Web font has no dot characters, like the arrows): drawn as
+small squares now. Depends on: Menu scene only.
+Tested: compile check (normal and Web); layout worked out by hand for 450 and 1080 px high. Not run: in Unity or the
+browser.

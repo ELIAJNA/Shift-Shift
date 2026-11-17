@@ -145,14 +145,30 @@ namespace ShiftShift
             ("Left, Right, Left, Right quickly", "Charge, then smash", "#F21E3D", "red brick walls"),
         };
 
+        private float _k = 1f; // text scale for the screen height
+
+        /// <summary>Height a wrapped label needs at this width.</summary>
+        private static float Fit(GUIStyle style, string text, float width) => style.CalcHeight(new GUIContent(text), width) + 4f;
+
         private void DrawHowTo(float w, float h)
         {
-            GUI.Label(new Rect(0, h * 0.05f, w, 70), "How to play", _big);
-            GUI.Label(new Rect(w * 0.1f, h * 0.05f + 62, w * 0.8f, 34),
-                "You run by yourself. Obstacles arrive on the beat: answer each one with the move its colour asks for.", _small);
+            GUI.Label(new Rect(0, h * 0.04f, w, 70 * _k), "How to play", _big);
+            const string intro = "You run by yourself. Obstacles arrive on the beat: answer each one with the move its colour asks for.";
+            float introY = h * 0.04f + 62 * _k, introH = Fit(_small, intro, w * 0.8f);
+            GUI.Label(new Rect(w * 0.1f, introY, w * 0.8f, introH), intro, _small);
+
+            // Bottom up (day 25: text was cut off in itch.io's small frame): back hint, tips, then the rows share the rest.
+            float backH = 30 * _k, backY = h - backH - 6 * _k;
+            GUI.Label(new Rect(0, backY, w, backH), "Any Shift: back", _small);
+            const string tipText = "Act on the click for more points: PERFECT and GOOD build your streak and multiplier.   Esc: pause\n" +
+                                   "Timing feels off (for example with Bluetooth headphones)? Use Calibrate timing in the menu.";
+            float tipsH = Fit(_small, tipText, w * 0.8f), tipsY = backY - tipsH - 4 * _k;
+            GUI.Label(new Rect(w * 0.1f, tipsY, w * 0.8f, tipsH), tipText, _small);
+
             var left = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = false };
-            var right = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = true, fontSize = 20 };
-            float top = h * 0.05f + 110, row = Mathf.Min(64f, h * 0.085f), x0 = w * 0.08f, x1 = w * 0.45f;
+            var right = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = true, fontSize = Mathf.RoundToInt(20 * _k) };
+            float top = introY + introH + 8 * _k, x0 = w * 0.08f, x1 = w * 0.45f;
+            float row = Mathf.Min(64f * _k, (tipsY - 6 * _k - top) / Moves.Length);
             for (int i = 0; i < Moves.Length; i++)
             {
                 var m = Moves[i];
@@ -161,11 +177,6 @@ namespace ShiftShift
                 GUI.Label(new Rect(x1, y, w * 0.92f - x1, row),
                     $"<color={m.colour}><b>{m.action}</b></color>  through {m.obstacle}", right);
             }
-            float tips = top + Moves.Length * row + 10;
-            GUI.Label(new Rect(w * 0.1f, tips, w * 0.8f, 60),
-                "Act on the click for more points: PERFECT and GOOD build your streak and multiplier.   Esc: pause\n" +
-                "Timing feels off (for example with Bluetooth headphones)? Use Calibrate timing in the menu.", _small);
-            GUI.Label(new Rect(0, h * 0.92f, w, 30), "Any Shift: back", _small);
         }
 
         private static Texture2D _arrowLeft, _arrowRight;
@@ -206,6 +217,13 @@ namespace ShiftShift
                 _small = new GUIStyle(GUI.skin.label) { fontSize = 17, alignment = TextAnchor.MiddleCenter, richText = true, wordWrap = true };
             }
             float w = Screen.width, h = Screen.height;
+            // Day 25 (ELIA): in itch.io's small frame the text was cut off. Shrink the text on short screens (sizes
+            // as before from 700 px high up), and let wrapped text measure its own height below.
+            _k = Mathf.Clamp(h / 700f, 0.7f, 1f);
+            _title.fontSize = Mathf.RoundToInt(84 * _k);
+            _big.fontSize = Mathf.RoundToInt(46 * _k);
+            _mid.fontSize = Mathf.RoundToInt(24 * _k);
+            _small.fontSize = Mathf.RoundToInt(17 * _k);
 
             if (_page == Page.HowTo)
             {
@@ -220,37 +238,50 @@ namespace ShiftShift
                 return;
             }
 
-            GUI.Label(new Rect(0, h * 0.08f, w, 110), "SHIFT+SHIFT", _title);
+            GUI.Label(new Rect(0, h * 0.08f, w, 110 * _k), "SHIFT+SHIFT", _title);
             if (!WebAudioUnlock.Ready)
             {
                 // Web build only: the browser needs one click before it plays sound (it does not count Shift).
-                GUI.Label(new Rect(0, h * 0.08f + 105, w, 30), "A Rhythm Runner Played With Just Two Keys", _small);
+                GUI.Label(new Rect(0, h * 0.08f + 105 * _k, w, 30 * _k), "A Rhythm Runner Played With Just Two Keys", _small);
                 GUI.Label(new Rect(0, h * 0.42f, w, 70), "Click to start", _big);
-                GUI.Label(new Rect(w * 0.1f, h * 0.42f + 75, w * 0.8f, 40),
-                    "(or press Space). Your browser needs this once before it plays sound. After that, just the two Shift keys.", _mid);
+                const string why = "(or press Space). Your browser needs this once before it plays sound. After that, just the two Shift keys.";
+                GUI.Label(new Rect(w * 0.1f, h * 0.42f + 75 * _k, w * 0.8f, Fit(_mid, why, w * 0.8f)), why, _mid);
                 return;
             }
-            GUI.Label(new Rect(0, h * 0.08f + 105, w, 30), "A Rhythm Runner Played With Just Two Keys", _small);
+            GUI.Label(new Rect(0, h * 0.08f + 105 * _k, w, 30 * _k), "A Rhythm Runner Played With Just Two Keys", _small);
 
             Entry e = _entries[_index];
-            GUI.Label(new Rect(0, h * 0.40f, w, 70), e.Title, _big);
+            GUI.Label(new Rect(0, h * 0.40f, w, 70 * _k), e.Title, _big);
             // Arrows are drawn as images: the Web build's font has no arrow characters (ELIA, day 20: missing in the browser).
-            float half = _big.CalcSize(new GUIContent(e.Title)).x * 0.5f, size = 44f, gap = 50f, cy = h * 0.40f + 35f;
+            float half = _big.CalcSize(new GUIContent(e.Title)).x * 0.5f, size = 44f * _k, gap = 50f * _k, cy = h * 0.40f + 35f * _k;
             Color old = GUI.color;
             GUI.color = new Color(0.55f, 0.55f, 0.55f, 1f);
             GUI.DrawTexture(new Rect(w * 0.5f - half - gap - size, cy - size * 0.5f, size, size), Arrow(false));
             GUI.DrawTexture(new Rect(w * 0.5f + half + gap, cy - size * 0.5f, size, size), Arrow(true));
             GUI.color = old;
-            GUI.Label(new Rect(w * 0.1f, h * 0.40f + 75, w * 0.8f, 40), e.Detail, _mid);
+            float detailY = h * 0.40f + 75 * _k;
+            float detailH = Fit(_mid, e.Detail, w * 0.8f);
+            GUI.Label(new Rect(w * 0.1f, detailY, w * 0.8f, detailH), e.Detail, _mid);
 
-            string dots = "";
-            for (int i = 0; i < _entries.Count; i++) dots += i == _index ? "● " : "○ ";
-            GUI.Label(new Rect(0, h * 0.40f + 130, w, 30), dots.TrimEnd(), _mid);
+            // Which entry this is: small squares (the Web build's font has no dot characters either).
+            float dot = 9f * _k, step = 18f * _k, dotsY = detailY + detailH + 10f * _k;
+            float dotsX = w * 0.5f - (_entries.Count * step - (step - dot)) * 0.5f;
+            for (int i = 0; i < _entries.Count; i++)
+            {
+                GUI.color = i == _index ? Color.white : new Color(1f, 1f, 1f, 0.3f);
+                GUI.DrawTexture(new Rect(dotsX + i * step, dotsY, dot, dot), Texture2D.whiteTexture);
+            }
+            GUI.color = old;
 
-            GUI.Label(new Rect(0, h * 0.74f, w, 34), "<b>Left Shift</b> / <b>Right Shift</b>: choose      <b>Both together</b>: open", _mid);
-            GUI.Label(new Rect(w * 0.1f, h * 0.86f, w * 0.8f, 50),
-                "Windows: pressing Shift five times in a row opens a Sticky Keys box. Choose No, or turn the shortcut off " +
-                "in Settings > Accessibility > Keyboard. Keep this page in focus while you play.", _small);
+            // Bottom up, so nothing runs off the screen.
+            const string sticky = "Windows: pressing Shift five times in a row opens a Sticky Keys box. Choose No, or turn the shortcut off " +
+                                  "in Settings > Accessibility > Keyboard. Keep this page in focus while you play.";
+            float stickyH = Fit(_small, sticky, w * 0.84f);
+            float stickyY = h - stickyH - 8f * _k;
+            GUI.Label(new Rect(w * 0.08f, stickyY, w * 0.84f, stickyH), sticky, _small);
+            const string keys = "<b>Left Shift</b> / <b>Right Shift</b>: choose      <b>Both together</b>: open";
+            float keysH = Fit(_mid, keys, w);
+            GUI.Label(new Rect(0, Mathf.Max(dotsY + dot + 8f * _k, stickyY - keysH - 6f * _k), w, keysH), keys, _mid);
         }
     }
 }
