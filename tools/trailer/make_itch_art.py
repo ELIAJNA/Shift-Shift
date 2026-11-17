@@ -229,6 +229,122 @@ def keycap(im, cx, cy, label, col, fontp, scale=1.0):
     text(im, label, int(26 * scale), (cx, cy), col, fontp)
 
 
+TILE_ORDER = ["lane", "slide", "sprint", "jump", "phase", "charge"]
+TILE_COL = dict(COL, jump=(255, 79, 232))  # the title pink, lighter than the game's jump pink
+
+
+def logo_block(im, x, title_cy, k, bold, med, tagline, align="centre"):
+    """The menu's title block (MainMenu.DrawLogo, day 27): six tiles over the two SHIFTs (none over the +), the boxy
+    runner leaping from the 3rd tile to the 4th, the 3D title (white face, cyan sides, faint glow) and the tagline
+    with a small dark shadow. Sizes as in the menu at scale k; x is the title's centre, or its left edge."""
+    f = ImageFont.truetype(bold, int(84 * k * SS))
+    full, wS = f.getlength("SHIFT+SHIFT"), f.getlength("SHIFT")
+    wP = full - 2 * wS
+    left = x - full / 2 if align == "centre" else x
+    cy = title_cy
+    d = ImageDraw.Draw(im)
+
+    # Tiles.
+    ty, th = cy - 84 * k * SS, 14 * k * SS
+    tiles = []
+    for g in range(2):
+        a = left + g * (wS + wP)
+        tw = wS / (3 + 2 * 0.16)
+        for i in range(3):
+            tiles.append((a + i * tw * 1.16, a + i * tw * 1.16 + tw, TILE_COL[TILE_ORDER[g * 3 + i]]))
+    glow = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    gd = ImageDraw.Draw(glow)
+    for x0, x1, c in tiles:
+        gd.rounded_rectangle([x0, ty, x1, ty + th], radius=4 * k * SS, fill=c + (200,))
+    im.alpha_composite(glow.filter(ImageFilter.GaussianBlur(10 * k * SS)))
+    d = ImageDraw.Draw(im)
+    for x0, x1, c in tiles:
+        d.rounded_rectangle([x0 + 3 * k * SS, ty + 5 * k * SS, x1 + 3 * k * SS, ty + th + 5 * k * SS], radius=4 * k * SS,
+                            fill=lerp(c, (0, 0, 0), 0.6))
+        d.rounded_rectangle([x0, ty, x1, ty + th], radius=4 * k * SS, fill=c)
+        d.rounded_rectangle([x0, ty, x1, ty + th * 0.4], radius=4 * k * SS, fill=lerp(c, (255, 255, 255), 0.35))
+
+    # Jump arc and runner.
+    x3, x4 = (tiles[2][0] + tiles[2][1]) / 2, (tiles[3][0] + tiles[3][1]) / 2
+    top, apex = ty - 4 * k * SS, 42 * k * SS
+    for n in range(2, 30, 2):
+        t = n / 30
+        if abs(t - 0.5) <= 0.12:
+            continue
+        px, py = x3 + (x4 - x3) * t, top - 4 * apex * t * (1 - t)
+        r = 2.2 * k * SS
+        d.ellipse([px - r, py - r, px + r, py + r], fill=(190, 225, 232, 140))
+    u = 7.6 * k * SS
+    rx = (x3 + x4) / 2
+    hip = (rx - 0.6 * u, top - apex + 6 * k * SS - 2.8 * u)
+    for dy, ln in [(-5.5, 5), (-3.6, 8), (-1.7, 4)]:
+        d.rectangle([hip[0] - 3.6 * u - ln * u, hip[1] + dy * u - 0.28 * u, hip[0] - 3.0 * u, hip[1] + dy * u + 0.28 * u],
+                    fill=(0, 250, 247, 130))
+
+    def seg(p, ang, ln, wd, col):
+        a = math.radians(ang)
+        dx, dy = math.sin(a), math.cos(a)
+        nx, ny = -dy, dx
+        q = (p[0] + dx * ln, p[1] + dy * ln)
+        hw = wd / 2
+        d.polygon([(p[0] + nx * hw, p[1] + ny * hw), (q[0] + nx * hw, q[1] + ny * hw),
+                   (q[0] - nx * hw, q[1] - ny * hw), (p[0] - nx * hw, p[1] - ny * hw)], fill=col)
+        return q
+
+    white, grey = (247, 247, 242), (150, 160, 172)
+    torso = 160
+    a = math.radians(torso)
+    neck = (hip[0] + math.sin(a) * 4.4 * u, hip[1] + math.cos(a) * 4.4 * u)
+    shoulder = (hip[0] + (neck[0] - hip[0]) * 0.85, hip[1] + (neck[1] - hip[1]) * 0.85)
+    limbs = [(hip, -55, -110, 2.4, 2.2, 1.2, False), (shoulder, 60, 120, 2.5, 2.3, 1.0, False),
+             (hip, 75, 20, 2.4, 2.2, 1.25, True), (shoulder, -50, -100, 2.5, 2.3, 1.0, True)]
+
+    def limb(l, col):
+        p, a1, a2, l1, l2, wd, _ = l
+        kn = seg(p, a1, l1 * u, wd * u, col)
+        seg(kn, a2, l2 * u, wd * 0.92 * u, col)
+
+    for l in limbs:
+        if l[6]:
+            limb(l, grey)  # far side, behind the body
+    seg(hip, torso, 4.4 * u, 2.6 * u, white)
+    head = (neck[0] + math.sin(a) * 1.3 * u, neck[1] + math.cos(a) * 1.3 * u)
+    seg((head[0] - math.sin(a) * 1.1 * u, head[1] - math.cos(a) * 1.1 * u), torso, 2.2 * u, 2.2 * u, white)
+    for l in limbs:
+        if not l[6]:
+            limb(l, white)
+
+    # Title: 12 layers of cyan fading to dark, a faint cyan glow, white face.
+    anchor = "mm" if align == "centre" else "lm"
+    tx = x if align == "centre" else left
+    depth, step = max(3, round(12 * k)), 1.1 * k * SS
+
+    def layer(dx, dy, col):
+        L = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        ImageDraw.Draw(L).text((tx + dx, cy + dy), "SHIFT+SHIFT", font=f, fill=col, anchor=anchor)
+        im.alpha_composite(L)
+    for i in range(depth, 0, -1):
+        layer(i * step * 0.6, i * step, lerp((0, 191, 199), (5, 31, 41), (i - 1) / max(1, depth - 1)) + (255,))
+    for gx in (-2, 0, 2):
+        for gy in (-2, 0, 2):
+            if gx or gy:
+                layer(gx * SS, gy * SS, (0, 250, 247, 46))
+    layer(0, 0, (247, 247, 242, 255))
+
+    # Tagline: clean, a 2 px dark shadow.
+    tf = ImageFont.truetype(bold, int(22 * k * SS))
+    ty2 = cy + 70 * k * SS
+    tx2 = x if align == "centre" else left + 4 * SS
+    for i in (2, 1):
+        L = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        ImageDraw.Draw(L).text((tx2 + i * 0.6 * k * SS, ty2 + i * k * SS), tagline, font=tf, fill=(10, 14, 28, 255), anchor=anchor)
+        im.alpha_composite(L)
+    L = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    ImageDraw.Draw(L).text((tx2, ty2), tagline, font=tf, fill=(236, 240, 245, 255), anchor=anchor)
+    im.alpha_composite(L)
+    return ty2 + 16 * k * SS
+
+
 def finish(im, w, h, path):
     im.convert("RGB").resize((w, h), Image.LANCZOS).save(path, optimize=True)
     print(path, os.path.getsize(path) // 1024, "KB")
@@ -251,22 +367,19 @@ def main():
     bold = ff(["InterDisplay-Black.otf", "InterDisplay-Bold.otf", "ariblk.ttf", "arialbd.ttf", "DejaVuSans-Bold.ttf"])
     med = ff(["InterDisplay-Medium.otf", "arial.ttf", "DejaVuSans.ttf"])
 
-    # Banner 960x300: road and obstacles on the right, title and the two keys on the left.
-    w, h = 960, 300
-    im = scene_image(w, h, 0.42, 0.72)
+    # Banner 960x360: road and obstacles on the right; the title block (as in the menu) and the two keys on the left.
+    w, h = 960, 360
+    im = scene_image(w, h, 0.42, 0.74)
     shade = Image.new("RGBA", im.size, (0, 0, 0, 0))
     ds = ImageDraw.Draw(shade)
     for x in range(int(im.size[0] * 0.62)):
         ds.line([(x, 0), (x, im.size[1])], fill=(6, 8, 22, int(235 * (1 - x / (im.size[0] * 0.62)) ** 0.6)))
     im.alpha_composite(shade)
-    text(im, "SHIFT+SHIFT", 84, (40 * SS, 112 * SS), COL["white"], bold, anchor="lm", glow=(92, 225, 230))
-    for i, c in enumerate(["lane", "slide", "sprint", "jump", "phase", "charge"]):
-        ImageDraw.Draw(im).rectangle([(44 + i * 62) * SS, 52 * SS, (44 + i * 62 + 52) * SS, 58 * SS], fill=COL[c])
-    text(im, "A rhythm runner played with just two keys", 24, (44 * SS, 172 * SS), (201, 209, 216), med, anchor="lm")
-    keycap(im, (44 + 75) * SS, 236 * SS, "⇧  LEFT", COL["sprint"], bold, 1.0)
-    text(im, "+", 34, ((44 + 175) * SS, 236 * SS), COL["white"], bold)
-    keycap(im, (44 + 275) * SS, 236 * SS, "RIGHT  ⇧", COL["jump"], bold, 1.0)
-    finish(im, w, h, os.path.join(a.out, "banner_960x300.png"))
+    logo_block(im, 40 * SS, 188 * SS, 0.9, bold, med, "A Rhythm Runner Played With Just Two Keys", align="left")
+    keycap(im, (44 + 75) * SS, 314 * SS, "⇧  LEFT", COL["sprint"], bold, 1.0)
+    text(im, "+", 34, ((44 + 175) * SS, 314 * SS), COL["white"], bold)
+    keycap(im, (44 + 275) * SS, 314 * SS, "RIGHT  ⇧", COL["jump"], bold, 1.0)
+    finish(im, w, h, os.path.join(a.out, "banner_960x360.png"))
 
     # Page background 1920x1080: the scene, darkened, so the page column in the middle stays readable.
     w, h = 1920, 1080
@@ -290,7 +403,7 @@ def main():
 
     # Cover 630x500 (itch.io's recommended size): title over the scene, the two keys at the bottom.
     w, h = 630, 500
-    im = scene_image(w, h, 0.47, 0.5)
+    im = scene_image(w, h, 0.6, 0.5)
     top = Image.new("RGBA", im.size, (0, 0, 0, 0))
     dt = ImageDraw.Draw(top)
     for y in range(int(im.size[1] * 0.3)):
@@ -299,11 +412,7 @@ def main():
         t = (y - im.size[1] * 0.7) / (im.size[1] * 0.3)
         dt.line([(0, y), (im.size[0], y)], fill=(6, 8, 22, int(210 * t)))
     im.alpha_composite(top)
-    for i, c in enumerate(["lane", "slide", "sprint", "jump", "phase", "charge"]):
-        x0 = (w - 6 * 50 + 10) / 2 + i * 50
-        ImageDraw.Draw(im).rectangle([x0 * SS, 26 * SS, (x0 + 40) * SS, 31 * SS], fill=COL[c])
-    text(im, "SHIFT+SHIFT", 72, (w * SS / 2, 78 * SS), COL["white"], bold, glow=(92, 225, 230))
-    text(im, "Two keys. Seven moves. One beat.", 22, (w * SS / 2, 128 * SS), (201, 209, 216), med)
+    logo_block(im, w * SS / 2, 170 * SS, 0.8, bold, med, "Two Keys. Seven Moves. One Beat.")
     keycap(im, (w / 2 - 95) * SS, 452 * SS, "⇧  LEFT", COL["sprint"], bold, 0.95)
     text(im, "+", 32, (w / 2 * SS, 452 * SS), COL["white"], bold)
     keycap(im, (w / 2 + 95) * SS, 452 * SS, "RIGHT  ⇧", COL["jump"], bold, 0.95)

@@ -1100,3 +1100,15 @@ default font. MainMenu.DrawLogo draws it again with Extruded; Core/TitleArt and 
 history at ae0b8c8). tools/title (Black Ops One / Russo One generator with fonts and OFL texts) is kept as a tool; the
 game uses no extra font, so the credits need no font line.
 Tested: compile check (normal and Web), Core tests 175. Not run: in Unity (same drawing ELIA saw on day 27).
+
+## 2026-11-17 — D27: title block with tiles and the leaping runner (menu, banner, cover)
+
+ELIA approved (after previews): six tiles in the action colours above the title, three over each SHIFT and none over
+the +; the boxy runner leaping from the 3rd tile to the 4th over the + on a dotted arc, with speed streaks; near limbs
+white, far limbs grey and drawn behind the body; the first 3D title; the tagline clean (no glow, 2 px dark shadow).
+MainMenu.DrawLogo draws it all with IMGUI boxes (rotated with GUIUtility.RotateAroundPivot; no image files). The title
+block moved down to make room (title centre at max(8% + 150 px, 214 px) x scale) and the level selector and "Click to
+start" follow it on short screens (worked out for 450, 600 and 1080 px high). Extruded skips the glow when it is clear.
+itch.io art (tools/trailer/make_itch_art.py, logo_block with the same measurements): banner now 960x360 (title block
+on the left, the keys below it), cover 630x500 with the title block at the top. Images in itch-art/ (not in git).
+Tested: compile check (normal and Web), previews of the itch art. Not run: the menu in Unity.
