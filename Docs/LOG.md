@@ -1143,3 +1143,9 @@ shared palette, no dithering. Checked frame by frame here; not yet seen on itch.
 ELIA: the banner's logo and a second plain SHIFT+SHIFT on the game frame's background right below it looked doubled.
 embed_bg_960x600.png now carries only the scene and "Click to play · headphones on". Also noted: the itch.io page is
 now at jna24.itch.io/shift-shift (username changed); use that in the README and the YouTube description.
+
+## 2026-11-17 — D27: hook line on the game frame
+
+ELIA chose the hook "You've pressed Shift a million times. Never like this." followed by the click hint.
+embed_bg_960x600.png: the hook above the Run game button (where the old title sat, fully visible in itch's frame,
+740 px wide so it survives a side crop to 800), "Click to play · headphones on" below the runner as before.
