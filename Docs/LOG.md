@@ -1000,3 +1000,7 @@ ELIA: music credit should read only "Tricks & Traps (CC0)". The Menu scene still
 list, no Kenney line): Set Up Visuals had not been re-run and saved since day 23. Updated both the generator
 (GreyboxSetup.Menu CreditsText) and the saved Menu scene's credits field: "Music: Tricks & Traps (CC0)", "Sound effects:
 Kenney". Not run: in Unity (scene text edited in the file).
+
+## 2026-11-17 — D25: confirmed
+
+ELIA: credits, menu text fit and the itch build all good.
