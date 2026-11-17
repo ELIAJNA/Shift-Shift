@@ -40,6 +40,14 @@ namespace ShiftShift
             _source.playOnAwake = false;
             _clip = Resources.Load<AudioClip>(clickClip);
             if (_clip == null) Debug.LogError($"[Calibration] Click clip '{clickClip}' not found in a Resources folder.");
+
+            // Same plain dark background as the menu (day 25, ELIA: the default sky made the text hard to read).
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                cam.clearFlags = CameraClearFlags.SolidColor;
+                cam.backgroundColor = new Color(0.0627f, 0.0784f, 0.0941f); // menu #101418
+            }
         }
 
         private void Update()
