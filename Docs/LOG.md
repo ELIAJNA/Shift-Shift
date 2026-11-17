@@ -974,3 +974,11 @@ ELIA built Web (Build/*.unityweb, 16.05 MB; a measured 32 MB was the old shift-s
 zipped it outside the folder, uploaded it to itch.io in place of the old zip; testers are re-checking the sprint lane
 move and fullscreen. Not confirmed: that index.html is the new ShiftShift template (TemplateData/profiler.js in the
 folder may be left over from an older build).
+
+## 2026-11-17 — D25: itch build did not load (zip paths)
+
+Testers: the page stayed on the loading screen. Console: 404 for Build/WebGL.loader.js. Cause: the zip was made with
+PowerShell 5.1 Compress-Archive (my instruction), which writes paths with backslashes ("Build\WebGL.loader.js");
+itch.io's server treats that as a file name, not a folder. Fix: zip the contents of Builds/WebGL with File Explorer
+(Compress to ZIP file). Never use Compress-Archive for the itch zip. The template itself loaded fine.
+Also: the YouTube trailer on the page is Private (shows "This video is private"): set it to Unlisted or Public.
