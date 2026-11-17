@@ -159,10 +159,7 @@ namespace ShiftShift
             _tagline.fontSize = Mathf.RoundToInt(22 * _k);
             _title.normal.textColor = _tagline.normal.textColor = Color.white; // tinted per layer with GUI.color
             var titleRect = new Rect(0, h * 0.08f, w, 110 * _k);
-            // Each letter in its own action colour (rich text); the layers are tinted grey, so every letter's sides are
-            // darker shades of its own colour.
-            Extruded(titleRect, TitleColoured, _title, Mathf.RoundToInt(12 * _k), 1.1f * _k,
-                Color.white, new Color(0.5f, 0.5f, 0.5f), new Color(0.12f, 0.12f, 0.12f), Color.white);
+            SatinTitle(titleRect, _title, _k);
             var tagRect = new Rect(0, h * 0.08f + 108 * _k, w, 34 * _k);
             Extruded(tagRect, "A Rhythm Runner Played With Just Two Keys", _tagline, Mathf.RoundToInt(4 * _k), 1f * _k,
                 new Color(0.79f, 0.82f, 0.85f), new Color(0.75f, 0.06f, 0.48f), new Color(0.12f, 0.02f, 0.08f),
@@ -174,6 +171,58 @@ namespace ShiftShift
         /// orange, H..F slide yellow, I..I sprint cyan, F..H jump pink, T..S phase blue, and the + charge red.
         /// </summary>
         private static readonly string TitleColoured = BuildTitle();
+
+        /// <summary>
+        /// The title as satin 3D lettering (ELIA, day 27: coloured sides merged the letters into blobs): thin dark
+        /// neutral sides and outline keep every letter separate; the face is the letter's colour with a soft light sheen
+        /// across the top and gentle shading at the bottom. IMGUI cannot fill text with a gradient, so the sheen and
+        /// shade are drawn as thin horizontal slices of the text, each clipped and tinted on its own.
+        /// </summary>
+        private static void SatinTitle(Rect r, GUIStyle style, float k)
+        {
+            const string plain = "SHIFT+SHIFT";
+            Color old = GUI.color;
+
+            // Sides: a short extrusion down and to the right, dark navy, the same for every letter.
+            int depth = Mathf.Max(3, Mathf.RoundToInt(7 * k));
+            float step = 1.1f * k;
+            for (int i = depth; i >= 1; i--)
+            {
+                GUI.color = Color.Lerp(new Color(0.13f, 0.17f, 0.3f), new Color(0.03f, 0.04f, 0.08f), (i - 1f) / Mathf.Max(1, depth - 1));
+                GUI.Label(new Rect(r.x + i * step * 0.6f, r.y + i * step, r.width, r.height), plain, style);
+            }
+            // Outline: separates the letters from their sides and from each other.
+            GUI.color = new Color(0.02f, 0.03f, 0.06f, 0.9f);
+            float o = Mathf.Max(1f, 1.6f * k);
+            for (int dx = -1; dx <= 1; dx++)
+                for (int dy = -1; dy <= 1; dy++)
+                    if (dx != 0 || dy != 0) GUI.Label(new Rect(r.x + dx * o, r.y + dy * o, r.width, r.height), plain, style);
+
+            // Face: each letter in its action colour.
+            GUI.color = Color.white;
+            GUI.Label(r, TitleColoured, style);
+
+            // Satin: where the capitals sit inside the label (text is centred vertically).
+            // One-pixel slices on whole pixels: no gaps or overlaps, so no stripes.
+            float cap = style.fontSize * 0.72f, top = Mathf.Floor(r.y + r.height * 0.5f - cap * 0.5f);
+            int slices = Mathf.Max(12, Mathf.CeilToInt(cap));
+            const float sliceH = 1f;
+            for (int i = 0; i < slices; i++)
+            {
+                float t = (i + 0.5f) / slices; // 0 top .. 1 bottom of the letters
+                float light = t < 0.5f ? 0.55f * (1f - t / 0.5f) * (1f - t / 0.5f) : 0f;   // soft sheen, strongest at the top
+                if (t > 0.2f && t < 0.28f) light += 0.25f;                                  // a thin bright satin line
+                float dark = t > 0.55f ? 0.38f * (t - 0.55f) / 0.45f : 0f;                   // shade towards the bottom
+                if (light <= 0f && dark <= 0f) continue;
+                var clip = new Rect(r.x, top + i * sliceH, r.width, sliceH);
+                GUI.BeginGroup(clip);
+                var inner = new Rect(0, r.y - clip.y, r.width, r.height);
+                if (light > 0f) { GUI.color = new Color(1f, 1f, 1f, light); GUI.Label(inner, plain, style); }
+                if (dark > 0f) { GUI.color = new Color(0f, 0f, 0.05f, dark); GUI.Label(inner, plain, style); }
+                GUI.EndGroup();
+            }
+            GUI.color = old;
+        }
 
         private static string BuildTitle()
         {
