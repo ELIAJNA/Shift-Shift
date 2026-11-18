@@ -321,7 +321,9 @@ namespace ShiftShift
             // Bottom up (day 25: text was cut off in itch.io's small frame): back hint, tips, then the rows share the rest.
             float backH = 30 * _k, backY = h - backH - 6 * _k;
             GUI.Label(new Rect(0, backY, w, backH), "Any Shift: back", _small);
-            const string tipText = "Act on the click for more points: PERFECT and GOOD build your streak and multiplier.   Esc: pause\n" +
+            // Scoring spelled out (ELIA, day 28).
+            const string tipText = "PERFECT 50, GOOD 20, OK 5 points. Hit on the beat in a row to build a streak: x2 at 10, x3 at 25, " +
+                                   "x4 at 50. OK keeps your streak; a crash ends the run.   Esc: pause\n" +
                                    "Timing feels off (for example with Bluetooth headphones)? Use Calibrate timing in the menu.";
             float tipsH = Fit(_small, tipText, w * 0.8f), tipsY = backY - tipsH - 4 * _k;
             GUI.Label(new Rect(w * 0.1f, tipsY, w * 0.8f, tipsH), tipText, _small);

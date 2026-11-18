@@ -1256,3 +1256,13 @@ Tested: compile check (Editor). Not run: Set Up Visuals; how the overlapping see
 ELIA: the top line showed "20   streak 0" without saying 20 is the score. GameFlow.DrawScore: "Score 20 · Streak 0"
 (the multiplier still follows in yellow when above x1). Run and LevelTest scenes.
 Tested: compile check. Not run: in Unity.
+
+## 2026-11-18 — D28: grade tally on the HUD; scoring explained
+
+ELIA asked whether the streak is in the rules (only named on How to play) and agreed to both changes:
+- GameFlow HUD: "PERFECT n   GOOD n   OK n" (cyan, green, grey), small, left side, just under the score line (no
+  overlap with the centred score at any score or at 960 px).
+- How to play: the first tip now reads "PERFECT 50, GOOD 20, OK 5 points. Hit on the beat in a row to build a streak:
+  x2 at 10, x3 at 25, x4 at 50. OK keeps your streak; a crash ends the run." The tips area measures its own height;
+  worked out to fit at 450 and 600 px high (rows shrink to fit).
+Tested: compile check (normal and Web). Not run: in Unity.
