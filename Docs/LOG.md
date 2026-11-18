@@ -1250,3 +1250,9 @@ moved into SeeThrough(material, alpha, queue); the Ghost material gets it too at
 would otherwise swap order and flicker). PaletteApplier keeps a material's own alpha when recolouring (day 17), so the
 pink stays see-through. Art: the ghost at 65% too.
 Tested: compile check (Editor). Not run: Set Up Visuals; how the overlapping see-through boxes look in the game.
+
+## 2026-11-18 — D28: score label on the HUD
+
+ELIA: the top line showed "20   streak 0" without saying 20 is the score. GameFlow.DrawScore: "Score 20 · Streak 0"
+(the multiplier still follows in yellow when above x1). Run and LevelTest scenes.
+Tested: compile check. Not run: in Unity.
