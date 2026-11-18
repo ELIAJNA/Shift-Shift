@@ -490,8 +490,11 @@ namespace ShiftShift
         {
             Color old = GUI.color;
             float o = Mathf.Clamp(style.fontSize / 18f, 2f, 4f); // tight even on the big GO (ELIA, day 27)
-            GUI.color = new Color(0f, 0f, 0f, 0.7f * old.a); // multiplies rich-text colours too: the shadow stays dark
-            GUI.Label(new Rect(r.x + o, r.y + o, r.width, r.height), text, style);
+            // The shadow without its <color> tags: a tag's colour is not darkened by GUI.color, so a coloured word's
+            // shadow came out as a second coloured copy and the text looked blurry (ELIA, day 28).
+            string plain = System.Text.RegularExpressions.Regex.Replace(text, "</?color[^>]*>", "");
+            GUI.color = new Color(0f, 0f, 0f, 0.7f * old.a);
+            GUI.Label(new Rect(r.x + o, r.y + o, r.width, r.height), plain, style);
             GUI.color = old;
             GUI.Label(r, text, style);
         }
