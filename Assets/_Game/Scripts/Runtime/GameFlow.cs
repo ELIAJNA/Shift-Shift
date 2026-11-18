@@ -524,7 +524,8 @@ namespace ShiftShift
         private void DrawScore(float w)
         {
             string mult = Score.Multiplier > 1 ? $"   <color=yellow>x{Score.Multiplier}</color>" : "";
-            Label(new Rect(0, 12, w, 40), $"<b>{Score.Points}</b>   streak {Score.Streak}{mult}", _mid);
+            // Labelled (ELIA, day 28: the bare number did not say it was the score).
+            Label(new Rect(0, 12, w, 40), $"Score <b>{Score.Points}</b>   ·   Streak {Score.Streak}{mult}", _mid);
         }
 
         private void EnsureStyles()
