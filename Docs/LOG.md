@@ -1283,3 +1283,11 @@ times. Never like this." with the new title, "Two keys. That's all you get.", "R
 clean run with the tally; "Can you keep up?" over the finale dance; end card. make_cards.py SHOTS rewritten (17 shots,
 same bar timings), Docs/TRAILER.md script table, Docs/TRAILER-EDIT.md "Re-cut with the new script". Cards rendered
 and checked here. The re-cut runs in the session on ELIA's PC; one new clip needed (a crash, recorded by hand).
+
+## 2026-11-18 — D28: lighter caption shade; shot 3 as a rendered leap
+
+ELIA: the caption shade was a bit dark; use the cover animation for 3.8-6.3 s. make_cards.py: the shade behind
+captions 110 -> 56 alpha. make_itch_art.py: the leap animation shared (leap_frames) by the cover GIF and a new
+title_clip (--title-clip DIR): 1920x1080 PNG frames, 30 fps, 2.53 s (2 bars at 190 BPM), the title block on the end
+card's dark background with a few stars, the runner waiting on the 3rd tile, leaping, landing on the 4th with sparks,
+staying landed. Rendered here (49 s for all art) and previewed with the caption over it; the cover GIF unchanged.

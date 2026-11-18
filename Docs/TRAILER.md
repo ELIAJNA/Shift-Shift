@@ -16,7 +16,7 @@ Cards: `python tools/trailer/make_cards.py --out <folder>` (cards.json lists eac
 |---|---|---|---|---|
 | 1 | 0.0-1.3 | 1 | (none) | Cold open: level 6 at full speed, PERFECT sparks flying |
 | 2 | 1.3-3.8 | 2 | **YOU'VE PRESSED SHIFT A MILLION TIMES.** | Black card |
-| 3 | 3.8-6.3 | 2 | **NEVER LIKE THIS.** | The menu: the title with the runner leaping over the + |
+| 3 | 3.8-6.3 | 2 | **NEVER LIKE THIS.** | Rendered clip (no recording): the title block full screen, the runner leaping over the + and landing with sparks (`make_itch_art.py --title-clip`) |
 | 4 | 6.3-8.8 | 2 | **TWO KEYS. THAT'S ALL YOU GET.** | The 4-3-2-1 count-in, close on the runner |
 | 5 | 8.8-10.1 | 1 | **READY?** | Black card; cut on the drop |
 | 6 | 10.1-11.4 | 1 | **TAP** / DODGE (orange) | Level 1: a lane change past an orange block |

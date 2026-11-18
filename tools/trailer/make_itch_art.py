@@ -427,6 +427,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("--fonts", default="")
+    ap.add_argument("--title-clip", default="", help="also render trailer shot 3 (the leap, 1920x1080 frames) here")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     dirs = ([a.fonts] if a.fonts else []) + [r"C:\Windows\Fonts", "/usr/share/fonts/opentype/inter",
@@ -493,6 +494,73 @@ def main():
     keycap(im, (w / 2 + 95) * SS, 452 * SS, "RIGHT  ⇧", COL["jump"], bold, 0.95)
     finish(im, w, h, os.path.join(a.out, "cover_630x500.png"))
     cover_gif(os.path.join(a.out, "cover_630x500.gif"), bold, med)
+    if a.title_clip:
+        title_clip(a.title_clip, bold, med)
+
+
+def leap_frames(base, g, fps, seconds, wait, fly, hold, loop_back):
+    """The leap, frame by frame (yields images at drawing size): the runner waits on the 3rd tile, leaps over the +
+    leaving the dotted trail, lands on the 4th tile (it flashes, sparks burst like a PERFECT). loop_back: then fades back
+    to the start (for a loop); otherwise it stays landed."""
+    n = int(round(seconds * fps))
+    wait, fly, hold = int(wait * fps), int(fly * fps), int(hold * fps)
+    land = wait + fly
+    rnd = random.Random(4)
+    tile4 = g["tiles"][3]
+    k = g["k"]
+    sparks = [(rnd.uniform(-1, 1) * 260, -rnd.uniform(160, 420), rnd.uniform(3, 6)) for _ in range(22)]
+    for f in range(n):
+        im = base.copy()
+        flash = (3, 1 - (f - land) / hold) if land <= f < land + hold else None
+        draw_tiles(im, g, flash)
+        a_back = 0.0
+        if f < wait:
+            t, a_now = 0.0, 1.0
+        elif f < land:
+            x = (f - wait) / fly
+            t, a_now = x * x * (3 - 2 * x), 1.0                 # eased leap
+        elif f < land + hold or not loop_back:
+            t, a_now = 1.0, 1.0
+        else:
+            x = (f - land - hold) / max(1, n - land - hold)
+            t, a_now, a_back = 1.0, 1 - x, x                    # fade out on the 4th tile, back in on the 3rd
+        if f < land + hold or not loop_back:
+            draw_arc(im, g, t)
+        draw_runner(im, g, t, a_now, streaks=wait <= f < land)
+        if a_back > 0:
+            draw_runner(im, g, 0.0, a_back, streaks=False)
+        if land <= f < land + hold:                             # PERFECT sparks from the landing tile
+            age = (f - land) / fps
+            d = ImageDraw.Draw(im)
+            cx, cy = (tile4[0] + tile4[1]) / 2, g["ty"]
+            for vx, vy, size in sparks:
+                px = cx + vx * age * SS * k
+                py = cy + (vy * age + 600 * age * age) * SS * k
+                sz = size * SS * k * (1 - age / (hold / fps) * 0.7)
+                fade = 1 - (f - land) / hold
+                d.rectangle([px - sz / 2, py - sz / 2, px + sz / 2, py + sz / 2],
+                            fill=lerp(tile4[2], (255, 255, 255), 0.3) + (int(255 * fade),))
+        yield im
+
+
+def title_clip(out_dir, bold, med, fps=30, seconds=2 * 4 * 60 / 190):
+    """Trailer shot 3 (ELIA, day 28): the title block full screen at 1920x1080 on the end card's dark background, the
+    runner leaping over the + and landing with sparks; two bars of the trailer music long. PNG frames frame_0001.png...
+    for the editor (ffmpeg -framerate 30 -i frame_%04d.png)."""
+    w, h = 1920, 1080
+    os.makedirs(out_dir, exist_ok=True)
+    base = Image.new("RGBA", (w * SS, h * SS), (16, 20, 24, 255))
+    d = ImageDraw.Draw(base)
+    rnd = random.Random(9)
+    for _ in range(160):                                        # a few faint stars
+        x, y, r = rnd.randrange(w * SS), rnd.randrange(h * SS), rnd.choice([1, 1, 2]) * SS
+        b = rnd.randint(60, 140)
+        d.ellipse([x - r, y - r, x + r, y + r], fill=(b, b, min(255, b + 30)))
+    g = logo_geom(w * SS / 2, 500 * SS, 1.9, bold)
+    draw_title(base, g, "A Rhythm Runner Played With Just Two Keys")
+    for i, im in enumerate(leap_frames(base, g, fps, seconds, wait=0.35, fly=0.75, hold=0.9, loop_back=False), 1):
+        im.convert("RGB").resize((w, h), Image.LANCZOS).save(os.path.join(out_dir, f"frame_{i:04d}.png"))
+    print(out_dir, i, "frames at", fps, "fps")
 
 
 def cover_gif(path, bold, med, fps=20):
@@ -515,45 +583,9 @@ def cover_gif(path, bold, med, fps=20):
     text(base, "+", 32, (w / 2 * SS, 452 * SS), COL["white"], bold)
     keycap(base, (w / 2 + 95) * SS, 452 * SS, "RIGHT  ⇧", COL["jump"], bold, 0.95)
 
-    frames, n = [], int(2.2 * fps)
-    wait, fly, hold = int(0.3 * fps), int(0.6 * fps), int(0.75 * fps)   # then the fade back
-    land = wait + fly
-    rnd = random.Random(4)
-    tile4 = g["tiles"][3]
-    sparks = [(rnd.uniform(-1, 1) * 260, -rnd.uniform(160, 420), rnd.uniform(3, 6)) for _ in range(22)]
-    for f in range(n):
-        im = base.copy()
-        flash = None
-        if land <= f < land + hold:
-            flash = (3, 1 - (f - land) / hold)
-        draw_tiles(im, g, flash)
-        if f < wait:
-            t, a_now, a_back = 0.0, 1.0, 0.0
-        elif f < land:
-            x = (f - wait) / fly
-            t, a_now, a_back = x * x * (3 - 2 * x), 1.0, 0.0   # eased leap
-        elif f < land + hold:
-            t, a_now, a_back = 1.0, 1.0, 0.0
-        else:
-            x = (f - land - hold) / max(1, n - land - hold)
-            t, a_now, a_back = 1.0, 1 - x, x                    # fade out on the 4th tile, back in on the 3rd
-        if f < land + hold:
-            draw_arc(im, g, t)
-        draw_runner(im, g, t, a_now, streaks=wait <= f < land)
-        if a_back > 0:
-            draw_runner(im, g, 0.0, a_back, streaks=False)
-        if land <= f < land + hold:                             # PERFECT sparks from the landing tile
-            age = (f - land) / fps
-            d = ImageDraw.Draw(im)
-            cx, cy = (tile4[0] + tile4[1]) / 2, g["ty"]
-            for vx, vy, size in sparks:
-                px = cx + vx * age * SS * 0.8
-                py = cy + (vy * age + 600 * age * age) * SS * 0.8
-                sz = size * SS * (1 - age / (hold / fps) * 0.7)
-                c = lerp(tile4[2], (255, 255, 255), 0.3)
-                fade = 1 - (f - land) / hold
-                d.rectangle([px - sz / 2, py - sz / 2, px + sz / 2, py + sz / 2], fill=c + (int(255 * fade),))
-        frames.append(im.convert("RGB").resize((w, h), Image.LANCZOS))
+    frames = [im.convert("RGB").resize((w, h), Image.LANCZOS)
+              for im in leap_frames(base, g, fps, 2.2, wait=0.3, fly=0.6, hold=0.75, loop_back=True)]
+    land = int(0.3 * fps) + int(0.6 * fps)
     pal = frames[land + 2].quantize(colors=255, method=Image.MEDIANCUT)
     q = [fr.quantize(palette=pal, dither=Image.Dither.NONE) for fr in frames]
     q[0].save(path, save_all=True, append_images=q[1:], duration=int(1000 / fps), loop=0, optimize=True, disposal=1)

@@ -22,7 +22,7 @@ COL = {"lane": "#F27017", "slide": "#FCC41E", "sprint": "#00FCF9", "jump": "#F40
 SHOTS = [  # Day 28 script (ELIA approved): action first, then the hook, a challenge, and the reward.
     (0, 1, [], "low", "Cold open: one bar of level 6 at full speed, PERFECT sparks flying (no caption)"),
     (1, 2, [("YOU'VE PRESSED SHIFT", "white", 110), ("A MILLION TIMES.", "white", 110)], "mid", None),
-    (3, 2, [("NEVER LIKE THIS.", "white", 120)], "low", "The menu: the title with the runner leaping over the +"),
+    (3, 2, [("NEVER LIKE THIS.", "white", 120)], "low", "Rendered clip: python tools/trailer/make_itch_art.py --out Recordings/trailer/art --title-clip Recordings/trailer/shot03 (PNG frames, 30 fps)"),
     (5, 2, [("TWO KEYS.", "white", 96), ("THAT'S ALL YOU GET.", "white", 96)], "low", "The 4-3-2-1 count-in, close on the runner"),
     (7, 1, [("READY?", "white", 150)], "mid", None),
     (8, 1, [("TAP", "lane", 130), ("DODGE", "white", 64)], "low", "Level 1: a lane change past an orange block"),
@@ -71,7 +71,7 @@ def main():
         y = (H - total) // 2 if where == "mid" else H - total - 120
         if where != "mid" and not opaque:  # soft shade behind lower captions
             sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-            ImageDraw.Draw(sh).rectangle([0, y - 70, W, H], fill=(0, 0, 0, 110))
+            ImageDraw.Draw(sh).rectangle([0, y - 70, W, H], fill=(0, 0, 0, 56))  # lighter (ELIA, day 28: 110 was too dark)
             im = Image.alpha_composite(im, sh)
         d = ImageDraw.Draw(im)
         for (t, c, s), h in zip(lines, hs):

@@ -60,3 +60,8 @@ times. Never like this.", a crash shot, and the finale dance before the end card
    recording through "Shift to retry".
 3. Cut every shot from cards.json on its bar lines, captions over footage, black cards as they are; render
    `Recordings/trailer/shiftshift_trailer.mp4` as before. Show ELIA the cut list and frames first.
+4. Day 28 additions (ELIA): the caption shade is lighter (half as dark), and shot 3 is not the menu recording but a
+   rendered clip: `python tools/trailer/make_itch_art.py --out Recordings/trailer/art --title-clip Recordings/trailer/shot03`
+   makes 76 PNG frames (1920x1080, 30 fps, exactly 2 bars): the title block, the runner leaping over the + and landing
+   with sparks. Use them as shot 3 with the "NEVER LIKE THIS." caption over them
+   (`ffmpeg -framerate 30 -i Recordings/trailer/shot03/frame_%04d.png ...`). Regenerate the cards first (step 1).
