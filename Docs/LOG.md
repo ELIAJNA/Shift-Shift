@@ -1291,3 +1291,10 @@ captions 110 -> 56 alpha. make_itch_art.py: the leap animation shared (leap_fram
 title_clip (--title-clip DIR): 1920x1080 PNG frames, 30 fps, 2.53 s (2 bars at 190 BPM), the title block on the end
 card's dark background with a few stars, the runner waiting on the 3rd tile, leaping, landing on the 4th with sparks,
 staying landed. Rendered here (49 s for all art) and previewed with the caption over it; the cover GIF unchanged.
+
+## 2026-11-18 — D28: trailer mode starts from the level picked in the menu
+
+ELIA asked how to record only level 6. Trailer mode always started at level 1 from the menu. MainMenu no longer jumps
+to level 1 in trailer mode: pick any level as usual; GameFlow then autoplays it and the levels after it. A Run scene
+opened directly in trailer mode still starts at level 1. Docs/TRAILER.md updated.
+Tested: compile check (normal and Web). Not run: in Unity.
