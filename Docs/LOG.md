@@ -1266,3 +1266,11 @@ ELIA asked whether the streak is in the rules (only named on How to play) and ag
   x2 at 10, x3 at 25, x4 at 50. OK keeps your streak; a crash ends the run." The tips area measures its own height;
   worked out to fit at 450 and 600 px high (rows shrink to fit).
 Tested: compile check (normal and Web). Not run: in Unity.
+
+## 2026-11-18 — D28: HUD shadows on coloured words fixed
+
+ELIA: the tally looked blurry. Cause: GameFlow.Label drew its shadow by tinting a copy of the text dark with GUI.color,
+but a <color> tag's colour is not darkened by GUI.color, so coloured words got a second coloured copy 2-4 px away (the
+day 27 comment said the opposite; wrong). Same on the yellow multiplier and NEW BEST. The shadow copy now has its
+<color> tags removed. Menu text does not use this shadow.
+Tested: compile check (normal and Web). Not run: in Unity.
