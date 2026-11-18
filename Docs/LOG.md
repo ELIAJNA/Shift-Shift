@@ -1274,3 +1274,12 @@ but a <color> tag's colour is not darkened by GUI.color, so coloured words got a
 day 27 comment said the opposite; wrong). Same on the yellow multiplier and NEW BEST. The shadow copy now has its
 <color> tags removed. Menu text does not use this shadow.
 Tested: compile check (normal and Web). Not run: in Unity.
+
+## 2026-11-18 — D28: trailer script rewrite
+
+ELIA approved a new trailer script: action in the first second (cold open), the hook "You've pressed Shift a million
+times. Never like this." with the new title, "Two keys. That's all you get.", "Ready?" on the drop; the six moves
+(phase shot with the new ghosts); "Six levels. 120 to 190 BPM."; "Miss the beat?" over a crash, "Stay on it." over a
+clean run with the tally; "Can you keep up?" over the finale dance; end card. make_cards.py SHOTS rewritten (17 shots,
+same bar timings), Docs/TRAILER.md script table, Docs/TRAILER-EDIT.md "Re-cut with the new script". Cards rendered
+and checked here. The re-cut runs in the session on ELIA's PC; one new clip needed (a crash, recorded by hand).

@@ -48,3 +48,15 @@ readable HUD text, and a new menu title (six tiles, the runner leaping over the 
    the game's title block (tiles, leaping runner, 3D title) above "Play free in your browser · itch.io".
 4. Re-cut from the new recordings with the same shot list and timings; prefer moments where the PERFECT sparks show.
    Same output: `Recordings/trailer/shiftshift_trailer.mp4`.
+
+## Re-cut with the new script (day 28)
+
+The script changed (Docs/TRAILER.md, "Script (day 28 rewrite)"): a cold open, the hook "You've pressed Shift a million
+times. Never like this.", a crash shot, and the finale dance before the end card. Same music, same bar timings.
+1. `git pull`, then make the new cards: `python tools/trailer/make_cards.py --out Recordings/trailer/cards`
+   (17 shots now; cards.json gives each one's start, length and footage).
+2. Footage: reuse the day 27 recordings (levels 1-6 in trailer mode, which include each level's dance, and the menu
+   clip). New: shot 13 needs a crash, recorded by hand: untick Trailer Mode, play any level, crash on purpose, keep
+   recording through "Shift to retry".
+3. Cut every shot from cards.json on its bar lines, captions over footage, black cards as they are; render
+   `Recordings/trailer/shiftshift_trailer.mp4` as before. Show ELIA the cut list and frames first.

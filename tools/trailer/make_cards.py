@@ -19,21 +19,23 @@ COL = {"lane": "#F27017", "slide": "#FCC41E", "sprint": "#00FCF9", "jump": "#F40
 
 # (start bar, bars, caption lines [(text, colour, size)], placement, footage; None footage = black card,
 #  None lines = end card). Bar 0 = 25.19 s into the full track.
-SHOTS = [
-    (0, 2, [("YOU HAVE TWO KEYS.", "white", 120)], "mid", None),
-    (2, 2, [("LEFT SHIFT.  RIGHT SHIFT.", "white", 96)], "low", "Level 1: the runner at the start, count-in, nothing pressed"),
-    (4, 2, [("THAT'S ALL YOU GET.", "white", 96)], "low", "Any level: the 4-3-2-1 count-in, close on the runner"),
-    (6, 2, [("NOW KEEP UP.", "white", 140)], "mid", None),
+SHOTS = [  # Day 28 script (ELIA approved): action first, then the hook, a challenge, and the reward.
+    (0, 1, [], "low", "Cold open: one bar of level 6 at full speed, PERFECT sparks flying (no caption)"),
+    (1, 2, [("YOU'VE PRESSED SHIFT", "white", 110), ("A MILLION TIMES.", "white", 110)], "mid", None),
+    (3, 2, [("NEVER LIKE THIS.", "white", 120)], "low", "The menu: the title with the runner leaping over the +"),
+    (5, 2, [("TWO KEYS.", "white", 96), ("THAT'S ALL YOU GET.", "white", 96)], "low", "The 4-3-2-1 count-in, close on the runner"),
+    (7, 1, [("READY?", "white", 150)], "mid", None),
     (8, 1, [("TAP", "lane", 130), ("DODGE", "white", 64)], "low", "Level 1: a lane change past an orange block"),
     (9, 1, [("HOLD LEFT", "slide", 110), ("SLIDE", "white", 64)], "low", "Level 2: slide under a yellow low bar"),
     (10, 1, [("HOLD RIGHT", "sprint", 110), ("SPRINT", "white", 64)], "low", "Level 2: sprint through a cyan gate"),
     (11, 1, [("BOTH", "jump", 130), ("JUMP", "white", 64)], "low", "Level 3: jump a gap, water below"),
-    (12, 2, [("HOLD BOTH", "phase", 110), ("PHASE", "white", 64)], "low", "Level 4: phase through a blue wall past the pink ghost blocks"),
+    (12, 2, [("HOLD BOTH", "phase", 110), ("PHASE", "white", 64)], "low", "Level 4: phase through a blue wall past the ghosts"),
     (14, 2, [("L  R  L  R", "charge", 120), ("SMASH", "white", 64)], "low", "Level 5: four taps, flame, smash the brick wall at the end of the shot"),
-    (16, 4, [("SIX LEVELS", "white", 110)], "low", "Montage, 1 bar each: level 3, level 4, level 5, level 6"),
-    (20, 4, [("EVERY OBSTACLE.", "white", 96), ("ON THE BEAT.", "white", 96)], "low", "A clean run: PERFECT pop-ups, streak, multiplier (2 cuts of 2 bars)"),
+    (16, 4, [("SIX LEVELS.", "white", 110), ("120 TO 190 BPM.", "white", 80)], "low", "1 bar per level, getting faster (levels 3, 4, 5, 6)"),
+    (20, 2, [("MISS THE BEAT?", "white", 110)], "low", "A crash: the jolt, the screen dims, 'Shift to retry' (recorded by hand)"),
+    (22, 2, [("STAY ON IT.", "white", 110)], "low", "A clean run: PERFECT sparks, the tally climbing, x4 multiplier"),
     (24, 4, [], "low", "Level 6 at full speed, 1-bar cuts: bend, crest, tunnel, archways (no caption)"),
-    (28, 4, [("SEVEN MOVES.", "white", 110), ("ONE BEAT.", "white", 110)], "low", "Level 6, 1-bar cuts: phase, flame and smash, a palette change"),
+    (28, 4, [("CAN YOU KEEP UP?", "white", 120)], "low", "End of level 6, then the finale dance: spin, jump, arms up with the flame"),
     (32, 3, None, "end", None),
 ]
 
