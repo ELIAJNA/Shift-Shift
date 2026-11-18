@@ -1298,3 +1298,13 @@ ELIA asked how to record only level 6. Trailer mode always started at level 1 fr
 to level 1 in trailer mode: pick any level as usual; GameFlow then autoplays it and the levels after it. A Run scene
 opened directly in trailer mode still starts at level 1. Docs/TRAILER.md updated.
 Tested: compile check (normal and Web). Not run: in Unity.
+
+## 2026-11-18 — D28: trailer done; mobile kickoff brief
+
+ELIA: the new trailer is done and on YouTube and itch.io. ELIA wants to start the mobile version now in a session on
+the PC. Docs/MOBILE-KICKOFF.md: ELIA's approval as a separate track on a `mobile` branch in its own worktree folder
+(main stays the jam build until submission); how to move the branch onto main after the 30 Nov history signing
+(rebase --onto); pointers into the code (touch should feed ShiftInput.KeySource, so the classifier and rules are
+unchanged; menus already run on two keys; Calibrate reads the keyboard directly); the agreed touch design (left/right
+half of the screen, one finger per side); early checks (Android first, audio latency, performance, text, pause); order
+of steps (M01...). SCOPE.md on main unchanged (mobile stays post-jam there).
