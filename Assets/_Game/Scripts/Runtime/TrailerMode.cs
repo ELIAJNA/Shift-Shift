@@ -6,8 +6,9 @@ namespace ShiftShift
     /// <summary>
     /// Trailer mode (ELIA, day 23): the runner plays every level by itself, for recording footage with Unity Recorder.
     /// Editor only: switched with Shift+Shift > Trailer Mode, never on in a build.
-    /// While on: the menu starts level 1 at once, debug overlays are hidden, each level goes on to the next after its
-    /// results (a fail restarts it), and nothing is saved (best scores, cleared levels).
+    /// While on: pick the first level in the menu as usual (day 28: was always level 1; a Run scene opened directly still
+    /// starts at level 1), the runner plays it and each level after it, going on after each results screen (a fail
+    /// restarts it); debug overlays are hidden and nothing is saved (best scores, cleared levels).
     /// </summary>
     public static class TrailerMode
     {

@@ -43,8 +43,9 @@ Two ways: trailer mode in the editor (below, cleanest), or play it yourself:
 The runner plays every level by itself, each answer on its beat, so the footage is clean. Editor only: it is never
 on in a build.
 1. **Shift+Shift > Trailer Mode (autoplay)** (a tick shows it is on).
-2. Press Play (from the Menu or Run scene). Level 1 starts at once; each level goes on to the next after 4 s of
-   results; level 6 stays on its results. A fail (should not happen) retries after 1 s. Debug text is hidden (F1
+2. Press Play. From the Menu scene, pick the first level as usual (Left/Right Shift, then both): the runner plays it
+   and each level after it (day 28; to record only level 6, pick level 6). From the Run scene, level 1 starts at once.
+   Each level goes on to the next after its dance and 4 s of results; level 6 stays on its results. A fail (should not happen) retries after 1 s. Debug text is hidden (F1
    still shows it). Best scores and cleared levels are not saved while it is on.
 3. Untick the menu item to play normally again.
 

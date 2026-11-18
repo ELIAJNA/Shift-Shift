@@ -86,8 +86,6 @@ namespace ShiftShift
             _keys.Reset(Down(Side.Left), Down(Side.Right));
         }
 
-        private bool _trailerStarted;
-
         private bool Down(Side side) => input != null && input.IsDown(side);
 
         private void Update()
@@ -95,12 +93,6 @@ namespace ShiftShift
             MenuKey key = _keys.Poll(Down(Side.Left), Down(Side.Right));
             // Browser: nothing happens until sound is unlocked by a click (Shift does not count as a gesture there).
             if (!WebAudioUnlock.Ready) return;
-            if (TrailerMode.Enabled && !_trailerStarted)
-            {
-                _trailerStarted = true; // editor only: straight into level 1
-                GameFlow.Play(TrailerMode.FirstLevel, runScene);
-                return;
-            }
             if (key == MenuKey.None) return;
             if (_page != Page.None)
             {
