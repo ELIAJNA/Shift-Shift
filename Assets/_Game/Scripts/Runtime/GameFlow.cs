@@ -526,7 +526,14 @@ namespace ShiftShift
             string mult = Score.Multiplier > 1 ? $"   <color=yellow>x{Score.Multiplier}</color>" : "";
             // Labelled (ELIA, day 28: the bare number did not say it was the score).
             Label(new Rect(0, 12, w, 40), $"Score <b>{Score.Points}</b>   ·   Streak {Score.Streak}{mult}", _mid);
+            // Grade tally, small, top-left (ELIA, day 28): a goal beyond surviving, e.g. no OKs.
+            if (_tally == null) _tally = new GUIStyle(_small) { alignment = TextAnchor.MiddleLeft };
+            Label(new Rect(20, 50, w * 0.45f, 30), // under the score line: no overlap at any score
+                $"<color=#00FCF9>PERFECT {Score.Perfects}</color>   <color=#7CFC8A>GOOD {Score.Goods}</color>   " +
+                $"<color=#B8BEC6>OK {Score.Oks}</color>", _tally);
         }
+
+        private GUIStyle _tally;
 
         private void EnsureStyles()
         {
