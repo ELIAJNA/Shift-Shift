@@ -305,36 +305,45 @@ namespace ShiftShift
 
         private void DrawHowTo(float w, float h)
         {
-            GUI.Label(new Rect(0, h * 0.04f, w, 70 * _k), "How to play", _big);
+            // Everything in one box, sized to its content and centred (ELIA, day 29: the title and "Any Shift: back"
+            // were outside the box, and at full screen the moves left a large empty gap). Top down: title, intro,
+            // the six moves, the tips, the back hint; the move rows shrink on short screens so it always fits.
             const string intro = "You run by yourself. Obstacles arrive on the beat: answer each one with the move its colour asks for.";
-            float introY = h * 0.04f + 62 * _k, introH = Fit(_small, intro, w * 0.8f);
-
-            // Bottom up (day 25: text was cut off in itch.io's small frame): back hint, tips, then the rows share the rest.
-            float backH = 30 * _k, backY = h - backH - 6 * _k;
-            GUI.Label(new Rect(0, backY, w, backH), "Any Shift: back", _small);
             // Scoring spelled out (ELIA, day 28).
             const string tipText = "PERFECT 50, GOOD 20, OK 5 points. Hit on the beat in a row to build a streak: x2 at 10, x3 at 25, " +
                                    "x4 at 50. OK keeps your streak; a crash ends the run.   Esc: pause\n" +
                                    "Timing feels off (for example with Bluetooth headphones)? Use Calibrate timing in the menu.";
-            float tipsH = Fit(_small, tipText, w * 0.8f), tipsY = backY - tipsH - 4 * _k;
-            // One panel behind the intro, the moves and the tips (testers, day 29).
-            UIPanel.Draw(new Rect(w * 0.05f, introY - 6 * _k, w * 0.9f, tipsY + tipsH + 4 * _k - (introY - 6 * _k)));
-            GUI.Label(new Rect(w * 0.1f, introY, w * 0.8f, introH), intro, _small);
-            GUI.Label(new Rect(w * 0.1f, tipsY, w * 0.8f, tipsH), tipText, _small);
+            float pad = 18 * _k, gap = 8 * _k, margin = 10 * _k;
+            float titleH = 64 * _k, introH = Fit(_small, intro, w * 0.8f), tipsH = Fit(_small, tipText, w * 0.8f), backH = 28 * _k;
+            float fixedH = pad * 2 + titleH + introH + tipsH + backH + gap * 4;
+            float row = Mathf.Min(56f * _k, (h - 2 * margin - fixedH) / Moves.Length);
+            float total = fixedH + row * Moves.Length;
+            float y = Mathf.Max(margin, (h - total) * 0.5f);
+            UIPanel.Draw(new Rect(w * 0.05f, y, w * 0.9f, total));
+
+            y += pad;
+            GUI.Label(new Rect(0, y, w, titleH), "How to play", _big);
+            y += titleH + gap;
+            GUI.Label(new Rect(w * 0.1f, y, w * 0.8f, introH), intro, _small);
+            y += introH + gap;
 
             var left = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = false };
             var right = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = true, fontSize = Mathf.RoundToInt(20 * _k) };
-            float top = introY + introH + 8 * _k, x0 = w * 0.08f, x1 = w * 0.45f;
-            float row = Mathf.Min(64f * _k, (tipsY - 6 * _k - top) / Moves.Length);
+            float x0 = w * 0.08f, x1 = w * 0.45f;
             for (int i = 0; i < Moves.Length; i++)
             {
                 var m = Moves[i];
-                float y = top + i * row;
                 GUI.Label(new Rect(x0, y, x1 - x0, row), $"<b>{m.keys}</b>", left);
                 GUI.Label(new Rect(x1, y, w * 0.92f - x1, row),
                     $"<color={m.colour}><b>{m.action}</b></color>  through {m.obstacle}", right);
+                y += row;
             }
+            y += gap;
+            GUI.Label(new Rect(w * 0.1f, y, w * 0.8f, tipsH), tipText, _small);
+            y += tipsH + gap;
+            GUI.Label(new Rect(0, y, w, backH), "Any Shift: back", _small);
         }
+
 
         private static Texture2D _arrowLeft, _arrowRight;
 

@@ -82,6 +82,9 @@ namespace ShiftShift
         private int _nextCheck;
         private Obstacle _failedOn;
 
+        /// <summary>The obstacle the run failed on (null while running); RunnerFigure falls into a gap (day 29).</summary>
+        public Obstacle FailedOn => _failedOn;
+
         // Visual state (song time).
         private float _visualX, _easeFromX, _easeToX;
         private double _easeStart = double.NegativeInfinity;
