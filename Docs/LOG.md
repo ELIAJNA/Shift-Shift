@@ -1376,3 +1376,10 @@ into the hole only from the near edge (to 0.5 m inside); a runner already over t
 (was 2.6) so the head and raised arms stay in view.
 Depends on / could break: Runner.Update (gap judging moment; Run, LevelTest), RunnerFigure.
 Tested: compile check (normal and Web), Core tests 175. Not run: in Unity.
+
+## 2026-11-19 — D29: gap fall - momentum and depth
+
+ELIA: a running figure would not drop right at the edge; and too much torso showed after an early jump. The fall now
+carries on forward (easing out over 0.3 s): from the near edge to about 1 m inside the gap; from inside, 0.6 m on;
+never past 0.45 m before the far side, never back. Drop 1.6 m (was 1.3): head, shoulders and raised arms show.
+Tested: compile check. Not run: in Unity.
