@@ -1308,3 +1308,12 @@ the PC. Docs/MOBILE-KICKOFF.md: ELIA's approval as a separate track on a `mobile
 unchanged; menus already run on two keys; Calibrate reads the keyboard directly); the agreed touch design (left/right
 half of the screen, one finger per side); early checks (Android first, audio latency, performance, text, pause); order
 of steps (M01...). SCOPE.md on main unchanged (mobile stays post-jam there).
+
+## 2026-11-19 — D29: jam deadline checked
+
+Official (GitHub's Game Off 2026 post and the itch.io jam page, via web search; itch.io and github.blog are not
+reachable from this cloud session): submissions open 1 Nov, close **1 Dec 2026 13:37 PST = 21:37 UTC = 2 Dec 03:07 IST**,
+for both the itch.io submission and the GitHub push; the source must be in a public GitHub repo; pushing code alone
+does not enter the jam; voting closes 1 Jan 2027 13:37 PST. Our plan's "build by 12:00 IST, submit by 18:00 IST on
+1 Dec" is our own buffer, about 9 hours before the real close. Post-deadline changes: the FAQ (per forum replies) allows
+critical bug fixes only. Plan: submit early (once the browser pass and screenshots are done), keep the 30 Nov signing.
