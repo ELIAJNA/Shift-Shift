@@ -308,7 +308,6 @@ namespace ShiftShift
             GUI.Label(new Rect(0, h * 0.04f, w, 70 * _k), "How to play", _big);
             const string intro = "You run by yourself. Obstacles arrive on the beat: answer each one with the move its colour asks for.";
             float introY = h * 0.04f + 62 * _k, introH = Fit(_small, intro, w * 0.8f);
-            GUI.Label(new Rect(w * 0.1f, introY, w * 0.8f, introH), intro, _small);
 
             // Bottom up (day 25: text was cut off in itch.io's small frame): back hint, tips, then the rows share the rest.
             float backH = 30 * _k, backY = h - backH - 6 * _k;
@@ -318,6 +317,9 @@ namespace ShiftShift
                                    "x4 at 50. OK keeps your streak; a crash ends the run.   Esc: pause\n" +
                                    "Timing feels off (for example with Bluetooth headphones)? Use Calibrate timing in the menu.";
             float tipsH = Fit(_small, tipText, w * 0.8f), tipsY = backY - tipsH - 4 * _k;
+            // One panel behind the intro, the moves and the tips (testers, day 29).
+            UIPanel.Draw(new Rect(w * 0.05f, introY - 6 * _k, w * 0.9f, tipsY + tipsH + 4 * _k - (introY - 6 * _k)));
+            GUI.Label(new Rect(w * 0.1f, introY, w * 0.8f, introH), intro, _small);
             GUI.Label(new Rect(w * 0.1f, tipsY, w * 0.8f, tipsH), tipText, _small);
 
             var left = new GUIStyle(_mid) { alignment = TextAnchor.MiddleLeft, wordWrap = false };
@@ -388,6 +390,8 @@ namespace ShiftShift
             if (_page == Page.Credits)
             {
                 GUI.Label(new Rect(0, h * 0.08f, w, 70), "Credits", _big);
+                float creditsH = Fit(_mid, credits, w * 0.7f);
+                UIPanel.Draw(new Rect(w * 0.12f, h * 0.52f - creditsH * 0.5f - 24 * _k, w * 0.76f, creditsH + 48 * _k));
                 GUI.Label(new Rect(w * 0.15f, h * 0.22f, w * 0.7f, h * 0.6f), credits, _mid);
                 GUI.Label(new Rect(0, h * 0.88f, w, 30), "Any Shift: back", _small);
                 return;
@@ -399,8 +403,9 @@ namespace ShiftShift
                 // Web build only: the browser needs one click before it plays sound (it does not count Shift).
 
                 float startY = Mathf.Max(h * 0.42f, logoBottom + 30 * _k);
-                GUI.Label(new Rect(0, startY, w, 70), "Click to start", _big);
                 const string why = "(or press Space). Your browser needs this once before it plays sound. After that, just the two Shift keys.";
+                UIPanel.Draw(new Rect(w * 0.08f, startY - 10 * _k, w * 0.84f, 75 * _k + Fit(_mid, why, w * 0.8f) + 22 * _k));
+                GUI.Label(new Rect(0, startY, w, 70), "Click to start", _big);
                 GUI.Label(new Rect(w * 0.1f, startY + 75 * _k, w * 0.8f, Fit(_mid, why, w * 0.8f)), why, _mid);
                 return;
             }
@@ -408,6 +413,9 @@ namespace ShiftShift
 
             Entry e = _entries[_index];
             float entryY = Mathf.Max(h * 0.40f, logoBottom + 17 * _k); // below the title block on short screens
+            // The selector's panel (testers, day 29): from the entry's title to just under the dots.
+            float panelBottom = entryY + 75 * _k + Fit(_mid, e.Detail, w * 0.8f) + 10f * _k + 9f * _k + 14f * _k;
+            UIPanel.Draw(new Rect(w * 0.08f, entryY - 8 * _k, w * 0.84f, panelBottom - (entryY - 8 * _k)));
             GUI.Label(new Rect(0, entryY, w, 70 * _k), e.Title, _big);
             // Arrows are drawn as images: the Web build's font has no arrow characters (ELIA, day 20: missing in the browser).
             float half = _big.CalcSize(new GUIContent(e.Title)).x * 0.5f, size = 44f * _k, gap = 50f * _k, cy = entryY + 35f * _k;

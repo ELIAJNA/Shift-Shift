@@ -1317,3 +1317,18 @@ for both the itch.io submission and the GitHub push; the source must be in a pub
 does not enter the jam; voting closes 1 Jan 2027 13:37 PST. Our plan's "build by 12:00 IST, submit by 18:00 IST on
 1 Dec" is our own buffer, about 9 hours before the real close. Post-deadline changes: the FAQ (per forum replies) allows
 critical bug fixes only. Plan: submit early (once the browser pass and screenshots are done), keep the 30 Nov signing.
+
+## 2026-11-19 — D29: tester feedback - fullscreen Esc, panels, grade colours, pop animation
+
+1. Esc in fullscreen zoomed out instead of pausing: browsers keep Esc to leave fullscreen and never pass it to the page
+   (cannot be changed). GameFlow.PauseOnResize: any change of the frame's size during the count-in or a run pauses
+   (so the Esc that leaves fullscreen also pauses; entering fullscreen mid-run pauses too). Not in trailer mode.
+2. Background panels: new UIPanel (Runtime): a dark see-through card, rounded corners, thin cyan edge, soft glow, one
+   texture made in code and drawn 9-sliced. Used on: the menu's level selector, "Click to start", How to play (behind
+   intro, moves and tips), Credits, Calibrate, Pause, Results, and behind "Shift to retry". Texture logic previewed here.
+3. Grade pop-ups were white over the white runner: now coloured (PERFECT cyan, GOOD green, OK amber, MISS red, dark
+   shadow) and above the runner (36% of the height, was 62%). The tally uses the same colours (OK was grey).
+4. Pop animation: grades appear at 1.7x, snap to 0.92x in 0.08 s, settle at 1x by 0.16 s, float up and fade over 0.6 s
+   (GUIUtility.ScaleAroundPivot). The level-complete cheer pops in the same way.
+Depends on / could break: GameFlow (Run, LevelTest), MainMenu (Menu), LatencyCalibration (Calibrate).
+Tested: compile check (normal and Web), Core tests 175; panel and pop previews rendered here. Not run: in Unity.
