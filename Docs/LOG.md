@@ -1406,3 +1406,10 @@ edges); once with the old rules, once with the new one. Every jump: same pass/fa
 called later than before. Windows at 120 BPM: PERFECT within 50 ms, GOOD 55-115 ms early or late, OK 120-200 ms early
 or 120-125 ms late, a miss beyond (190 BPM: OK to 250 ms early and 170 ms late). AutoPlanTests' level simulation now
 mirrors the new rule too: all six levels still clear with the same grades at 60, 20 and 8 fps. Core tests 181.
+
+## 2026-11-19 — D29: README link, checklist
+
+README: the itch.io link (jna24.itch.io/shift-shift, public from the submission). PLAN.md checklist: README ticked;
+butler items ticked as not used (zips uploaded on the itch.io site); the submit item now carries the official close
+(2 Dec 03:07 IST) and the 25-27 Nov target. Still open for ELIA: joined the jam, browser pass, screenshots, GIF cover
+upload, theme sentence and GitHub link on the page, final build, signing, submission, tag, community post, voting.

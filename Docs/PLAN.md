@@ -398,13 +398,13 @@ close.
 
 - [x] itch.io project created as a draft, HTML project type
 
-- [ ] butler installed for command-line uploads
+- [x] butler installed for command-line uploads (not used: builds are zipped with File Explorer and uploaded on the itch.io site; day 25 note: never Compress-Archive)
 
 **Repository (ongoing, final check day 30)**
 
 - [ ] Source pushed daily; last push before the deadline
 
-- [ ] README.md: one-line pitch, controls, how to build, link to the
+- [x] README.md: one-line pitch, controls, how to build, link to the
   itch page
 
 - [x] CREDITS.md: every third-party asset with licence and source URL
@@ -431,8 +431,7 @@ close.
 
 - [ ] Windows x64 zip as a downloadable backup
 
-- [ ] Both builds uploaded via butler with channel names html and
-  windows
+- [x] Both builds uploaded via butler with channel names html and windows (not used: the WebGL zip is uploaded on the itch.io site; the Windows zip is optional)
 
 **itch page (day 29)**
 
@@ -444,7 +443,7 @@ close.
 
 - [ ] 6 to 8 screenshots, at least two from level 4 or later
 
-- [ ] Animated GIF cover (630 x 500) showing a gesture sequence (made day 27: the leap over the +; to upload)
+- [ ] Animated GIF cover (630 x 500) showing a gesture sequence (made day 27: the leap over the +; tick once uploaded)
 
 - [x] 30 to 45 s gameplay video uploaded to YouTube and embedded
 
@@ -459,7 +458,7 @@ close.
 - [ ] Final WebGL build uploaded and played through once on the live
   itch page
 
-- [ ] Game submitted to the jam from the jam page, before 18:00 IST
+- [ ] Game submitted to the jam from the jam page: aim for 25-27 Nov. Official close 1 Dec 13:37 PST = 2 Dec 03:07 IST (checked day 29); the page must be Public
 
 - [ ] Jam submission page shows the entry; post in the Game Off
   community thread

@@ -3,7 +3,7 @@
 **Two buttons. Both of them are Shift.**
 
 A 3D rhythm auto-runner for [GitHub Game Off 2026](https://itch.io/jam/game-off-2026) (theme: SHIFT).
-Play it on itch.io: _link goes here once the page is public_.
+Play it free in your browser: **[jna24.itch.io/shift-shift](https://jna24.itch.io/shift-shift)** (public from the jam submission).
 
 ## Controls
 
