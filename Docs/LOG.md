@@ -1413,3 +1413,11 @@ README: the itch.io link (jna24.itch.io/shift-shift, public from the submission)
 butler items ticked as not used (zips uploaded on the itch.io site); the submit item now carries the official close
 (2 Dec 03:07 IST) and the 25-27 Nov target. Still open for ELIA: joined the jam, browser pass, screenshots, GIF cover
 upload, theme sentence and GitHub link on the page, final build, signing, submission, tag, community post, voting.
+
+## 2026-11-19 — D29: items done; submission set for 24 Nov
+
+ELIA: everything on the open list is done (jam joined, final build and browser pass, screenshots, animated cover,
+theme sentence and GitHub link on the page, Windows backup) except the final steps; ELIA submits on 24 Nov.
+PLAN.md checklist ticked. The signing reminder (scheduled task) moved from 30 Nov to 24 Nov 09:00 IST, because the
+history step rewrites every commit and must come before the tag and the submission. Docs/SUBMIT-DAY.md: the 24 Nov
+steps in order (sign, tag v1.0-jam signed, public page, submit, community post text, after).
