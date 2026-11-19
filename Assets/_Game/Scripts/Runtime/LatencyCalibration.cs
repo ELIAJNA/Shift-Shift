@@ -146,6 +146,9 @@ namespace ShiftShift
                            $"\n\n<size=18>A spread over ±40 ms means the taps were uneven: try again.</size>";
                     break;
             }
+            // A panel behind the text (testers, day 29: the screen needed a highlight, like every screen now).
+            float textH = _style.CalcHeight(new GUIContent(text), w * 0.8f);
+            UIPanel.Draw(new Rect(w * 0.1f, h * 0.5f - textH * 0.5f - 28f, w * 0.8f, textH + 56f)); // wide enough for the longest line at 960 px
             GUI.Label(new Rect(0, 0, w, h), text, _style);
         }
     }

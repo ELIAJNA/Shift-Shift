@@ -159,8 +159,25 @@ namespace ShiftShift
             runner.Judged -= OnJudged;
         }
 
+        private int _lastW = -1, _lastH = -1;
+
+        /// <summary>
+        /// Testers, day 29: in fullscreen the browser takes Esc to leave fullscreen and never passes it to the game, so
+        /// Esc did not pause. Any change of the frame's size during a run (leaving or entering fullscreen) now pauses.
+        /// </summary>
+        private void PauseOnResize()
+        {
+            int sw = Screen.width, sh = Screen.height;
+            bool changed = _lastW >= 0 && (sw != _lastW || sh != _lastH);
+            _lastW = sw;
+            _lastH = sh;
+            if (changed && !TrailerMode.Enabled && !IsPaused && (Current == Phase.CountIn || Current == Phase.Playing))
+                SetPaused(true);
+        }
+
         private void Update()
         {
+            PauseOnResize();
             if (Current == Phase.Ready && conductor.IsStarted) Current = Phase.CountIn;
             if (Current == Phase.CountIn && conductor.CurrentBeat >= 0) Current = Phase.Playing;
             if (_flash > 0f) _flash = Mathf.Max(0f, _flash - Time.unscaledDeltaTime / flashSeconds);
@@ -393,6 +410,7 @@ namespace ShiftShift
                     DrawScore(w);
                     if (_canRestart)
                     {
+                        UIPanel.Draw(new Rect(w * 0.32f, h * 0.45f - 10, w * 0.36f, 120));
                         Label(new Rect(0, h * 0.45f, w, 80), "Shift to retry", _big);
                         Label(new Rect(0, h * 0.45f + 70, w, 30), "Esc: menu", _small);
                     }
@@ -402,12 +420,14 @@ namespace ShiftShift
                     if (!ResultsVisible)
                     {
                         // The dance: just the cheer, at the top, clear of the runner.
-                        Label(new Rect(0, h * 0.08f, w, 80), $"<b>{CompleteHeading(conductor.LevelAssetName)}</b>", _big);
+                        float since = Time.unscaledTime - (_resultsAt - celebrateSeconds);
+                        DrawPopped(new Rect(0, h * 0.08f, w, 80), $"<b>{CompleteHeading(conductor.LevelAssetName)}</b>", _big,
+                            Pop(since), 1f);
                         DrawScore(w);
                         break;
                     }
                     Dim(w, h);
-                    GUI.Box(new Rect(w * 0.25f, h * 0.2f, w * 0.5f, h * 0.55f), GUIContent.none); // wide enough for "Unstoppable! Level 5 complete" at 960 px
+                    UIPanel.Draw(new Rect(w * 0.25f, h * 0.2f, w * 0.5f, h * 0.55f)); // wide enough for "Unstoppable! Level 5 complete" at 960 px
                     Label(new Rect(0, h * 0.23f, w, 60), $"<b>{CompleteHeading(conductor.LevelAssetName)}</b>", _mid);
                     Label(new Rect(0, h * 0.33f, w, 40), $"Score  {Score.Points}" + (_newBest ? "   <color=yellow>NEW BEST</color>" : ""), _mid);
                     Label(new Rect(0, h * 0.41f, w, 40), $"Best streak  {Score.BestStreak}", _mid);
@@ -421,7 +441,7 @@ namespace ShiftShift
             if (IsPaused)
             {
                 Dim(w, h);
-                GUI.Box(new Rect(w * 0.3f, h * 0.28f, w * 0.4f, h * 0.4f), GUIContent.none);
+                UIPanel.Draw(new Rect(w * 0.28f, h * 0.28f, w * 0.44f, h * 0.36f));
                 Label(new Rect(0, h * 0.32f, w, 60), "<b>Paused</b>", _big);
                 Label(new Rect(0, h * 0.45f, w, 30), "Left Shift or Esc: resume", _mid);
                 if (ShiftKeys.FromBrowser)
@@ -431,8 +451,8 @@ namespace ShiftShift
                 return;
             }
 
-            if (Time.unscaledTime - _lastGradeAt < 0.5f && (Current == Phase.Playing || Current == Phase.Failed))
-                Label(new Rect(0, h * 0.62f, w, 60), _lastGrade, _mid);
+            if (Time.unscaledTime - _lastGradeAt < GradePopSeconds && (Current == Phase.Playing || Current == Phase.Failed))
+                DrawGradePop(w, h);
 
             if (_flash > 0f)
             {
@@ -524,6 +544,46 @@ namespace ShiftShift
             GUI.color = old;
         }
 
+        private const float GradePopSeconds = 0.6f;
+
+        // Grade colours (testers, day 29: white grades vanished against the white runner); the tally uses the same.
+        private const string PerfectHex = "#00FCF9", GoodHex = "#7CFC8A", OkHex = "#FFC24A", MissHex = "#FF5A6E";
+
+        private static string GradeHex(string grade) =>
+            grade == "PERFECT" ? PerfectHex : grade == "GOOD" ? GoodHex : grade == "OK" ? OkHex : MissHex;
+
+        /// <summary>
+        /// The grade pops (testers, day 29): it appears large, snaps to size with a small bounce, floats up and fades.
+        /// Above the runner, in its colour.
+        /// </summary>
+        private void DrawGradePop(float w, float h)
+        {
+            float t = (Time.unscaledTime - _lastGradeAt) / GradePopSeconds;
+            float scale = Pop(t * GradePopSeconds);
+            float alpha = t < 0.55f ? 1f : 1f - (t - 0.55f) / 0.45f;
+            float y = h * 0.36f - 26f * t;
+            DrawPopped(new Rect(0, y, w, 70), $"<b><color={GradeHex(_lastGrade)}>{_lastGrade}</color></b>", _big, scale, alpha);
+        }
+
+        /// <summary>Pop-in scale over time (s): 1.7 down to 0.92 in 0.08 s, back to 1 by 0.16 s.</summary>
+        private static float Pop(float seconds)
+        {
+            if (seconds < 0.08f) return Mathf.Lerp(1.7f, 0.92f, seconds / 0.08f);
+            if (seconds < 0.16f) return Mathf.Lerp(0.92f, 1f, (seconds - 0.08f) / 0.08f);
+            return 1f;
+        }
+
+        private static void DrawPopped(Rect r, string text, GUIStyle style, float scale, float alpha)
+        {
+            Matrix4x4 m = GUI.matrix;
+            Color old = GUI.color;
+            GUIUtility.ScaleAroundPivot(new Vector2(scale, scale), r.center);
+            GUI.color = new Color(1f, 1f, 1f, Mathf.Clamp01(alpha));
+            Label(r, text, style);
+            GUI.color = old;
+            GUI.matrix = m;
+        }
+
         private void DrawScore(float w)
         {
             string mult = Score.Multiplier > 1 ? $"   <color=yellow>x{Score.Multiplier}</color>" : "";
@@ -532,8 +592,8 @@ namespace ShiftShift
             // Grade tally, small, top-left (ELIA, day 28): a goal beyond surviving, e.g. no OKs.
             if (_tally == null) _tally = new GUIStyle(_small) { alignment = TextAnchor.MiddleLeft };
             Label(new Rect(20, 50, w * 0.45f, 30), // under the score line: no overlap at any score
-                $"<color=#00FCF9>PERFECT {Score.Perfects}</color>   <color=#7CFC8A>GOOD {Score.Goods}</color>   " +
-                $"<color=#B8BEC6>OK {Score.Oks}</color>", _tally);
+                $"<color={PerfectHex}>PERFECT {Score.Perfects}</color>   <color={GoodHex}>GOOD {Score.Goods}</color>   " +
+                $"<color={OkHex}>OK {Score.Oks}</color>", _tally);
         }
 
         private GUIStyle _tally;
