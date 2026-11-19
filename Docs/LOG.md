@@ -1332,3 +1332,11 @@ critical bug fixes only. Plan: submit early (once the browser pass and screensho
    (GUIUtility.ScaleAroundPivot). The level-complete cheer pops in the same way.
 Depends on / could break: GameFlow (Run, LevelTest), MainMenu (Menu), LatencyCalibration (Calibrate).
 Tested: compile check (normal and Web), Core tests 175; panel and pop previews rendered here. Not run: in Unity.
+
+## 2026-11-19 — D29: pause box layout
+
+ELIA's browser screenshot: in itch's frame the hint "(keys do nothing? click the game first)" overlapped "Right Shift:
+restart" (lines at fixed fractions of the height). Pause lines are now stacked one after another (title 64 px, options
+38 px, hint 26 px, 6 px gaps) and the panel is sized around them (~270 px), centred at 47% of the height.
+Also confirmed from the screenshot: panel, coloured tally and the pause on the fullscreen change work in the browser.
+Tested: compile check (normal and Web). Not run: in Unity.

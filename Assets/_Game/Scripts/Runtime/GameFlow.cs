@@ -441,13 +441,27 @@ namespace ShiftShift
             if (IsPaused)
             {
                 Dim(w, h);
-                UIPanel.Draw(new Rect(w * 0.28f, h * 0.28f, w * 0.44f, h * 0.36f));
-                Label(new Rect(0, h * 0.32f, w, 60), "<b>Paused</b>", _big);
-                Label(new Rect(0, h * 0.45f, w, 30), "Left Shift or Esc: resume", _mid);
-                if (ShiftKeys.FromBrowser)
-                    Label(new Rect(0, h * 0.45f + 34, w, 30), "(keys do nothing? click the game first)", _small);
-                Label(new Rect(0, h * 0.51f, w, 30), "Right Shift: restart", _mid);
-                Label(new Rect(0, h * 0.57f, w, 30), "Both: menu", _mid);
+                // Lines stacked one after another, the panel sized around them (testers, day 29: at fixed heights the
+                // browser hint overlapped "Right Shift: restart" in itch's frame).
+                var lines = new System.Collections.Generic.List<(string text, GUIStyle style, float height)>
+                {
+                    ("<b>Paused</b>", _big, 64f),
+                    ("Left Shift or Esc: resume", _mid, 38f),
+                };
+                if (ShiftKeys.FromBrowser) lines.Add(("(keys do nothing? click the game first)", _small, 26f));
+                lines.Add(("Right Shift: restart", _mid, 38f));
+                lines.Add(("Both: menu", _mid, 38f));
+                const float pad = 22f, gap = 6f;
+                float total = pad * 2 - gap;
+                foreach (var l in lines) total += l.height + gap;
+                float y = h * 0.47f - total * 0.5f;
+                UIPanel.Draw(new Rect(w * 0.26f, y, w * 0.48f, total));
+                y += pad;
+                foreach (var l in lines)
+                {
+                    Label(new Rect(0, y, w, l.height), l.text, l.style);
+                    y += l.height + gap;
+                }
                 return;
             }
 
