@@ -393,7 +393,7 @@ close.
 - [x] GitHub account; public repo shift-shift created with Unity
   .gitignore and Git LFS
 
-- [ ] itch.io account linked to GitHub; joined the Game Off 2026 jam
+- [x] itch.io account linked to GitHub; joined the Game Off 2026 jam
   page
 
 - [x] itch.io project created as a draft, HTML project type
@@ -414,7 +414,7 @@ close.
 - [x] LICENSE chosen: MIT for code (LICENSE), All Rights Reserved for assets
   and Docs/ (LICENSE-ASSETS), copyright ELIA. Third-party assets keep their
   own licences.
-- [ ] Right before the final submission: on ELIA's PC, run the final history
+- [ ] (24 Nov, first) Right before the final submission: on ELIA's PC, run the final history
   step (tools/sign-history.sh): one name on every commit, three old subjects
   reworded, every commit signed with ELIA's own SSH key (commits made from the
   cloud session are unsigned). Then force-push. Steps: Docs/LOG.md, 2026-11-13.
@@ -423,13 +423,13 @@ close.
 
 **Builds (day 28 to 29)**
 
-- [ ] WebGL build under 20 MB compressed, Brotli with fallback, tested
+- [x] WebGL build under 20 MB compressed, Brotli with fallback, tested
   in Chrome, Firefox, Edge (16 MB, Brotli with fallback, Chrome tested; Firefox and Edge on day 28)
 
 - [x] WebGL viewport set on itch (960 x 600, the build's canvas) with fullscreen button enabled; the page
   template fills the frame and the screen (day 25)
 
-- [ ] Windows x64 zip as a downloadable backup
+- [x] Windows x64 zip as a downloadable backup
 
 - [x] Both builds uploaded via butler with channel names html and windows (not used: the WebGL zip is uploaded on the itch.io site; the Windows zip is optional)
 
@@ -441,21 +441,21 @@ close.
 - [x] Controls stated on the page (Left Shift, Right Shift; tip to
   disable Sticky Keys)
 
-- [ ] 6 to 8 screenshots, at least two from level 4 or later
+- [x] 6 to 8 screenshots, at least two from level 4 or later
 
-- [ ] Animated GIF cover (630 x 500) showing a gesture sequence (made day 27: the leap over the +; tick once uploaded)
+- [x] Animated GIF cover (630 x 500) showing a gesture sequence (made day 27: the leap over the +; tick once uploaded)
 
 - [x] 30 to 45 s gameplay video uploaded to YouTube and embedded
 
-- [ ] Theme interpretation stated in one sentence
+- [x] Theme interpretation stated in one sentence
 
-- [ ] Link to the GitHub repo
+- [x] Link to the GitHub repo
 
 - [x] Credits section mirrors CREDITS.md
 
 **Submit (1 Dec)**
 
-- [ ] Final WebGL build uploaded and played through once on the live
+- [x] Final WebGL build uploaded and played through once on the live
   itch page
 
 - [ ] Game submitted to the jam from the jam page: aim for 25-27 Nov. Official close 1 Dec 13:37 PST = 2 Dec 03:07 IST (checked day 29); the page must be Public
