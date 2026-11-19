@@ -1363,3 +1363,16 @@ moved 1.2 m forward. Now the fall moves to the gap's centre (Obstacle.trackDista
 in 0.25 s while dropping, and, as ELIA asked, straight down with both arms raised: no forward tumble, no flailing,
 a 6 degree lean.
 Tested: compile check. Not run: in Unity.
+
+## 2026-11-19 — D29: gap miss where the runner lands; head stays in view
+
+ELIA's screenshots: after the fall the head sank out of view; on an early jump the runner went on to the far edge and
+then fell back. Runner.Update: when the runner is over a gap (near edge passed in the air, far edge ahead), no key
+press undecided, and it is no longer airborne, the run fails there and then (Miss, Fail at the current distance:
+FailStop keeps it before the far edge). Same outcome as before (landing before the far edge always failed at the far
+edge check), only the moment and place change. A jump that covers the far edge is unaffected (autoplay's jumps stay
+airborne past it: far edge at beat + 0.25 s + depth/2, airborne until key-up + 0.5 s). RunnerFigure.FallIntoGap: steps
+into the hole only from the near edge (to 0.5 m inside); a runner already over the hole drops where it is; drop 1.3 m
+(was 2.6) so the head and raised arms stay in view.
+Depends on / could break: Runner.Update (gap judging moment; Run, LevelTest), RunnerFigure.
+Tested: compile check (normal and Web), Core tests 175. Not run: in Unity.

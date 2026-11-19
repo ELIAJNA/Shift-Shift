@@ -271,14 +271,21 @@ namespace ShiftShift
             {
                 _fallT = 0f;
                 _basePos = transform.localPosition;
+                // Step into the hole only if not over it already: a missed jump stops at the near edge (a short step
+                // forward); a runner that came down inside the gap drops right where it is (no move back, ELIA).
                 Obstacle gap = runner.FailedOn;
-                _toGapCentre = gap != null && gap.hasTrackPosition ? gap.trackDistance - runner.Distance : 0f;
+                _toGapCentre = 0f;
+                if (gap != null && gap.hasTrackPosition)
+                {
+                    float near = gap.trackDistance - gap.depth * 0.5f + 0.5f, far = gap.trackDistance + gap.depth * 0.5f - 0.5f;
+                    _toGapCentre = Mathf.Clamp(runner.Distance, near, Mathf.Max(near, far)) - runner.Distance;
+                }
                 if (flame != null) { flame.Stop(); _flaming = false; }
             }
             _fallT += Time.deltaTime;
             float t = _fallT;
             float over = Smooth(Mathf.Clamp01(t / 0.25f));              // over the hole first...
-            float drop = Mathf.Min(2.6f, 0.5f * 9.8f * t * t);          // ...falling all the while, down to the water
+            float drop = Mathf.Min(1.3f, 0.5f * 9.8f * t * t);          // ...falling all the while; head and arms stay in view (ELIA)
             transform.localPosition = _basePos + new Vector3(0f, -drop, _toGapCentre * over);
             transform.localRotation = Quaternion.Euler(6f * over, 0f, 0f);     // upright, a very slight lean
             if (armLeft != null) armLeft.localRotation = Quaternion.Euler(-172f, 0f, -12f);  // both arms straight up
