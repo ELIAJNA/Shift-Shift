@@ -256,46 +256,70 @@ namespace ShiftShift
         private static float Smooth(float x) => x * x * (3f - 2f * x);
 
         private float _fallT = -1f;
-        private float _toGapCentre;
+        private float _fallForward, _fallDepth;
+        private const float FallLean = 30f;        // degrees forward at the end of the fall
+        private const float ShoulderHeight = 1.55f; // the figure's shoulders above its feet (m)
 
         /// <summary>
-        /// A missed gap (ELIA, day 29): after the crash freeze the runner moves over the middle of the hole and drops
-        /// straight down into it with both arms raised. The run can fail at either edge of a gap (a jump made too early
-        /// lands before the far edge), so it moves toward the gap's centre, forward or back (the first version always
-        /// went forward and from the far edge ended up on the road beyond, sinking through it). Game time, so it waits
-        /// through the hit-stop and the pause. Look only.
+        /// A missed gap (ELIA, day 29). After the crash freeze the runner arcs on into the hole with its momentum:
+        /// forward motion easing out while it falls faster and faster, leaning forward to 30 degrees, both arms raised.
+        /// It sinks just far enough for the gap's near edge to hide it below the shoulders from where the camera is
+        /// (ELIA: head and arms in view, no torso or legs). How much shows depends on how far past the edge it is (the
+        /// camera looks down into the pit), so the depth is worked out from the camera's position, not fixed.
+        /// Game time, so it waits through the hit-stop and the pause. Look only.
         /// </summary>
         private void FallIntoGap()
         {
-            if (_fallT < 0f)
-            {
-                _fallT = 0f;
-                _basePos = transform.localPosition;
-                // The runner is moving: it carries on a little into the hole as it falls (ELIA). From the near edge (no
-                // jump) to about 1 m inside; from inside the gap (an early jump came down) 0.6 m on, never past the far
-                // side, never back.
-                Obstacle gap = runner.FailedOn;
-                _toGapCentre = 0f;
-                if (gap != null && gap.hasTrackPosition)
-                {
-                    float near = gap.trackDistance - gap.depth * 0.5f + 1.0f, far = gap.trackDistance + gap.depth * 0.5f - 0.45f;
-                    float target = Mathf.Clamp(runner.Distance + 0.6f, near, Mathf.Max(near, far));
-                    _toGapCentre = Mathf.Max(0f, target - runner.Distance);
-                }
-                if (flame != null) { flame.Stop(); _flaming = false; }
-            }
+            if (_fallT < 0f) StartFall();
             _fallT += Time.deltaTime;
             float t = _fallT;
-            float over = 1f - (1f - Mathf.Clamp01(t / 0.3f)) * (1f - Mathf.Clamp01(t / 0.3f)); // momentum, easing out...
-            float drop = Mathf.Min(1.6f, 0.5f * 9.8f * t * t);          // ...falling all the while; head, shoulders and arms stay in view (ELIA)
-            transform.localPosition = _basePos + new Vector3(0f, -drop, _toGapCentre * over);
-            transform.localRotation = Quaternion.Euler(6f * over, 0f, 0f);     // upright, a very slight lean
+            float u = Mathf.Clamp01(t / 0.5f);
+            float forward = _fallForward * (1f - (1f - u) * (1f - u));         // momentum, easing out
+            float drop = Mathf.Min(_fallDepth, 0.5f * 8f * t * t);               // falling faster and faster
+            float lean = FallLean * (1f - (1f - u) * (1f - u));
+            transform.localPosition = _basePos + new Vector3(0f, -drop, forward);
+            transform.localRotation = Quaternion.Euler(lean, 0f, 0f);
             if (armLeft != null) armLeft.localRotation = Quaternion.Euler(-172f, 0f, -12f);  // both arms straight up
             if (armRight != null) armRight.localRotation = Quaternion.Euler(-172f, 0f, 12f);
-            if (legLeft != null) legLeft.localRotation = Quaternion.identity;
-            if (legRight != null) legRight.localRotation = Quaternion.identity;
+            if (legLeft != null) legLeft.localRotation = Quaternion.Euler(-12f, 0f, 0f);
+            if (legRight != null) legRight.localRotation = Quaternion.Euler(8f, 0f, 0f);
             if (upperBody != null) upperBody.localRotation = Quaternion.identity;
         }
+
+        private void StartFall()
+        {
+            _fallT = 0f;
+            _basePos = transform.localPosition;
+            if (flame != null) { flame.Stop(); _flaming = false; }
+            _fallForward = 0f;
+            _fallDepth = 1.6f;
+            Obstacle gap = runner.FailedOn;
+            if (gap == null || !gap.hasTrackPosition) return;
+
+            // How far on: from the near edge (no jump) to about 1.2 m into the hole; from inside it (an early jump came
+            // down) 0.8 m on; never closer than 0.5 m to the far side, never back.
+            float nearEdge = gap.trackDistance - gap.depth * 0.5f, farEdge = gap.trackDistance + gap.depth * 0.5f;
+            float target = Mathf.Clamp(runner.Distance + 0.8f, nearEdge + 1.2f, Mathf.Max(nearEdge + 1.2f, farEdge - 0.5f));
+            _fallForward = Mathf.Max(0f, target - runner.Distance);
+
+            // Depth: the line from the camera over the gap's near edge, at the figure's final place, is where the edge
+            // starts hiding it; put the shoulders just below that line. Runner-local space: z along the track, y up,
+            // the road at the figure's starting height.
+            Camera cam = Camera.main;
+            Transform parent = transform.parent;
+            if (cam == null || parent == null) return;
+            Vector3 c = parent.InverseTransformPoint(cam.transform.position);
+            float roadY = _basePos.y;
+            float rimZ = nearEdge - runner.Distance + _basePos.z;
+            float figZ = _basePos.z + _fallForward;
+            float camY = c.y - roadY;
+            float hidden = 0f; // how far below the road the edge hides things at the figure's place
+            if (figZ > rimZ && rimZ > c.z && camY > 0f)
+                hidden = camY * (figZ - rimZ) / (rimZ - c.z);
+            float shoulders = ShoulderHeight * Mathf.Cos(FallLean * Mathf.Deg2Rad);
+            _fallDepth = Mathf.Clamp(shoulders + 0.05f + hidden, 1.0f, 3.2f); // shoulders just below the hiding line
+        }
+
 
     }
 }

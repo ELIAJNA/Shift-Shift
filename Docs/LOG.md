@@ -1383,3 +1383,16 @@ ELIA: a running figure would not drop right at the edge; and too much torso show
 carries on forward (easing out over 0.3 s): from the near edge to about 1 m inside the gap; from inside, 0.6 m on;
 never past 0.45 m before the far side, never back. Drop 1.6 m (was 1.3): head, shoulders and raised arms show.
 Tested: compile check. Not run: in Unity.
+
+## 2026-11-19 — D29: gap fall - a forward arc, a lean, depth from the camera
+
+ELIA: the fall still dropped straight down; it should lean forward and fall with its momentum; and after an early jump
+the legs showed (ELIA had asked for less body, I had made it deeper but it also drifted further from the edge).
+Why depth alone did not work: the camera looks down into the pit, so the further past the near edge the runner is, the
+more of it shows. RunnerFigure.FallIntoGap now: forward motion easing out over 0.5 s while falling faster and faster
+(8 m/s2), so the path arcs; a lean forward to 30 degrees; arms up. Forward: from the near edge to 1.2 m into the
+hole, from inside 0.8 m on, at most to 0.5 m before the far side. Depth: worked out at the start of the fall from the
+camera's position (runner-local): the line from the camera over the near edge gives how far below the road the edge
+hides things at the figure's final place; the shoulders go 5 cm below it (clamped 1-3.2 m). Worked numbers: no jump,
+drop 2.0 m; early jump landing 1.5 m in, drop 3.0 m; head and raised arms show in both.
+Tested: compile check (normal and Web), the numbers above. Not run: in Unity.
