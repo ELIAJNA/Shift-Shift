@@ -1354,3 +1354,12 @@ camera stays.
 Depends on / could break: Runner (one read-only property), RunnerFigure (only acts on a fail at a Gap), MainMenu.
 Tested: compile check (normal and Web), Core tests 175. Not run: in Unity (the fall's direction, forward = the figure's
 +z, is worked out, not seen).
+
+## 2026-11-19 — D29: gap fall fixed
+
+ELIA's screenshot: the runner fell onto the road beyond the gap and sank through it. Cause: the run failed at the
+gap's far edge (an early jump landed before it; FailStop puts the runner at the failed edge), and the fall always
+moved 1.2 m forward. Now the fall moves to the gap's centre (Obstacle.trackDistance - Runner.Distance, forward or back)
+in 0.25 s while dropping, and, as ELIA asked, straight down with both arms raised: no forward tumble, no flailing,
+a 6 degree lean.
+Tested: compile check. Not run: in Unity.

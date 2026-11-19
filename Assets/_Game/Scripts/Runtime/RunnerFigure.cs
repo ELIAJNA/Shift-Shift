@@ -256,11 +256,14 @@ namespace ShiftShift
         private static float Smooth(float x) => x * x * (3f - 2f * x);
 
         private float _fallT = -1f;
+        private float _toGapCentre;
 
         /// <summary>
-        /// A missed gap (ELIA, day 29: the runner stood at the edge): after the crash freeze it tips forward and drops
-        /// into the gap, arms up. Game time, so it waits through the hit-stop and the pause. The runner stops at the gap's
-        /// near edge (FailStop), so it drifts a little forward, over the hole, as it falls. Look only.
+        /// A missed gap (ELIA, day 29): after the crash freeze the runner moves over the middle of the hole and drops
+        /// straight down into it with both arms raised. The run can fail at either edge of a gap (a jump made too early
+        /// lands before the far edge), so it moves toward the gap's centre, forward or back (the first version always
+        /// went forward and from the far edge ended up on the road beyond, sinking through it). Game time, so it waits
+        /// through the hit-stop and the pause. Look only.
         /// </summary>
         private void FallIntoGap()
         {
@@ -268,21 +271,22 @@ namespace ShiftShift
             {
                 _fallT = 0f;
                 _basePos = transform.localPosition;
+                Obstacle gap = runner.FailedOn;
+                _toGapCentre = gap != null && gap.hasTrackPosition ? gap.trackDistance - runner.Distance : 0f;
                 if (flame != null) { flame.Stop(); _flaming = false; }
             }
             _fallT += Time.deltaTime;
             float t = _fallT;
-            float drop = Mathf.Min(2.6f, 0.5f * 9.8f * t * t);     // free fall, down to the water in the pit
-            float forward = Mathf.Min(1.2f, 1.6f * t);              // over the hole
-            float pitch = Mathf.Min(75f, 140f * t);                  // tips forward
-            transform.localPosition = _basePos + new Vector3(0f, -drop, forward);
-            transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-            float flail = Mathf.Sin(t * 18f) * 15f;
-            if (armLeft != null) armLeft.localRotation = Quaternion.Euler(-160f + flail, 0f, -20f);
-            if (armRight != null) armRight.localRotation = Quaternion.Euler(-160f - flail, 0f, 20f);
-            if (legLeft != null) legLeft.localRotation = Quaternion.Euler(-20f - flail, 0f, 0f);
-            if (legRight != null) legRight.localRotation = Quaternion.Euler(10f + flail, 0f, 0f);
+            float over = Smooth(Mathf.Clamp01(t / 0.25f));              // over the hole first...
+            float drop = Mathf.Min(2.6f, 0.5f * 9.8f * t * t);          // ...falling all the while, down to the water
+            transform.localPosition = _basePos + new Vector3(0f, -drop, _toGapCentre * over);
+            transform.localRotation = Quaternion.Euler(6f * over, 0f, 0f);     // upright, a very slight lean
+            if (armLeft != null) armLeft.localRotation = Quaternion.Euler(-172f, 0f, -12f);  // both arms straight up
+            if (armRight != null) armRight.localRotation = Quaternion.Euler(-172f, 0f, 12f);
+            if (legLeft != null) legLeft.localRotation = Quaternion.identity;
+            if (legRight != null) legRight.localRotation = Quaternion.identity;
             if (upperBody != null) upperBody.localRotation = Quaternion.identity;
         }
+
     }
 }
