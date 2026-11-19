@@ -213,6 +213,23 @@ namespace ShiftShift
                 return;
             }
 
+            // Over a gap (its near edge passed in the air, the far edge still ahead): coming down inside it is the miss,
+            // right there (ELIA, day 29: an early jump used to carry the runner on to the far edge before it failed and
+            // fell back). The outcome is unchanged (landing before the far edge always failed); only where and when.
+            if (_nextCheck > 0 && _nextCheck < _checks.Count)
+            {
+                Check far = _checks[_nextCheck], near = _checks[_nextCheck - 1];
+                bool overGap = far.Info.Kind == ObstacleKind.Gap && far.Final && !near.Final && near.Obstacle == far.Obstacle;
+                bool pressPending = input.TryGetUnresolvedPress(out double pendingAt) && pendingAt <= now;
+                if (overGap && !pressPending && !_model.IsAirborne(now))
+                {
+                    far.Info.Time = now;
+                    Judged?.Invoke(far.Obstacle, Grade.Miss);
+                    Fail(far, z); // FailStop keeps the runner where it is (before the far edge): it drops in there
+                    return;
+                }
+            }
+
             while (_nextCheck < _checks.Count && Clock.SongTimeAtBeat(_checks[_nextCheck].Beat) <= now)
             {
                 Check c = _checks[_nextCheck];
