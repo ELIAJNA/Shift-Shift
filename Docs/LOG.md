@@ -1396,3 +1396,13 @@ camera's position (runner-local): the line from the camera over the near edge gi
 hides things at the figure's final place; the shoulders go 5 cm below it (clamped 1-3.2 m). Worked numbers: no jump,
 drop 2.0 m; early jump landing 1.5 m in, drop 3.0 m; head and raised arms show in both.
 Tested: compile check (normal and Web), the numbers above. Not run: in Unity.
+
+## 2026-11-19 — D29: gap rule checked (no change to outcomes or grades)
+
+ELIA asked to check the gap mechanics and grades still work as before after the "fail where you land" change.
+New GapRuleTests: one gap, a jump pressed at every offset from -450 to +450 ms (5 ms steps), at each level's tempo
+(120-190 BPM), through the real GestureClassifier and RunnerModel the way Runner.Update judges (60 fps, checks at both
+edges); once with the old rules, once with the new one. Every jump: same pass/fail and same grade; a miss is never
+called later than before. Windows at 120 BPM: PERFECT within 50 ms, GOOD 55-115 ms early or late, OK 120-200 ms early
+or 120-125 ms late, a miss beyond (190 BPM: OK to 250 ms early and 170 ms late). AutoPlanTests' level simulation now
+mirrors the new rule too: all six levels still clear with the same grades at 60, 20 and 8 fps. Core tests 181.

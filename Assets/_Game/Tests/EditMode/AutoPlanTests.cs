@@ -98,7 +98,17 @@ namespace ShiftShift.Tests
                 }
                 classifier.Update(now);
 
-                // Runner.Update
+                // Runner.Update, day 29: over a gap (near edge passed) and down = the miss, there and then.
+                if (next > 0 && next < checks.Count && checks[next].Info.Kind == ObstacleKind.Gap && checks[next].Final &&
+                    !checks[next - 1].Final && checks[next - 1].Name == checks[next].Name)
+                {
+                    bool pendingOver = classifier.TryGetUnresolvedPress(out double overAt) && overAt <= now;
+                    if (!pendingOver && !model.IsAirborne(now))
+                    {
+                        failure = $"came down inside {checks[next].Name} at {now:0.000} s";
+                        return grades;
+                    }
+                }
                 while (next < checks.Count && tempo.TimeAtBeat(checks[next].Beat) <= now)
                 {
                     Check c = checks[next];
