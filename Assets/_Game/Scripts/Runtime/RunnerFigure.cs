@@ -73,6 +73,12 @@ namespace ShiftShift
                 Dance();
                 return;
             }
+            if (runner.State == Runner.RunState.Failed && runner.FailedOn != null &&
+                runner.FailedOn.kind == ShiftShift.Core.ObstacleKind.Gap)
+            {
+                FallIntoGap();
+                return;
+            }
             // Half-strides since the start: the whole part counts footfalls, the fraction drives the swing.
             float half = runner.Distance / strideMetres * 2f;
             float swing = Mathf.Sin(half * Mathf.PI);
@@ -248,5 +254,35 @@ namespace ShiftShift
         }
 
         private static float Smooth(float x) => x * x * (3f - 2f * x);
+
+        private float _fallT = -1f;
+
+        /// <summary>
+        /// A missed gap (ELIA, day 29: the runner stood at the edge): after the crash freeze it tips forward and drops
+        /// into the gap, arms up. Game time, so it waits through the hit-stop and the pause. The runner stops at the gap's
+        /// near edge (FailStop), so it drifts a little forward, over the hole, as it falls. Look only.
+        /// </summary>
+        private void FallIntoGap()
+        {
+            if (_fallT < 0f)
+            {
+                _fallT = 0f;
+                _basePos = transform.localPosition;
+                if (flame != null) { flame.Stop(); _flaming = false; }
+            }
+            _fallT += Time.deltaTime;
+            float t = _fallT;
+            float drop = Mathf.Min(2.6f, 0.5f * 9.8f * t * t);     // free fall, down to the water in the pit
+            float forward = Mathf.Min(1.2f, 1.6f * t);              // over the hole
+            float pitch = Mathf.Min(75f, 140f * t);                  // tips forward
+            transform.localPosition = _basePos + new Vector3(0f, -drop, forward);
+            transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+            float flail = Mathf.Sin(t * 18f) * 15f;
+            if (armLeft != null) armLeft.localRotation = Quaternion.Euler(-160f + flail, 0f, -20f);
+            if (armRight != null) armRight.localRotation = Quaternion.Euler(-160f - flail, 0f, 20f);
+            if (legLeft != null) legLeft.localRotation = Quaternion.Euler(-20f - flail, 0f, 0f);
+            if (legRight != null) legRight.localRotation = Quaternion.Euler(10f + flail, 0f, 0f);
+            if (upperBody != null) upperBody.localRotation = Quaternion.identity;
+        }
     }
 }

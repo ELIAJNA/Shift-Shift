@@ -1340,3 +1340,17 @@ restart" (lines at fixed fractions of the height). Pause lines are now stacked o
 38 px, hint 26 px, 6 px gaps) and the panel is sized around them (~270 px), centred at 47% of the height.
 Also confirmed from the screenshot: panel, coloured tally and the pause on the fullscreen change work in the browser.
 Tested: compile check (normal and Web). Not run: in Unity.
+
+## 2026-11-19 — D29: How to play in one box; runner falls into a missed gap
+
+ELIA's screenshots: How to play's title and "Any Shift: back" sat outside the panel, and at full screen the moves left
+a large empty gap. MainMenu.DrawHowTo laid out top down: title, intro, six move rows, tips, back hint, all inside one
+panel sized to its content and centred; rows are at most 56 px (x scale) and shrink to fit short screens (worked out:
+~560 px tall at 1080, ~500 at 600, fits at 450).
+ELIA: on a missed gap the runner stood at the edge. Runner.FailedOn (new, read-only); RunnerFigure.FallIntoGap: after
+the crash freeze (game time, so it waits through the hit-stop and pause) the figure drifts 1.2 m forward over the hole,
+tips forward up to 75 degrees and falls (9.8 m/s2) down to 2.6 m below the road, arms up and flailing. Look only; the
+camera stays.
+Depends on / could break: Runner (one read-only property), RunnerFigure (only acts on a fail at a Gap), MainMenu.
+Tested: compile check (normal and Web), Core tests 175. Not run: in Unity (the fall's direction, forward = the figure's
++z, is worked out, not seen).
