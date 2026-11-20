@@ -10,7 +10,7 @@ namespace ShiftShift
     /// Latency calibration screen (playbook 1.4), reached with F2 from the debug overlay. Plays clicks scheduled on
     /// the audio clock; the player taps either Shift on each one. The mean (tap - click) covers audio output delay,
     /// input delay and the player's own timing; it is saved and the Conductor delays the game by that much.
-    /// Right Shift saves, Left Shift retries, Esc goes back without saving.
+    /// Right Shift saves, Left Shift retries, both Shifts (or Esc, outside browser fullscreen) go back without saving.
     /// </summary>
     [RequireComponent(typeof(AudioSource))]
     public sealed class LatencyCalibration : MonoBehaviour
@@ -50,29 +50,64 @@ namespace ShiftShift
             }
         }
 
+        // Menu-style keys (testers, day 30): in browser fullscreen Esc only leaves fullscreen and never reaches the
+        // game, so the screen also goes back with both Shifts together, like the menu. Esc still works in a window.
+        private readonly ShiftMenuKeys _keys = new ShiftMenuKeys();
+        private bool _keysReady;
+
         private void Update()
         {
+            // Key states: the browser's own view in Web builds (ShiftKeys: Unity's can lose the second Shift), else the
+            // Input System. "Hit" = pressed since the last frame, timed for the calibration taps.
+            bool leftDown, rightDown, leftHit, rightHit, esc;
             Keyboard kb = Keyboard.current;
-            if (kb == null) return;
-            bool left = kb.leftShiftKey.wasPressedThisFrame, right = kb.rightShiftKey.wasPressedThisFrame;
-            if (kb.escapeKey.wasPressedThisFrame) { Back(); return; }
+            if (ShiftKeys.FromBrowser)
+            {
+                ShiftKeys.Read(out leftDown, out rightDown, out bool lh, out bool rh, out bool la, out bool ra,
+                    out bool lr, out bool rr);
+                leftHit = lh || la || lr;
+                rightHit = rh || ra || rr;
+            }
+            else
+            {
+                if (kb == null) return;
+                leftDown = kb.leftShiftKey.isPressed;
+                rightDown = kb.rightShiftKey.isPressed;
+                leftHit = kb.leftShiftKey.wasPressedThisFrame;
+                rightHit = kb.rightShiftKey.wasPressedThisFrame;
+            }
+            esc = kb != null && kb.escapeKey.wasPressedThisFrame;
+            if (!_keysReady)
+            {
+                _keys.Reset(leftDown, rightDown); // the keys that opened this screen from the menu do not count
+                _keysReady = true;
+            }
+            MenuKey key = _keys.Poll(leftDown, rightDown);
+            if (esc) { Back(); return; }
 
             switch (_state)
             {
                 case State.Ready:
-                    if ((left || right) && _clip != null) Begin();
+                    if (key == MenuKey.Both) Back();
+                    else if ((key == MenuKey.Left || key == MenuKey.Right) && _clip != null) Begin();
                     break;
                 case State.Running:
                     double now = AudioSettings.dspTime; // same clock the Conductor uses
-                    if (left || right) _taps.Add(now);
-                    if (now > _clickTimes[_clickTimes.Count - 1] + Beat) Finish();
+                    if (leftHit || rightHit) _taps.Add(now);
+                    if (now > _clickTimes[_clickTimes.Count - 1] + Beat)
+                    {
+                        Finish();
+                        _keys.Reset(leftDown, rightDown); // the last tap must not pick a result option
+                    }
                     break;
                 case State.Result:
-                    if (right && _result.Count >= clicks / 2) Save();
-                    else if (left) Begin();
+                    if (key == MenuKey.Both) Back();
+                    else if (key == MenuKey.Right && _result.Count >= clicks / 2) Save();
+                    else if (key == MenuKey.Left) Begin();
                     break;
             }
         }
+
 
         private void Begin()
         {
@@ -131,8 +166,8 @@ namespace ShiftShift
             {
                 case State.Ready:
                     text = "<b>Latency calibration</b>\n\nTap either Shift on every click.\n" +
-                           $"The first {warmUp} clicks are practice.\n\nPress Shift to begin\n\n" +
-                           $"<size=18>Current offset {saved:+0;-0;0} ms   ·   Esc: back</size>";
+                           $"The first {warmUp} clicks are practice.\n\nLeft or Right Shift: begin\n\n" +
+                           $"<size=18>Current offset {saved:+0;-0;0} ms   ·   Both Shifts: back</size>";
                     break;
                 case State.Running:
                     int heard = Mathf.Clamp((int)((AudioSettings.dspTime - _start) / Beat) + 1, 0, clicks);
@@ -141,8 +176,8 @@ namespace ShiftShift
                 default:
                     bool enough = _result.Count >= clicks / 2;
                     text = $"<b>Result</b>\n\nOffset {_result.MeanMs:+0;-0;0} ms\nspread ±{_result.SpreadMs:0} ms   (counted {_result.Count} of {_taps.Count} taps)\n\n" +
-                           (enough ? "Right Shift: save   ·   Left Shift: try again   ·   Esc: back"
-                                   : "Not enough taps counted.\nLeft Shift: try again   ·   Esc: back") +
+                           (enough ? "Right Shift: save   ·   Left Shift: try again   ·   Both: back"
+                                   : "Not enough taps counted.\nLeft Shift: try again   ·   Both: back") +
                            $"\n\n<size=18>A spread over ±40 ms means the taps were uneven: try again.</size>";
                     break;
             }

@@ -1421,3 +1421,15 @@ theme sentence and GitHub link on the page, Windows backup) except the final ste
 PLAN.md checklist ticked. The signing reminder (scheduled task) moved from 30 Nov to 24 Nov 09:00 IST, because the
 history step rewrites every commit and must come before the tag and the submission. Docs/SUBMIT-DAY.md: the 24 Nov
 steps in order (sign, tag v1.0-jam signed, public page, submit, community post text, after).
+
+## 2026-11-20 — D30: calibration screen back with both Shifts
+
+Tester: on Calibrate timing, Esc left browser fullscreen instead of going back to the menu (the browser keeps Esc in
+fullscreen; same cause as the pause, day 29). LatencyCalibration now reads the keys like the menu: the browser's own
+view in Web builds (ShiftKeys; the scene has no ShiftInput, so nothing else reads it), the Input System elsewhere,
+through ShiftMenuKeys. Ready: Left or Right Shift begins, both Shifts go back. Result: Right saves, Left tries again,
+both go back without saving. Esc still goes back outside fullscreen. Keys reset on arrival (the both-press that opened
+the screen from the menu does not count) and when the run ends (the last tap does not pick an option). Taps are timed
+from the per-frame key hits, as before (in Web builds now the browser's, which also catch a press during the other
+key's hold). Screen text updated.
+Tested: compile check (normal and Web). Not run: in Unity or the browser.
