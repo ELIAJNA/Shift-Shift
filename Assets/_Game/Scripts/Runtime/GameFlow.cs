@@ -446,7 +446,7 @@ namespace ShiftShift
                 var lines = new System.Collections.Generic.List<(string text, GUIStyle style, float height)>
                 {
                     ("<b>Paused</b>", _big, 64f),
-                    ("Left Shift or Esc: resume", _mid, 38f),
+                    ("Left Shift: resume", _mid, 38f), // Esc still resumes in a window; in browser fullscreen it only leaves fullscreen
                 };
                 if (ShiftKeys.FromBrowser) lines.Add(("(keys do nothing? click the game first)", _small, 26f));
                 lines.Add(("Right Shift: restart", _mid, 38f));

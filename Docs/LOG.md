@@ -1433,3 +1433,12 @@ the screen from the menu does not count) and when the run ends (the last tap doe
 from the per-frame key hits, as before (in Web builds now the browser's, which also catch a press during the other
 key's hold). Screen text updated.
 Tested: compile check (normal and Web). Not run: in Unity or the browser.
+
+## 2026-11-21 — D31: resume no longer moves the runner; pause wording
+
+Tester screenshots: Left Shift to resume also moved the runner a lane (the pause menu acts on the key's release, the
+same release completes a TapLeft; ShiftInput runs before GameFlow, so the tap reached the runner while still paused).
+Runner ignores taps and new holds while the conductor is paused; a hold's end still counts (a slide or sprint held into
+the pause ends normally). Move sounds were already silent while paused. Pause text: "Left Shift: resume" (Esc still
+resumes in a window; in browser fullscreen it only leaves fullscreen).
+Tested: compile check (normal and Web). Not run: in Unity or the browser.
