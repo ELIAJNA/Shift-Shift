@@ -172,9 +172,14 @@ namespace ShiftShift
             _checks.Add(new Check { Info = info, Beat = z / metresPerBeat, TargetBeat = targetBeat, Final = final, Obstacle = o });
         }
 
+        // Keys pressed in the pause menu are for the menu (testers, day 31: Left Shift to resume also moved the runner
+        // a lane, since the tap completes on the same release that resumes). Taps and new holds are ignored while paused;
+        // a hold's end still counts, so a slide or sprint held into the pause cannot stay on for good.
+        private bool Paused => conductor != null && conductor.IsPaused;
+
         private void OnHoldStarted(GestureType type, double time)
         {
-            if (!Waiting) _model.OnHoldStarted(type, time);
+            if (!Waiting && !Paused) _model.OnHoldStarted(type, time);
         }
 
         private void OnHoldEnded(GestureType type, double time)
@@ -184,7 +189,7 @@ namespace ShiftShift
 
         private void OnGestureFired(GestureType type, double time)
         {
-            if (Waiting) return; // gestures before the start are on another clock
+            if (Waiting || Paused) return; // gestures before the start are on another clock; pause-menu keys are not moves
             double now = Now;
             _model.OnGestureFired(type, time, input.AlternateStreak, now);
             if (State != RunState.Running) return;
