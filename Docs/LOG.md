@@ -1442,3 +1442,15 @@ Runner ignores taps and new holds while the conductor is paused; a hold's end st
 the pause ends normally). Move sounds were already silent while paused. Pause text: "Left Shift: resume" (Esc still
 resumes in a window; in browser fullscreen it only leaves fullscreen).
 Tested: compile check (normal and Web). Not run: in Unity or the browser.
+
+## 2026-11-24 — D32: signed and submitted
+
+ELIA submitted a week early. On ELIA's PC: ssh-agent enabled and the signing key loaded (no passphrase; fingerprint
+matches the GitHub signing key), tools/sign-history.sh run on origin/main (217 commits, 217 signed, every name ELIA),
+force-pushed. Checked before the push: main holds no mobile work (no mobile branch on GitHub, no touch code, no
+keystore; mobile appears only in docs and Unity's stock Mobile render asset, which the Web build uses). The AI
+assistant's config (.claude/, CLAUDE.md) taken out of the repo and kept local through .gitignore (signed commit
+3a48f0e). Tag v1.0-jam (signed) on 3a48f0e, GitHub release with the WebGL zip. itch.io page Public; entry submitted to
+Game Off 2026 with the repo link, theme sentence and AI usage. Rating opens 2 Dec.
+Cloud copy reset to the signed main; commits from here are unsigned. Still to do: community post, rebase the mobile
+branch onto the signed main (PC), rate 20+ entries from 2 Dec, critical fixes only.

@@ -402,7 +402,7 @@ close.
 
 **Repository (ongoing, final check day 30)**
 
-- [ ] Source pushed daily; last push before the deadline
+- [x] Source pushed daily; last push before the deadline (signed history pushed 24 Nov)
 
 - [x] README.md: one-line pitch, controls, how to build, link to the
   itch page
@@ -414,12 +414,13 @@ close.
 - [x] LICENSE chosen: MIT for code (LICENSE), All Rights Reserved for assets
   and Docs/ (LICENSE-ASSETS), copyright ELIA. Third-party assets keep their
   own licences.
-- [ ] (24 Nov, first) Right before the final submission: on ELIA's PC, run the final history
+- [x] (24 Nov, first) Right before the final submission: on ELIA's PC, run the final history
   step (tools/sign-history.sh): one name on every commit, three old subjects
   reworded, every commit signed with ELIA's own SSH key (commits made from the
-  cloud session are unsigned). Then force-push. Steps: Docs/LOG.md, 2026-11-13.
+  cloud session are unsigned). Then force-push. Steps: Docs/LOG.md, 2026-11-13. Done 24 Nov: 217 of 217 signed.
+  The AI assistant's config files (.claude/, CLAUDE.md) were then taken out of the repo and kept local (D32).
 
-- [ ] Tag v1.0-jam on the submitted commit
+- [x] Tag v1.0-jam on the submitted commit (signed, 3a48f0e; GitHub release with the WebGL zip)
 
 **Builds (day 28 to 29)**
 
@@ -458,10 +459,10 @@ close.
 - [x] Final WebGL build uploaded and played through once on the live
   itch page
 
-- [ ] Game submitted to the jam from the jam page: aim for 25-27 Nov. Official close 1 Dec 13:37 PST = 2 Dec 03:07 IST (checked day 29); the page must be Public
+- [x] Game submitted to the jam from the jam page (24 Nov, 7 days 19 hours before the deadline): aim for 25-27 Nov. Official close 1 Dec 13:37 PST = 2 Dec 03:07 IST (checked day 29); the page must be Public
 
-- [ ] Jam submission page shows the entry; post in the Game Off
-  community thread
+- [x] Jam submission page shows the entry (24 Nov)
+- [ ] Post in the Game Off community thread (text in Docs/SUBMIT-DAY.md)
 
 **During voting (2 Dec to 1 Jan)**
 
