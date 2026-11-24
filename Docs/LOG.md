@@ -1454,3 +1454,9 @@ assistant's config (.claude/, CLAUDE.md) taken out of the repo and kept local th
 Game Off 2026 with the repo link, theme sentence and AI usage. Rating opens 2 Dec.
 Cloud copy reset to the signed main; commits from here are unsigned. Still to do: community post, rebase the mobile
 branch onto the signed main (PC), rate 20+ entries from 2 Dec, critical fixes only.
+
+## 2026-11-24 — D32: community post
+
+ELIA posted the entry in the Game Off 2026 community:
+https://itch.io/jam/game-off-2026/topic/7504804/shiftshift-my-entry-for-gameoff2026-itchio
+Still to do: rebase the mobile branch onto the signed main (PC); from 2 Dec rate 20+ entries, critical fixes only.

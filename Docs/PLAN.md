@@ -462,7 +462,7 @@ close.
 - [x] Game submitted to the jam from the jam page (24 Nov, 7 days 19 hours before the deadline): aim for 25-27 Nov. Official close 1 Dec 13:37 PST = 2 Dec 03:07 IST (checked day 29); the page must be Public
 
 - [x] Jam submission page shows the entry (24 Nov)
-- [ ] Post in the Game Off community thread (text in Docs/SUBMIT-DAY.md)
+- [x] Post in the Game Off community thread (24 Nov: https://itch.io/jam/game-off-2026/topic/7504804/shiftshift-my-entry-for-gameoff2026-itchio)
 
 **During voting (2 Dec to 1 Jan)**
 
